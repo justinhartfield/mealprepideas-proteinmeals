@@ -74,7 +74,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
 
   {faqStructuredData && <script type="application/ld+json" set:html={faqStructuredData} />}
 
-  <main class="flex-grow" x-data={`{ filter: 'all', faqOpen: null, recipes: ${recipesJson} }`}>
+  <main class="flex-grow" x-data={`{ filter: 'all', faqOpen: null, hubPath: '${hubPath}', recipes: ${recipesJson} }`}>
     <!-- BREADCRUMB + HERO -->
     <section class="relative pt-20 pb-12 px-6 border-b" style="border-color: var(--border-default);">
       <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
@@ -182,8 +182,8 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
                 <span class="text-xl font-black tabular-nums" x-text="recipe.cal"></span>
               </div>
             </div>
-            <a href="#" class="block w-full py-4 text-center hover-accent-bg hover-inverse-text transition-all text-[10px] font-black uppercase tracking-[0.2em]" style="background-color: var(--bg-secondary);">
-              View Recipe Structure
+            <a x-bind:href="recipe.slug ? hubPath + 'recipes/' + recipe.slug + '/' : hubPath" class="block w-full py-4 text-center hover-accent-bg hover-inverse-text transition-all text-[10px] font-black uppercase tracking-[0.2em]" style="background-color: var(--bg-secondary);">
+              View Full Recipe
             </a>
           </div>
         </template>

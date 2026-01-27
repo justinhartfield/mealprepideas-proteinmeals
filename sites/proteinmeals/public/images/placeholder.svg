@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#1a1a2e"/>
+  <rect x="300" y="200" width="200" height="200" rx="20" fill="none" stroke="#3a3a5e" stroke-width="4"/>
+  <circle cx="370" cy="270" r="20" fill="none" stroke="#3a3a5e" stroke-width="3"/>
+  <path d="M330 370 L370 320 L410 350 L440 310 L470 370" fill="none" stroke="#3a3a5e" stroke-width="3" stroke-linejoin="round"/>
+  <text x="400" y="440" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#5a5a7e" letter-spacing="3">IMAGE LOADING</text>
+</svg>

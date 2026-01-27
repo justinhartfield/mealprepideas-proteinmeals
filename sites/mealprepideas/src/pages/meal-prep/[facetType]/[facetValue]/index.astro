@@ -28,13 +28,14 @@ const realRecipes = getRecipesMatchingAnyFacet('meal-prep', facetType!, facetVal
 // Build recipe display objects from real data, with fallback placeholders
 const displayRecipes = realRecipes.length > 0
   ? realRecipes.slice(0, 6).map((r, i) => isMethod
-      ? { id: i + 1, title: r.title, protein: `${r.protein}g`, cals: `${r.calories}`, time: `${r.prepTime + r.cookTime}m`, category: r.facets.meal || 'dinner', img: '' }
-      : { id: i + 1, title: r.title, protein: `${r.protein}g`, cal: `${r.calories}`, pe: r.protein > 35 ? 'Elite' : r.protein > 25 ? 'High' : 'Mid', tags: [r.facets.meal || 'Dinner', r.facets.goal || r.facets.constraint || 'Prep'].map(t => slugToDisplay(t)) }
+      ? { id: i + 1, title: r.title, slug: r.slug, protein: `${r.protein}g`, cals: `${r.calories}`, time: `${r.prepTime + r.cookTime}m`, category: r.facets.meal || 'dinner', img: '' }
+      : { id: i + 1, title: r.title, slug: r.slug, protein: `${r.protein}g`, cal: `${r.calories}`, pe: r.protein > 35 ? 'Elite' : r.protein > 25 ? 'High' : 'Mid', tags: [r.facets.meal || 'Dinner', r.facets.goal || r.facets.constraint || 'Prep'].map(t => slugToDisplay(t)) }
     )
   : isMethod
     ? Array.from({ length: 6 }, (_, i) => ({
         id: i + 1,
         title: `${displayValue} Recipe ${i + 1}`,
+        slug: '',
         protein: `${28 + i * 4}g`,
         cals: `${320 + i * 50}`,
         time: `${10 + i * 3}m`,
@@ -44,6 +45,7 @@ const displayRecipes = realRecipes.length > 0
     : Array.from({ length: 6 }, (_, i) => ({
         id: i + 1,
         title: `${displayValue} Meal ${i + 1}`,
+        slug: '',
         protein: `${24 + i * 3}g`,
         cal: `${380 + i * 40}`,
         pe: ['High', 'Elite', 'Mid', 'High', 'Elite', 'Mid'][i],

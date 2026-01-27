@@ -1,0 +1,51 @@
+---
+/**
+ * mealprepideas.co/terms/ — Terms of Service
+ */
+import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
+import HeaderNav from '@mealprepideas/shared/components/HeaderNav.astro';
+import FooterNav from '@mealprepideas/shared/components/FooterNav.astro';
+---
+
+<BaseLayout title="Terms of Service | MealPrepIdeas.co" description="Terms of service for MealPrepIdeas.co.">
+  <HeaderNav />
+  <main class="flex-grow py-20 px-6">
+    <article class="max-w-3xl mx-auto prose" style="color: var(--text-primary);">
+      <h1 class="text-4xl font-black tracking-tight mb-8" style="color: var(--text-primary);">Terms of Service</h1>
+      <p class="text-sm mb-4" style="color: var(--text-tertiary);">Last updated: January 2025</p>
+
+      <h2 class="text-2xl font-bold mt-8 mb-4">Acceptance of Terms</h2>
+      <p style="color: var(--text-secondary);">By accessing and using MealPrepIdeas.co, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use this website.</p>
+
+      <h2 class="text-2xl font-bold mt-8 mb-4">Use of Content</h2>
+      <p style="color: var(--text-secondary);">All recipes, meal plans, guides, and other content on MealPrepIdeas.co are provided for informational and educational purposes only. You may use this content for personal, non-commercial purposes.</p>
+      <p style="color: var(--text-secondary);">You may not:</p>
+      <ul class="list-disc pl-6 space-y-2" style="color: var(--text-secondary);">
+        <li>Reproduce, distribute, or republish our content without attribution</li>
+        <li>Use our content for commercial purposes without written permission</li>
+        <li>Scrape or bulk-download content using automated tools</li>
+        <li>Frame or embed our pages on other websites without permission</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold mt-8 mb-4">Nutritional Disclaimer</h2>
+      <p style="color: var(--text-secondary);">The nutritional information, calorie counts, protein values, and macro data provided on this site are estimates based on common ingredient databases. Actual values may vary based on specific brands, preparation methods, and portion sizes.</p>
+      <p style="color: var(--text-secondary);">Our content is not medical or dietary advice. Always consult a qualified healthcare professional or registered dietitian before making significant changes to your diet, especially if you have existing health conditions.</p>
+
+      <h2 class="text-2xl font-bold mt-8 mb-4">Food Safety</h2>
+      <p style="color: var(--text-secondary);">While we provide storage and reheating instructions, you are responsible for ensuring proper food safety practices. Always follow USDA guidelines for food storage temperatures and shelf life. When in doubt, discard food that may be spoiled.</p>
+
+      <h2 class="text-2xl font-bold mt-8 mb-4">Affiliate Links & Recommendations</h2>
+      <p style="color: var(--text-secondary);">Some links on this site may be affiliate links. We may earn a small commission if you make a purchase through these links, at no additional cost to you. Our product recommendations are based on genuine editorial judgment.</p>
+
+      <h2 class="text-2xl font-bold mt-8 mb-4">Limitation of Liability</h2>
+      <p style="color: var(--text-secondary);">MealPrepIdeas.co and its operators are not liable for any damages arising from your use of this website or its content, including but not limited to foodborne illness, allergic reactions, or nutritional deficiencies.</p>
+
+      <h2 class="text-2xl font-bold mt-8 mb-4">Changes to Terms</h2>
+      <p style="color: var(--text-secondary);">We reserve the right to modify these terms at any time. Continued use of the site after changes constitutes acceptance of the updated terms.</p>
+
+      <h2 class="text-2xl font-bold mt-8 mb-4">Contact</h2>
+      <p style="color: var(--text-secondary);">For questions about these terms, please reach out through the contact information provided on our website.</p>
+    </article>
+  </main>
+  <FooterNav />
+</BaseLayout>

@@ -8,10 +8,40 @@ import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import FacetNav from './FacetNav.astro';
 import { recipes } from '../data/content/recipes';
+import { plans } from '../data/content/plans';
+import { stores } from '../data/content/stores';
+import {
+  getTotalStrategies,
+  getAverageProtein,
+  getFastFoodChains,
+  getRecipeCount,
+  getPlanCount,
+  getFirstPlanShoppingList,
+} from '../utils/stats';
 
 const featuredMealPrep = recipes.filter(r => r.hub === 'meal-prep').slice(0, 3);
 const featuredProtein = recipes.filter(r => r.hub === 'high-protein').slice(0, 3);
-const fallbackImg = 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=600';
+const fallbackImg = '/images/placeholder.svg';
+
+// Dynamic stats
+const totalStrategies = getTotalStrategies();
+const avgProtein = getAverageProtein();
+const recipeCount = getRecipeCount();
+const planCount = getPlanCount();
+
+// Dynamic chain data from stores
+const fastFoodChains = getFastFoodChains().slice(0, 4);
+const chainNames = fastFoodChains.map(c => c.name.toUpperCase());
+
+// Real shopping list from first plan
+const shoppingListItems = getFirstPlanShoppingList();
+
+// Store abbreviation badges with links
+const storeBadges = [
+  { abbr: 'TJ', slug: 'trader-joes' },
+  { abbr: 'CO', slug: 'costco' },
+  { abbr: 'WM', slug: 'walmart' },
+];
 
 interface Props {
   title: string;
@@ -55,7 +85,7 @@ const facetChips = [
          style="border-right: 1px solid var(--border-default);"
          x-bind:class="activeHub === 'high-protein' ? 'opacity-30' : 'opacity-100'">
         <div class="absolute inset-0 transition-colors" style="background-color: var(--bg-secondary);"></div>
-        <img src="/images/hero-meal-prep.jpg" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=1200'"
+        <img src="/images/hero-meal-prep.jpg" onerror="this.onerror=null;this.src='/images/placeholder.svg'"
              class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-20 group-hover:opacity-40 transition-opacity duration-700" alt="Meal Prep" width="1200" height="675" />
         <div class="relative z-10">
           <span class="text-xs font-bold tracking-[0.5em] block mb-4" style="color: var(--accent-primary);">OPTIMIZE LOGISTICS</span>
@@ -78,7 +108,7 @@ const facetChips = [
          class="relative flex-1 group transition-all duration-700 ease-out flex flex-col justify-end p-12 overflow-hidden"
          x-bind:class="activeHub === 'meal-prep' ? 'opacity-30' : 'opacity-100'">
         <div class="absolute inset-0 transition-colors" style="background-color: var(--bg-secondary);"></div>
-        <img src="/images/hero-high-protein.jpg" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&q=80&w=1200'"
+        <img src="/images/hero-high-protein.jpg" onerror="this.onerror=null;this.src='/images/placeholder.svg'"
              class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-20 group-hover:opacity-40 transition-opacity duration-700" alt="High Protein" width="1200" height="675" />
         <div class="relative z-10">
           <span class="text-xs font-bold tracking-[0.5em] block mb-4" style="color: var(--accent-primary);">OPTIMIZE MACROS</span>
@@ -107,8 +137,8 @@ const facetChips = [
           <p class="font-medium" style="color: var(--text-secondary);">Use the inventory controls below to generate a precise meal protocol matching your biological and logistical constraints.</p>
         </div>
         <div class="text-right">
-          <span class="text-[40px] font-black tabular-nums tracking-tighter block leading-none" style="color: var(--text-primary);">1,248</span>
-          <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-secondary);">Available Strategies</span>
+          <span class="text-[40px] font-black tabular-nums tracking-tighter block leading-none" style="color: var(--text-primary);">{totalStrategies}</span>
+          <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-secondary);">Recipes & Plans</span>
         </div>
       </div>
 
@@ -232,8 +262,8 @@ const facetChips = [
       <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
         <!-- PACK A: HIGH PROTEIN FROZEN -->
         <div class="md:col-span-8 hyper-border rounded-3xl p-8 min-h-[400px] flex flex-col justify-between group overflow-hidden relative">
-          <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=1200"
-               class="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:scale-105 transition-transform duration-700" alt="Frozen Meals" />
+          <img src="/images/hero-high-protein.jpg" onerror="this.onerror=null;this.src='/images/placeholder.svg'"
+               class="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:scale-105 transition-transform duration-700" alt="High-protein frozen meals and store picks" />
           <div>
             <div class="flex gap-2 mb-6">
               <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--accent-primary); color: var(--text-inverse);">Pack 01</span>
@@ -244,9 +274,9 @@ const facetChips = [
           </div>
           <div class="flex items-center justify-between mt-8 relative z-10">
             <div class="flex -space-x-3">
-              {['TJ', 'AL', 'WM'].map(abbr => (
-                <div class="w-10 h-10 rounded-full flex items-center justify-center text-[10px] font-bold"
-                     style="background: var(--bg-tertiary); border: 2px solid var(--bg-primary); color: var(--text-primary);">{abbr}</div>
+              {storeBadges.map(badge => (
+                <a href={`/stores/${badge.slug}/`} class="w-10 h-10 rounded-full flex items-center justify-center text-[10px] font-bold hover:scale-110 transition-transform"
+                     style="background: var(--bg-tertiary); border: 2px solid var(--bg-primary); color: var(--text-primary);">{badge.abbr}</a>
               ))}
             </div>
             <a href="/stores/trader-joes/" class="text-[10px] font-black uppercase tracking-[0.2em] transition-colors flex items-center gap-2" style="color: var(--text-secondary);">
@@ -275,7 +305,7 @@ const facetChips = [
         </div>
 
         <!-- PACK C: NO MICROWAVE -->
-        <div class="md:col-span-4 hyper-border rounded-3xl p-8 flex flex-col justify-between group">
+        <a href="/meal-prep/constraint/no-microwave/" class="md:col-span-4 hyper-border rounded-3xl p-8 flex flex-col justify-between group block">
           <div class="mb-8">
             <span class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-tertiary);">Persona: Office</span>
             <h5 class="text-3xl font-black tracking-tighter leading-tight" style="color: var(--text-primary);">No-Microwave Work Lunches</h5>
@@ -286,11 +316,11 @@ const facetChips = [
               <span style="color: var(--text-primary);">Cold / Ambient</span>
             </div>
             <div class="flex justify-between items-center text-xs font-bold pb-2" style="border-bottom: 1px solid var(--border-default);">
-              <span style="color: var(--text-tertiary);">Protein Min</span>
-              <span style="color: var(--text-primary);">35g / serving</span>
+              <span style="color: var(--text-tertiary);">Avg Protein</span>
+              <span style="color: var(--text-primary);">{avgProtein}g / serving</span>
             </div>
           </div>
-        </div>
+        </a>
 
         <!-- PACK D: FAST FOOD MATRIX -->
         <div class="md:col-span-8 rounded-3xl p-8 flex flex-col md:flex-row gap-8 items-center"
@@ -299,8 +329,8 @@ const facetChips = [
             <h5 class="text-4xl font-black tracking-tighter mb-4" style="color: var(--text-primary);">Fast-Food Chain Modification Guides</h5>
             <p class="text-sm mb-6" style="color: var(--text-secondary);">How to hack Chick-Fil-A, McDonalds, and Chipotle for maximum protein with zero sauce-slop.</p>
             <div class="flex flex-wrap gap-2">
-              {['PANERA', 'CHIPOTLE', 'PANDA EXPRESS', 'TACO BELL'].map(chain => (
-                <span class="text-[9px] font-black px-2 py-1 rounded" style="border: 1px solid var(--border-default); color: var(--text-primary);">{chain}</span>
+              {fastFoodChains.map(chain => (
+                <a href={`/stores/${chain.slug}/`} class="text-[9px] font-black px-2 py-1 rounded transition-colors hover:opacity-80" style="border: 1px solid var(--border-default); color: var(--text-primary);">{chain.name.toUpperCase()}</a>
               ))}
             </div>
           </div>
@@ -308,8 +338,8 @@ const facetChips = [
                style="background: var(--bg-tertiary);">
             <div class="w-full h-full rounded-xl flex flex-col items-center justify-center text-center"
                  style="border: 2px dashed var(--border-default);">
-              <span class="text-4xl font-black tracking-tighter" style="color: var(--text-primary);">94%</span>
-              <span class="text-[8px] font-bold uppercase tracking-widest" style="color: var(--text-tertiary);">Accuracy Data</span>
+              <span class="text-4xl font-black tracking-tighter" style="color: var(--text-primary);">{recipeCount}</span>
+              <span class="text-[8px] font-bold uppercase tracking-widest" style="color: var(--text-tertiary);">Recipes</span>
             </div>
           </div>
         </div>
@@ -337,17 +367,15 @@ const facetChips = [
               <span class="text-xs font-bold" style="color: var(--text-tertiary);">#P-0042</span>
             </div>
             <div class="space-y-4">
-              {[
-                { text: '2.5lbs Lean Ground Turkey', done: false },
-                { text: '3x Bell Peppers (Red/Yellow)', done: false },
-                { text: '1x Large Bag Baby Spinach', done: false },
-                { text: 'Low-Sodium Soy Sauce', done: true },
-              ].map(item => (
-                <div class="flex items-center gap-4">
-                  <div class="w-4 h-4 rounded" style={`border: 2px solid var(--border-strong); ${item.done ? 'background: var(--text-primary);' : ''}`}></div>
-                  <span class="text-sm font-bold" style={item.done ? 'color: var(--text-tertiary); text-decoration: line-through;' : `color: var(--text-primary);`}>{item.text}</span>
-                </div>
-              ))}
+              {shoppingListItems.slice(0, 4).map((item, i) => {
+                const done = i === shoppingListItems.length - 1;
+                return (
+                  <div class="flex items-center gap-4">
+                    <div class="w-4 h-4 rounded" style={`border: 2px solid var(--border-strong); ${done ? 'background: var(--text-primary);' : ''}`}></div>
+                    <span class="text-sm font-bold" style={done ? 'color: var(--text-tertiary); text-decoration: line-through;' : `color: var(--text-primary);`}>{item}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
           <div class="absolute top-0 right-0 w-full h-full rounded-3xl -rotate-6 -z-10" style="background-color: var(--accent-primary);"></div>

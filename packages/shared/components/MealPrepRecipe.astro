@@ -21,7 +21,7 @@ const { recipe, relatedRecipes = [] } = Astro.props;
 // Build image path — check if a local image exists for this recipe slug
 const localImagePath = `/images/recipes/${recipe.slug}.jpg`;
 const heroImage = localImagePath;
-const fallbackImage = 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=1200';
+const fallbackImage = '/images/placeholder.svg';
 
 // Map recipe data to template values
 const recipeName = recipe.title;

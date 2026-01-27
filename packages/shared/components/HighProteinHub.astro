@@ -8,9 +8,37 @@ import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import FacetNav from './FacetNav.astro';
 import { recipes } from '../data/content/recipes';
+import { stores } from '../data/content/stores';
+import { plans } from '../data/content/plans';
+import {
+  getTotalStrategies,
+  getHighProteinRecipeCount,
+  getHighProteinAverageProtein,
+  getHighProteinAverageCalories,
+  getStoreCount,
+  getPlanCount,
+  getFastFoodChains,
+} from '../utils/stats';
 
 const highProteinRecipes = recipes.filter(r => r.hub === 'high-protein').slice(0, 8);
-const fallbackImage = 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&q=80&w=800';
+const fallbackImage = '/images/placeholder.svg';
+
+// Dynamic stats
+const totalStrategies = getTotalStrategies();
+const hpRecipeCount = getHighProteinRecipeCount();
+const hpAvgProtein = getHighProteinAverageProtein();
+const hpAvgCals = getHighProteinAverageCalories();
+const storeCount = getStoreCount();
+const planCount = getPlanCount();
+const fastFoodChainCount = getFastFoodChains().length;
+
+// Store abbreviation badges with links
+const storeBadges = [
+  { abbr: 'TJ', slug: 'trader-joes' },
+  { abbr: 'CO', slug: 'costco' },
+  { abbr: 'WM', slug: 'walmart' },
+  { abbr: 'AL', slug: 'aldi' },
+];
 
 interface Props {
   title: string;
@@ -83,15 +111,15 @@ const facetGroups = [
     statusBadge="NEW TRADER JOE'S SKUS DETECTED"
   />
 
-  <main class="flex-grow" x-data="{
+  <main class="flex-grow" x-data={`{
     query: { goal: 'muscle-gain', diet: 'none', method: 'any', constraint: 'none' },
     get resultsCount() {
-      let base = 842;
-      if(this.query.goal !== 'muscle-gain') base -= 200;
-      if(this.query.diet !== 'none') base -= 150;
-      return base;
+      let base = ${totalStrategies};
+      if(this.query.goal !== 'muscle-gain') base -= Math.floor(base * 0.25);
+      if(this.query.diet !== 'none') base -= Math.floor(base * 0.18);
+      return Math.max(base, ${hpRecipeCount});
     }
-  }">
+  }`}>
     <!-- T1 HERO: MACRO INTENT PILLAR -->
     <section class="relative pt-24 pb-32 px-6 overflow-hidden" style="border-bottom: 1px solid var(--border-default);">
       <div class="max-w-7xl mx-auto relative z-10">
@@ -125,12 +153,12 @@ const facetGroups = [
               </div>
               <div class="grid grid-cols-2 gap-4">
                 <div class="p-4 rounded-xl" style="background: var(--bg-tertiary); border: 1px solid var(--border-default);">
-                  <span class="block text-[10px] font-bold uppercase mb-1" style="color: var(--text-tertiary);">Calories</span>
-                  <span class="text-xl font-black tabular-nums" style="color: var(--text-primary);">2,400</span>
+                  <span class="block text-[10px] font-bold uppercase mb-1" style="color: var(--text-tertiary);">Avg Cal</span>
+                  <span class="text-xl font-black tabular-nums" style="color: var(--text-primary);">{hpAvgCals.toLocaleString()}</span>
                 </div>
                 <div class="p-4 rounded-xl" style="background: var(--bg-tertiary); border: 1px solid var(--border-default);">
-                  <span class="block text-[10px] font-bold uppercase mb-1" style="color: var(--text-tertiary);">P:E Ratio</span>
-                  <span class="text-xl font-black tabular-nums" style="color: var(--accent-primary);">2.4</span>
+                  <span class="block text-[10px] font-bold uppercase mb-1" style="color: var(--text-tertiary);">Avg Protein</span>
+                  <span class="text-xl font-black tabular-nums" style="color: var(--accent-primary);">{hpAvgProtein}g</span>
                 </div>
               </div>
               <button class="theme-btn-primary w-full py-4 text-xs font-black uppercase tracking-widest rounded-xl">Lock Parameters</button>
@@ -189,9 +217,9 @@ const facetGroups = [
             <label class="block text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-tertiary);">04. Retail Preference</label>
             <div class="flex items-center gap-4">
               <div class="flex -space-x-3">
-                {['TJ', 'CO', 'WM', 'AL'].map(abbr => (
-                  <div class="w-10 h-10 rounded-full flex items-center justify-center text-[10px] font-bold"
-                       style="background: var(--bg-tertiary); border: 2px solid var(--bg-primary); color: var(--text-primary);">{abbr}</div>
+                {storeBadges.map(badge => (
+                  <a href={`/stores/${badge.slug}/`} class="w-10 h-10 rounded-full flex items-center justify-center text-[10px] font-bold hover:scale-110 transition-transform"
+                       style="background: var(--bg-tertiary); border: 2px solid var(--bg-primary); color: var(--text-primary);">{badge.abbr}</a>
                 ))}
               </div>
               <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-tertiary);">Filter by store inventory</span>
@@ -243,7 +271,7 @@ const facetGroups = [
               <div class="flex justify-between items-start mb-8">
                 <span class="px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded"
                       style="background: var(--text-primary); color: var(--bg-primary);">Chain Hacks</span>
-                <span class="text-xs font-black" style="color: var(--text-primary);">94% ACCURACY</span>
+                <span class="text-xs font-black" style="color: var(--text-primary);">{fastFoodChainCount} CHAINS</span>
               </div>
               <h3 class="text-3xl font-black tracking-tighter mb-4 leading-none" style="color: var(--text-primary);">Fast Food Macro Modification</h3>
               <p class="text-sm font-medium leading-relaxed" style="color: var(--text-secondary);">How to hack Chick-Fil-A, Chipotle, and Panda Express for 50g+ protein under 600 cals.</p>
@@ -274,12 +302,12 @@ const facetGroups = [
             </div>
             <div class="relative z-10 mt-8 grid grid-cols-2 gap-4">
               <div class="text-center p-3 rounded-xl" style="background: var(--bg-tertiary); border: 1px solid var(--border-default);">
-                <span class="block text-xl font-black" style="color: var(--text-primary);">8.2k</span>
-                <span class="text-[8px] uppercase font-bold" style="color: var(--text-tertiary);">Daily Users</span>
+                <span class="block text-xl font-black" style="color: var(--text-primary);">{hpRecipeCount}</span>
+                <span class="text-[8px] uppercase font-bold" style="color: var(--text-tertiary);">Recipes</span>
               </div>
               <div class="text-center p-3 rounded-xl" style="background: var(--bg-tertiary); border: 1px solid var(--border-default);">
-                <span class="block text-xl font-black" style="color: var(--text-primary);">98%</span>
-                <span class="text-[8px] uppercase font-bold" style="color: var(--text-tertiary);">Stickiness</span>
+                <span class="block text-xl font-black" style="color: var(--text-primary);">{planCount}</span>
+                <span class="text-[8px] uppercase font-bold" style="color: var(--text-tertiary);">Meal Plans</span>
               </div>
             </div>
           </a>
