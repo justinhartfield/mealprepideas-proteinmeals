@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Honey Garlic Sriracha Turkey Bowls | Recipe T4-992 | Index Authority</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-lime: #D9FF00;
+            --brand-charcoal: #0F0F0F;
+            --brand-gray: #1A1A1A;
+            --ui-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--brand-charcoal);
+            color: #FFFFFF;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-grid {
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--brand-charcoal); }
+        ::-webkit-scrollbar-thumb { background: var(--brand-lime); border-radius: 10px; }
+
+        .hyper-border {
+            position: relative;
+            background: var(--brand-gray);
+            border: 1px solid var(--ui-border);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .hyper-border:hover {
+            border-color: var(--brand-lime);
+            box-shadow: 0 0 30px rgba(217, 255, 0, 0.1);
+        }
+
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--brand-lime);
+            box-shadow: 0 0 15px var(--brand-lime);
+            animation: scan 4s linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        .glass-nav {
+            backdrop-filter: blur(12px);
+            background: rgba(15, 15, 15, 0.8);
+            border-bottom: 1px solid var(--ui-border);
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;xs="<svg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'n\'><feTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/></filter><rect width=\'100%\' height=\'100%\' filter=\'url(%23n)\' opacity=\'0.05\'/></svg>"');
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .recipe-gradient {
+            background: linear-gradient(180deg, rgba(15,15,15,0) 0%, rgba(15,15,15,1) 100%);
+        }
+
+        .macro-bar {
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .macro-fill {
+            height: 100%;
+            background: var(--brand-lime);
+        }
+
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-grid" x-data="{ 
+    servings: 4, 
+    showReheat: false,
+    checkedIngredients: [],
+    toggleIngredient(id) {
+        if (this.checkedIngredients.includes(id)) {
+            this.checkedIngredients = this.checkedIngredients.filter(i => i !== id);
+        } else {
+            this.checkedIngredients.push(id);
+        }
+    }
+}">
+
+    <div class="noise-overlay"></div>
+
+    <!-- STICKY HEADER -->
+    <header class="glass-nav sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-8">
+            <a href="/" class="flex flex-col leading-none">
+                <span class="text-[10px] uppercase tracking-[0.3em] text-zinc-500 mb-1 font-bold">Authority Network</span>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-[#D9FF00] rounded-full"></div>
+                    <span class="text-xl font-black tracking-tighter italic">INDEX.01</span>
+                </div>
+            </a>
+            <nav class="hidden md:flex space-x-6 text-xs font-bold uppercase tracking-widest text-zinc-400">
+                <a href="#" class="hover:text-white transition-colors">MealPrepIdeas.co</a>
+                <span class="text-zinc-800">/</span>
+                <a href="#" class="hover:text-white transition-colors">ProteinMeals.co</a>
+            </nav>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <div class="hidden sm:block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                SKU: REC-HGS-042
+            </div>
+            <button class="bg-[#D9FF00] text-black px-4 py-2 rounded-full text-[10px] font-black tracking-widest hover:bg-white transition-all">
+                EXPORT DATA
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- RECIPE HERO / INVENTORY HEADER -->
+        <section class="relative border-b border-zinc-900 bg-zinc-950 overflow-hidden">
+            <div class="absolute inset-0 opacity-20 pointer-events-none">
+                <img src="https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover" alt="Meal Prep Detail">
+                <div class="absolute inset-0 recipe-gradient"></div>
+            </div>
+
+            <div class="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-12">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                    <div class="flex-1">
+                        <nav class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#D9FF00] mb-6">
+                            <span>High Protein</span>
+                            <span class="text-zinc-700">/</span>
+                            <span>Meal Prep</span>
+                            <span class="text-zinc-700">/</span>
+                            <span>One-Pan</span>
+                        </nav>
+                        <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-6">HONEY GARLIC<br>SRIRACHA TURKEY</h1>
+                        
+                        <div class="flex flex-wrap gap-4 items-center">
+                            <div class="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg">
+                                <span class="text-[10px] font-black text-zinc-500 uppercase">Preparation</span>
+                                <span class="text-sm font-bold">15 MIN</span>
+                            </div>
+                            <div class="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg">
+                                <span class="text-[10px] font-black text-zinc-500 uppercase">Batch Cook</span>
+                                <span class="text-sm font-bold">25 MIN</span>
+                            </div>
+                            <div class="flex items-center gap-2 bg-[#D9FF00]/10 border border-[#D9FF00]/20 px-4 py-2 rounded-lg text-[#D9FF00]">
+                                <span class="text-[10px] font-black uppercase">P:E Ratio</span>
+                                <span class="text-sm font-bold">High (34%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full md:w-80">
+                        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl relative overflow-hidden group">
+                            <div class="scanner-line"></div>
+                            <div class="flex justify-between items-center mb-6">
+                                <span class="text-[10px] font-black text-zinc-500 uppercase">Macro Matrix</span>
+                                <span class="text-[10px] font-black text-zinc-400">PER SERVING</span>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1">
+                                        <span>PROTEIN</span>
+                                        <span class="text-[#D9FF00]">42g</span>
+                                    </div>
+                                    <div class="macro-bar"><div class="macro-fill w-[85%]"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1">
+                                        <span>CARBS</span>
+                                        <span>38g</span>
+                                    </div>
+                                    <div class="macro-bar"><div class="macro-fill bg-zinc-700 w-[45%]"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1">
+                                        <span>FATS</span>
+                                        <span>12g</span>
+                                    </div>
+                                    <div class="macro-bar"><div class="macro-fill bg-zinc-700 w-[25%]"></div></div>
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-6 border-t border-zinc-800 flex justify-between items-center">
+                                <span class="text-2xl font-black tabular-nums tracking-tighter">485 CAL</span>
+                                <div class="w-8 h-8 rounded bg-zinc-800 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-zinc-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTENT GRID -->
+        <section class="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <!-- LEFT COLUMN: INGREDIENTS & STEPS -->
+            <div class="lg:col-span-8 space-y-16">
+                
+                <!-- INGREDIENTS MODULE -->
+                <div>
+                    <div class="flex items-center justify-between mb-8 pb-4 border-b border-zinc-900">
+                        <h3 class="text-3xl font-black tracking-tight uppercase italic">Inventory</h3>
+                        <div class="flex items-center gap-4">
+                            <span class="text-[10px] font-bold text-zinc-500 uppercase">Scale Servings:</span>
+                            <div class="flex border border-zinc-800 rounded overflow-hidden">
+                                <button @click="servings > 1 ? servings-- : null" class="px-3 py-1 bg-zinc-900 hover:bg-zinc-800 font-black">-</button>
+                                <span class="px-4 py-1 bg-zinc-950 font-black tabular-nums text-[#D9FF00]" x-text="servings"></span>
+                                <button @click="servings++" class="px-3 py-1 bg-zinc-900 hover:bg-zinc-800 font-black">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                        <template x-for="(ing, index) in [
+                            {id: 1, name: 'Lean Ground Turkey', base: 1, unit: 'lb'},
+                            {id: 2, name: 'Sriracha Hot Sauce', base: 2, unit: 'tbsp'},
+                            {id: 3, name: 'Raw Honey', base: 3, unit: 'tbsp'},
+                            {id: 4, name: 'Minced Garlic', base: 2, unit: 'cloves'},
+                            {id: 5, name: 'Jasmin Rice (Dry)', base: 0.5, unit: 'cup'},
+                            {id: 6, name: 'Broccoli Florets', base: 2, unit: 'cups'},
+                            {id: 7, name: 'Soy Sauce (Low Sodium)', base: 1.5, unit: 'tbsp'},
+                            {id: 8, name: 'Sesame Oil', base: 1, unit: 'tsp'}
+                        ]">
+                            <label :for="'ing-'+ing.id" 
+                                   class="group flex items-center justify-between p-4 rounded-xl border border-zinc-900 hover:border-zinc-700 cursor-pointer transition-all"
+                                   :class="checkedIngredients.includes(ing.id) ? 'bg-zinc-950/50 opacity-40' : 'bg-zinc-900/20'">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-5 h-5 border-2 rounded transition-colors"
+                                         :class="checkedIngredients.includes(ing.id) ? 'bg-[#D9FF00] border-[#D9FF00]' : 'border-zinc-800 group-hover:border-zinc-600'">
+                                        <svg x-show="checkedIngredients.includes(ing.id)" class="w-full h-full text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                    <span class="font-bold text-sm tracking-tight" x-text="ing.name"></span>
+                                    <input type="checkbox" :id="'ing-'+ing.id" class="hidden" @change="toggleIngredient(ing.id)">
+                                </div>
+                                <span class="text-[10px] font-black tabular-nums text-zinc-500" x-text="(ing.base * servings/4).toFixed(1) + ' ' + ing.unit"></span>
+                            </label>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- STEPS MODULE -->
+                <div>
+                    <h3 class="text-3xl font-black tracking-tight uppercase italic mb-8 pb-4 border-b border-zinc-900">Execution Steps</h3>
+                    <div class="space-y-8">
+                        <template x-for="(step, i) in [
+                            {t: 'Base Preparation', d: 'Cook jasmine rice according to package instructions. Spread on a sheet pan once done to cool quickly to prevent gummy texture during storage.'},
+                            {t: 'Protein Sear', d: 'In a large skillet over medium-high heat, brown the ground turkey in sesame oil until fully cooked. Drain excess fat to keep the meal prep lean.'},
+                            {t: 'Sauce Integration', d: 'Whisk honey, sriracha, garlic, and soy sauce. Pour over the turkey and simmer for 3-5 minutes until the sauce reduces to a sticky glaze.'},
+                            {t: 'Vegetable Steam', d: 'Flash steam broccoli for 3 minutes (keep it crunchy). It will cook further when you reheat it later in the week.'}
+                        ]">
+                            <div class="flex gap-6 group">
+                                <div class="flex-shrink-0 w-12 h-12 rounded-full border border-zinc-800 flex items-center justify-center font-black text-[#D9FF00] group-hover:bg-[#D9FF00] group-hover:text-black transition-all">
+                                    0<span x-text="i+1"></span>
+                                </div>
+                                <div class="flex-grow pt-2">
+                                    <h4 class="text-lg font-black tracking-tight mb-2 uppercase" x-text="step.t"></h4>
+                                    <p class="text-zinc-500 text-sm leading-relaxed" x-text="step.d"></p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: LOGISTICS TERMINAL (T4 SPECIFIC) -->
+            <div class="lg:col-span-4">
+                <div class="sticky top-28 space-y-6">
+                    
+                    <!-- LOGISTICS CARD -->
+                    <div class="hyper-border rounded-3xl p-8">
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-2 h-8 bg-[#D9FF00]"></div>
+                            <h3 class="text-xl font-black tracking-tighter uppercase">Logistics Terminal</h3>
+                        </div>
+
+                        <div class="space-y-6">
+                            <!-- Fridge Life -->
+                            <div class="flex justify-between items-center p-4 bg-zinc-950 rounded-xl border border-zinc-800">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                    <span class="text-[10px] font-black uppercase text-zinc-500">Shelf Life</span>
+                                </div>
+                                <span class="font-black text-[#D9FF00]">5 DAYS</span>
+                            </div>
+
+                            <!-- Freezer Safety -->
+                            <div class="flex justify-between items-center p-4 bg-zinc-950 rounded-xl border border-zinc-800">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                                    <span class="text-[10px] font-black uppercase text-zinc-500">Freezer Safe</span>
+                                </div>
+                                <span class="font-black text-[#D9FF00]">YES (3 MO)</span>
+                            </div>
+
+                            <!-- Reheating Instructions -->
+                            <div class="space-y-3">
+                                <span class="text-[10px] font-black uppercase text-zinc-500 tracking-widest block px-2">Reheat Protocols</span>
+                                <button @click="showReheat = 'microwave'" :class="showReheat === 'microwave' ? 'border-[#D9FF00] bg-[#D9FF00]/5' : 'border-zinc-800'" class="w-full text-left p-4 rounded-xl border transition-all">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold uppercase">01. Microwave</span>
+                                        <span class="text-[10px] font-bold text-zinc-500 italic">Fastest</span>
+                                    </div>
+                                    <p x-show="showReheat === 'microwave'" x-cloak class="mt-4 text-xs text-zinc-400 leading-relaxed">
+                                        Heat for 2 minutes with a damp paper towel over the bowl. This traps steam and keeps the turkey from drying out.
+                                    </p>
+                                </button>
+
+                                <button @click="showReheat = 'skillet'" :class="showReheat === 'skillet' ? 'border-[#D9FF00] bg-[#D9FF00]/5' : 'border-zinc-800'" class="w-full text-left p-4 rounded-xl border transition-all">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold uppercase">02. Skillet</span>
+                                        <span class="text-[10px] font-bold text-zinc-500 italic">Best Texture</span>
+                                    </div>
+                                    <p x-show="showReheat === 'skillet'" x-cloak class="mt-4 text-xs text-zinc-400 leading-relaxed">
+                                        Add to a pan with 1 tbsp of water. Cover and heat on medium for 5 minutes. Revitalizes the honey glaze perfectly.
+                                    </p>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- PLAN LINK -->
+                        <div class="mt-8 pt-8 border-t border-zinc-800">
+                            <span class="text-[10px] font-black text-zinc-500 uppercase block mb-4">Primary Association</span>
+                            <a href="/plans/5-day-high-protein-meal-prep/" class="block p-4 rounded-2xl bg-[#D9FF00] text-black group overflow-hidden relative">
+                                <div class="relative z-10 flex flex-col">
+                                    <span class="text-[10px] font-black tracking-widest mb-1">PLAN P-001</span>
+                                    <span class="text-sm font-black uppercase leading-tight">5-Day High Protein<br>Weekly Protocol</span>
+                                </div>
+                                <svg class="absolute bottom-[-10px] right-[-10px] w-20 h-20 text-black/10 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- VARIATION MODULE -->
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+                        <span class="text-[10px] font-black text-zinc-500 uppercase block mb-4">Constraint Variations</span>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="p-3 border border-zinc-800 rounded-xl">
+                                <span class="text-[10px] font-black uppercase text-zinc-500 block mb-1">Vegan</span>
+                                <span class="text-[9px] font-bold text-zinc-400 leading-tight block">Swap Turkey for Soy Crumbles</span>
+                            </div>
+                            <div class="p-3 border border-zinc-800 rounded-xl">
+                                <span class="text-[10px] font-black uppercase text-zinc-500 block mb-1">Gluten-Free</span>
+                                <span class="text-[9px] font-bold text-zinc-400 leading-tight block">Use Tamari instead of Soy Sauce</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RELATED FACETS (INTERNAL GRAPH) -->
+        <section class="border-t border-zinc-900 bg-zinc-950 py-20 px-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center gap-4 mb-12">
+                    <div class="h-[1px] flex-grow bg-zinc-900"></div>
+                    <h4 class="text-xs font-black tracking-[0.4em] text-zinc-500 uppercase">Explore Related Taxonomies</h4>
+                    <div class="h-[1px] flex-grow bg-zinc-900"></div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <template x-for="facet in [
+                        {label: 'Protein: Turkey', path: '/high-protein/ingredient/turkey/'},
+                        {label: 'Method: One-Pan', path: '/meal-prep/method/one-pan/'},
+                        {label: 'Goal: Muscle-Gain', path: '/high-protein/goal/muscle-gain/'},
+                        {label: 'Constraint: Cheap', path: '/meal-prep/constraint/cheap/'},
+                        {label: 'Persona: Work Lunch', path: '/meal-prep/persona/work/'},
+                        {label: 'Diet: Dairy-Free', path: '/high-protein/diet/dairy-free/'}
+                    ]">
+                        <a :href="facet.path" class="hyper-border p-4 rounded-xl group flex flex-col justify-between h-24">
+                            <span class="text-[9px] font-black text-zinc-500 uppercase tracking-widest" x-text="facet.label.split(':')[0]"></span>
+                            <span class="text-xs font-bold group-hover:text-[#D9FF00] transition-colors" x-text="facet.label.split(':')[1].trim()"></span>
+                        </a>
+                    </template>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER: SYSTEM DIRECTORY -->
+    <footer class="bg-black border-t border-zinc-900 py-20 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-2 mb-6">
+                    <div class="w-3 h-3 bg-[#D9FF00] rounded-full"></div>
+                    <span class="text-xl font-black tracking-tighter italic">INDEX.01</span>
+                </div>
+                <p class="text-zinc-500 text-sm max-w-xs mb-8">The universal taxonomy for high-performance nutrition and logistical meal planning.</p>
+                <div class="flex space-x-4">
+                    <div class="w-10 h-10 border border-zinc-800 rounded flex items-center justify-center text-zinc-500 hover:text-white transition-colors cursor-pointer">IG</div>
+                    <div class="w-10 h-10 border border-zinc-800 rounded flex items-center justify-center text-zinc-500 hover:text-white transition-colors cursor-pointer">TW</div>
+                    <div class="w-10 h-10 border border-zinc-800 rounded flex items-center justify-center text-zinc-500 hover:text-white transition-colors cursor-pointer">YT</div>
+                </div>
+            </div>
+            
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Taxonomy</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-400">
+                    <li><a href="#" class="hover:text-[#D9FF00]">Meal-Prep Hub</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">High-Protein Hub</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Store Index</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Chain Index</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Conditions</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-400">
+                    <li><a href="#" class="hover:text-[#D9FF00]">PCOS Protocol</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Bariatric Rules</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Postpartum Prep</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Cholesterol Low</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Methodologies</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-400">
+                    <li><a href="#" class="hover:text-[#D9FF00]">Slow-Cooker</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Air-Fryer</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Microwave-Only</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">One-Pan</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4">
+            <span class="text-[10px] font-bold text-zinc-700 uppercase tracking-widest">© 2024 Index Authority Network. Data-Backed Intent Engine.</span>
+            <div class="flex gap-8">
+                <a href="#" class="text-[10px] font-bold text-zinc-700 uppercase tracking-widest hover:text-white">Privacy</a>
+                <a href="#" class="text-[10px] font-bold text-zinc-700 uppercase tracking-widest hover:text-white">Terms</a>
+                <a href="#" class="text-[10px] font-bold text-zinc-700 uppercase tracking-widest hover:text-white">API Access</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Magnetic effect for buttons
+        document.querySelectorAll('.hyper-border').forEach(btn => {
+            btn.addEventListener('mousemove', e => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                btn.style.setProperty('--mouse-x', `${x}px`);
+                btn.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>

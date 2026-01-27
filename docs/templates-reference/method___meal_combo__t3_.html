@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breakfast Crockpot Prep | The Grocery Index | MealPrepIdeas.co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-lime: #D9FF00;
+            --brand-charcoal: #0F0F0F;
+            --brand-gray: #1A1A1A;
+            --ui-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--brand-charcoal);
+            color: #FFFFFF;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-grid {
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--brand-charcoal); }
+        ::-webkit-scrollbar-thumb { background: var(--brand-lime); border-radius: 10px; }
+
+        .hyper-border {
+            position: relative;
+            background: var(--brand-gray);
+            border: 1px solid var(--ui-border);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .hyper-border:hover {
+            border-color: var(--brand-lime);
+            box-shadow: 0 0 30px rgba(217, 255, 0, 0.1);
+        }
+
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--brand-lime);
+            box-shadow: 0 0 15px var(--brand-lime);
+            animation: scan 4s linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        .glass-nav {
+            backdrop-filter: blur(12px);
+            background: rgba(15, 15, 15, 0.8);
+            border-bottom: 1px solid var(--ui-border);
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;xs="<svg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'n\'><feTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/></filter><rect width=\'100%\' height=\'100%\' filter=\'url(%23n)\' opacity=\'0.05\'/></svg>"');
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .data-row:hover {
+            background: rgba(217, 255, 0, 0.03);
+        }
+
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-grid" x-data="{ 
+    dietFilter: 'all', 
+    recipes: [
+        { id: 1, title: 'Overnight Steel Cut Oats', protein: '12g', cal: '310', tags: ['vegan', 'high-fiber'], score: 9.8 },
+        { id: 2, title: 'Slow-Cooker Egg Casserole', protein: '24g', cal: '420', tags: ['low-carb', 'gluten-free'], score: 9.4 },
+        { id: 3, title: 'Morning Power Quinoa', protein: '15g', cal: '340', tags: ['vegan', 'protein-plus'], score: 9.1 },
+        { id: 4, title: 'Turkey Sausage Breakfast Bake', protein: '32g', cal: '480', tags: ['muscle-gain'], score: 8.9 },
+        { id: 5, title: 'Pumpkin Spice Barley Bowl', protein: '10g', cal: '290', tags: ['high-fiber'], score: 8.7 },
+        { id: 6, title: 'Shredded Beef Breakfast Tacos', protein: '28g', cal: '450', tags: ['low-carb'], score: 8.5 },
+        { id: 7, title: 'Berry Compote Chia Base', protein: '8g', cal: '210', tags: ['vegan', 'low-calorie'], score: 8.2 },
+        { id: 8, title: 'Denver Omelet Dump-Meal', protein: '22g', cal: '380', tags: ['keto'], score: 8.0 },
+        { id: 9, title: 'Apple Cinnamon Groats', protein: '11g', cal: '320', tags: ['high-fiber', 'cheap'], score: 7.9 },
+        { id: 10, title: 'Chorizo & Sweet Potato Mash', protein: '19g', cal: '410', tags: ['gluten-free'], score: 7.8 }
+    ]
+}">
+
+    <div class="noise-overlay"></div>
+
+    <!-- STICKY HEADER -->
+    <header class="glass-nav sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-8">
+            <a href="/" class="flex flex-col leading-none">
+                <span class="text-[10px] uppercase tracking-[0.3em] text-zinc-500 mb-1 font-bold">Authority Network</span>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-[#D9FF00] rounded-full"></div>
+                    <span class="text-xl font-black tracking-tighter italic">INDEX.01</span>
+                </div>
+            </a>
+            <nav class="hidden md:flex space-x-6 text-xs font-bold uppercase tracking-widest text-zinc-400">
+                <a href="#" class="text-white">MealPrepIdeas.co</a>
+                <span class="text-zinc-800">/</span>
+                <a href="#" class="hover:text-white transition-colors">ProteinMeals.co</a>
+            </nav>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <div class="text-[10px] font-black uppercase tracking-widest text-zinc-500 hidden lg:block">
+                Route: <span class="text-white">/meal-prep/meal/breakfast/method/crockpot/</span>
+            </div>
+            <button class="bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-full text-[10px] font-bold tracking-widest flex items-center gap-2 hover:bg-zinc-800 transition-all">
+                <span class="w-2 h-2 rounded-full bg-[#D9FF00] animate-pulse"></span> SYSTEM: T3_RANKER
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- T3 HERO: TWO-FACET INTERSECTION -->
+        <section class="pt-20 pb-12 px-6 border-b border-zinc-900 bg-zinc-950 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] font-black uppercase tracking-widest text-zinc-400">Meal: Breakfast</span>
+                    <span class="text-zinc-700">+</span>
+                    <span class="px-3 py-1 bg-[#D9FF00] text-black rounded text-[10px] font-black uppercase tracking-widest">Method: Crockpot</span>
+                </div>
+                
+                <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.85]">CROCKPOT<br><span class="text-stroke">BREAKFASTS</span></h1>
+                
+                <div class="max-w-2xl">
+                    <p class="text-xl font-medium text-zinc-400 leading-relaxed">
+                        This specific intersection solves the "morning friction" constraint. By utilizing low-and-slow thermal cycles, these protocols allow for 8-hour overnight batching, ensuring high-protein fuel is ready precisely at the 06:00-08:00 window without active labor.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Abstract background element -->
+            <div class="absolute right-0 top-0 w-1/3 h-full bg-[#D9FF00]/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+        </section>
+
+        <!-- RANKING ENGINE (THE TOP 10) -->
+        <section class="py-20 px-6 max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row gap-12">
+                
+                <!-- Main Content: The List -->
+                <div class="flex-grow">
+                    <div class="flex items-center justify-between mb-12 border-b border-zinc-900 pb-6">
+                        <div>
+                            <h2 class="text-3xl font-black tracking-tighter">THE TOP 10 PROTOCOLS</h2>
+                            <p class="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-2">Sorted by Prep-Efficiency & Macro-Density</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button @click="dietFilter = 'all'" :class="dietFilter === 'all' ? 'bg-[#D9FF00] text-black' : 'bg-zinc-900 text-zinc-500'" class="px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">All</button>
+                            <button @click="dietFilter = 'vegan'" :class="dietFilter === 'vegan' ? 'bg-[#D9FF00] text-black' : 'bg-zinc-900 text-zinc-500'" class="px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Vegan</button>
+                            <button @click="dietFilter = 'low-carb'" :class="dietFilter === 'low-carb' ? 'bg-[#D9FF00] text-black' : 'bg-zinc-900 text-zinc-500'" class="px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Low-Carb</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <template x-for="(recipe, index) in recipes" :key="recipe.id">
+                            <div x-show="dietFilter === 'all' || recipe.tags.includes(dietFilter)" 
+                                 class="hyper-border rounded-2xl p-6 flex flex-col md:flex-row items-center gap-8 group">
+                                
+                                <div class="text-4xl font-black text-zinc-800 group-hover:text-[#D9FF00] transition-colors tabular-nums">
+                                    <span x-text="(index + 1).toString().padStart(2, '0')"></span>
+                                </div>
+                                
+                                <div class="flex-grow">
+                                    <h3 class="text-xl font-black tracking-tight mb-2 group-hover:translate-x-1 transition-transform" x-text="recipe.title"></h3>
+                                    <div class="flex flex-wrap gap-2">
+                                        <template x-for="tag in recipe.tags">
+                                            <span class="text-[9px] font-black uppercase tracking-widest text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded" x-text="tag"></span>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4 w-full md:w-auto">
+                                    <div class="bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-center min-w-[80px]">
+                                        <span class="block text-[10px] font-black text-zinc-500 uppercase">Protein</span>
+                                        <span class="text-lg font-black tracking-tighter" x-text="recipe.protein"></span>
+                                    </div>
+                                    <div class="bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-center min-w-[80px]">
+                                        <span class="block text-[10px] font-black text-zinc-500 uppercase">Cals</span>
+                                        <span class="text-lg font-black tracking-tighter" x-text="recipe.cal"></span>
+                                    </div>
+                                </div>
+
+                                <a :href="'/recipes/' + recipe.id" class="w-full md:w-12 h-12 bg-white group-hover:bg-[#D9FF00] text-black rounded-full flex items-center justify-center transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                                </a>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Sidebar: Logistics & Related -->
+                <aside class="w-full lg:w-80 shrink-0 space-y-8">
+                    <!-- LOGISTICS BLOCK -->
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 relative overflow-hidden">
+                        <div class="scanner-line"></div>
+                        <h4 class="text-xs font-black tracking-[0.3em] text-[#D9FF00] uppercase mb-6">Execution Notes</h4>
+                        <div class="space-y-6">
+                            <div>
+                                <span class="block text-[10px] font-black text-zinc-500 uppercase mb-2">Batching Rule</span>
+                                <p class="text-sm font-medium leading-relaxed">Cook on 'Low' for 7-8 hours. Over-cooking egg-based casseroles beyond 9 hours will cause syneresis (water release).</p>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-black text-zinc-500 uppercase mb-2">Storage Logic</span>
+                                <p class="text-sm font-medium leading-relaxed">Portion into glass containers immediately. Valid for 4 days refrigerated. Reheat at 50% power for 90 seconds.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RELATED PAGE RAIL -->
+                    <div class="space-y-4">
+                        <h4 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-2">Related Methods</h4>
+                        <a href="#" class="block p-4 bg-zinc-950 border border-zinc-900 rounded-xl hover:border-[#D9FF00] transition-all group">
+                            <span class="text-[10px] font-bold text-zinc-600 group-hover:text-[#D9FF00]">SWAP METHOD</span>
+                            <span class="block text-sm font-bold mt-1">Air-Fryer Breakfasts</span>
+                        </a>
+                        <a href="#" class="block p-4 bg-zinc-950 border border-zinc-900 rounded-xl hover:border-[#D9FF00] transition-all group">
+                            <span class="text-[10px] font-bold text-zinc-600 group-hover:text-[#D9FF00]">SWAP METHOD</span>
+                            <span class="block text-sm font-bold mt-1">Instant-Pot Breakfasts</span>
+                        </a>
+                    </div>
+
+                    <!-- RECENTLY INDEXED (Stickiness) -->
+                    <div class="p-8 border border-zinc-900 rounded-3xl bg-white text-black">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4 block">System Update</span>
+                        <h5 class="text-xl font-black tracking-tighter mb-4">5-Day Breakfast Plan</h5>
+                        <p class="text-sm font-medium mb-6 opacity-70">Download the Sunday prep-sheet for this exact category.</p>
+                        <button class="w-full bg-black text-white py-3 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-zinc-800 transition-colors">Generate PDF</button>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- FAQ SECTION (SCHEMA COMPLIANT) -->
+        <section class="bg-zinc-950 border-t border-zinc-900 py-24 px-6">
+            <div class="max-w-4xl mx-auto">
+                <h4 class="text-4xl font-black tracking-tighter mb-12">SYSTEM FAQ</h4>
+                <div class="space-y-8">
+                    <div class="border-b border-zinc-900 pb-8">
+                        <h5 class="text-lg font-black tracking-tight mb-4">Can I cook eggs in a crockpot overnight?</h5>
+                        <p class="text-zinc-500 font-medium leading-relaxed">Yes, but only as part of a casserole with structural components like potatoes or bread. Plain eggs will rubberize. Use the 'Low' setting and ensure the pot is at least half-full for even heat distribution.</p>
+                    </div>
+                    <div class="border-b border-zinc-900 pb-8">
+                        <h5 class="text-lg font-black tracking-tight mb-4">Are oats better in a slow cooker?</h5>
+                        <p class="text-zinc-500 font-medium leading-relaxed">Steel-cut oats excel in the crockpot. Unlike rolled oats, they maintain a "pop" and creamy texture over 8 hours that microwave methods cannot replicate.</p>
+                    </div>
+                    <div class="border-b border-zinc-900 pb-8">
+                        <h5 class="text-lg font-black tracking-tight mb-4">How long do these meals last in the fridge?</h5>
+                        <p class="text-zinc-500 font-medium leading-relaxed">Our protocol standard is 4 days (Monday-Thursday) to maintain peak moisture levels and food safety standards for high-protein poultry/eggs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- SYSTEM FOOTER -->
+    <footer class="bg-black border-t border-zinc-900 py-20 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-2 mb-6">
+                    <div class="w-3 h-3 bg-[#D9FF00] rounded-full"></div>
+                    <span class="text-xl font-black tracking-tighter italic">INDEX.01</span>
+                </div>
+                <p class="text-zinc-500 text-sm max-w-xs mb-8">The universal taxonomy for high-performance nutrition and logistical meal planning.</p>
+                <div class="flex space-x-4">
+                    <div class="w-10 h-10 border border-zinc-800 rounded flex items-center justify-center text-zinc-500 hover:text-white transition-colors cursor-pointer">IG</div>
+                    <div class="w-10 h-10 border border-zinc-800 rounded flex items-center justify-center text-zinc-500 hover:text-white transition-colors cursor-pointer">TW</div>
+                    <div class="w-10 h-10 border border-zinc-800 rounded flex items-center justify-center text-zinc-500 hover:text-white transition-colors cursor-pointer">YT</div>
+                </div>
+            </div>
+            
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Taxonomy</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-400">
+                    <li><a href="#" class="hover:text-[#D9FF00]">Meal-Prep Hub</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">High-Protein Hub</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Store Index</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Chain Index</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Condition Hubs</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-400">
+                    <li><a href="#" class="hover:text-[#D9FF00]">Postpartum</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Bariatric</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">PCOS</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Muscle Gain</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Methods</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-400">
+                    <li><a href="#" class="hover:text-[#D9FF00]">Air-Fryer</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Crockpot</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Instant-Pot</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">No-Cook</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4">
+            <span class="text-[10px] font-bold text-zinc-700 uppercase tracking-widest">© 2024 Index Authority Network. Data-Backed Intent Engine.</span>
+            <div class="flex gap-8">
+                <a href="#" class="text-[10px] font-bold text-zinc-700 uppercase tracking-widest hover:text-white">Privacy</a>
+                <a href="#" class="text-[10px] font-bold text-zinc-700 uppercase tracking-widest hover:text-white">Terms</a>
+                <a href="#" class="text-[10px] font-bold text-zinc-700 uppercase tracking-widest hover:text-white">API Access</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JSON-LD Structured Data (T3 Example) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Top 10 Crockpot Breakfast Meal Preps",
+      "description": "Ranking the best overnight crockpot breakfasts by protein density and ease of preparation.",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Overnight Steel Cut Oats",
+          "url": "https://mealprepideas.co/recipes/1"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Slow-Cooker Egg Casserole",
+          "url": "https://mealprepideas.co/recipes/2"
+        }
+      ]
+    }
+    </script>
+</body>
+</html>

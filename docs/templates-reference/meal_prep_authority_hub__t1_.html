@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Prep Authority Hub | Logistics & Batch-Cooking Systems</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    
+    <!-- Structured Data for T1 Hub Landing -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Meal Prep Hub Authority Clusters",
+      "description": "Comprehensive guides for meal planning, batch cooking, and food storage logistics.",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "url": "https://mealprepideas.co/meal-prep/method/crockpot/",
+          "name": "Crockpot Meal Prep"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "url": "https://mealprepideas.co/meal-prep/persona/postpartum/",
+          "name": "Postpartum Freezer Prep"
+        }
+      ]
+    }
+    </script>
+
+    <style>
+        :root {
+            --brand-lime: #D9FF00;
+            --brand-charcoal: #0F0F0F;
+            --brand-gray: #1A1A1A;
+            --ui-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--brand-charcoal);
+            color: #FFFFFF;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-grid {
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--brand-charcoal); }
+        ::-webkit-scrollbar-thumb { background: var(--brand-lime); border-radius: 10px; }
+
+        .hyper-border {
+            position: relative;
+            background: var(--brand-gray);
+            border: 1px solid var(--ui-border);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .hyper-border:hover {
+            border-color: var(--brand-lime);
+            box-shadow: 0 0 30px rgba(217, 255, 0, 0.1);
+        }
+
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--brand-lime);
+            box-shadow: 0 0 15px var(--brand-lime);
+            animation: scan 4s linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        .glass-nav {
+            backdrop-filter: blur(12px);
+            background: rgba(15, 15, 15, 0.8);
+            border-bottom: 1px solid var(--ui-border);
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;xs="<svg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'n\'><feTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/></filter><rect width=\'100%\' height=\'100%\' filter=\'url(%23n)\' opacity=\'0.05\'/></svg>"');
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .bento-card {
+            background: var(--brand-gray);
+            border: 1px solid var(--ui-border);
+            border-radius: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .bento-card:hover {
+            border-color: var(--brand-lime);
+            transform: translateY(-4px);
+        }
+
+        [x-cloak] { display: none !important; }
+
+        .data-stream {
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+    </style>
+</head>
+<body class="bg-grid" x-data="{ decisionGoal: 'Weight Loss', decisionMethod: 'Batch Cooking', searchOpen: false }">
+
+    <div class="noise-overlay"></div>
+
+    <!-- GLOBAL NAVIGATION (AS PER DESIGN SYSTEM) -->
+    <header class="glass-nav sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-8">
+            <a href="/" class="flex flex-col leading-none group">
+                <span class="text-[10px] uppercase tracking-[0.3em] text-zinc-500 mb-1 font-bold group-hover:text-[#D9FF00] transition-colors">Meal Prep Hub</span>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-[#D9FF00] rounded-full"></div>
+                    <span class="text-xl font-black tracking-tighter italic uppercase">Logistics.io</span>
+                </div>
+            </a>
+            <nav class="hidden lg:flex space-x-6 text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+                <a href="/meal-prep/" class="text-white border-b-2 border-[#D9FF00] pb-1">Core Hub</a>
+                <a href="#" class="hover:text-white transition-colors">Methods</a>
+                <a href="#" class="hover:text-white transition-colors">Personas</a>
+                <a href="#" class="hover:text-white transition-colors">Storage Guides</a>
+            </nav>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <div class="hidden md:block">
+                <div class="flex items-center gap-4 bg-zinc-900/50 border border-zinc-800 rounded-full px-4 py-1.5">
+                    <span class="flex items-center gap-2 text-[9px] font-black text-zinc-500 tracking-tighter">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> 5-DAY SYSTEMS: READY
+                    </span>
+                </div>
+            </div>
+            <button @click="searchOpen = !searchOpen" class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center border border-zinc-700 hover:border-[#D9FF00] transition-all">
+                <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- T1 HERO: THE LOGISTICS COMMAND CENTER -->
+        <section class="relative min-h-[80vh] flex flex-col justify-center px-6 border-b border-zinc-900 overflow-hidden bg-black">
+            <!-- Background Visual: Abstract Logistics Grid -->
+            <div class="absolute inset-0 opacity-20 pointer-events-none">
+                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="smallGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" stroke-width="0.5"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#smallGrid)" />
+                </svg>
+            </div>
+
+            <div class="max-w-7xl mx-auto w-full relative z-10 grid md:grid-cols-2 gap-12 items-center">
+                <div class="animate-in fade-in slide-in-from-left duration-1000">
+                    <div class="inline-flex items-center gap-3 bg-[#D9FF00]/10 border border-[#D9FF00]/20 px-3 py-1 rounded-full mb-6">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D9FF00] opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-[#D9FF00]"></span>
+                        </span>
+                        <span class="text-[10px] font-black text-[#D9FF00] tracking-widest uppercase">System Authority: Meal-Prep</span>
+                    </div>
+                    <h1 class="text-7xl md:text-[120px] font-black tracking-tighter leading-[0.85] mb-8 italic">
+                        BATCH.<br>STORE.<br><span class="text-stroke">EXECUTE.</span>
+                    </h1>
+                    <p class="max-w-md text-zinc-400 font-medium text-lg leading-relaxed mb-10">
+                        The definitive framework for high-volume food logistics. From 90-minute Sunday sprints to postpartum freezer stashes.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#decision" class="bg-[#D9FF00] text-black px-8 py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-white transition-all transform hover:scale-105">Start Planning</a>
+                        <a href="#clusters" class="border border-zinc-700 hover:border-white px-8 py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all">Browse Clusters</a>
+                    </div>
+                </div>
+
+                <div class="relative hidden md:block group">
+                    <div class="scanner-line"></div>
+                    <div class="relative aspect-square rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" alt="Batch Cooking">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                        <div class="absolute bottom-8 left-8 right-8 bg-zinc-950/90 backdrop-blur-md p-6 border border-zinc-800 rounded-2xl">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <span class="text-[10px] font-black text-[#D9FF00] uppercase tracking-widest mb-1 block">Featured Strategy</span>
+                                    <h3 class="text-xl font-black tracking-tight">Sunday Logistics: 15 Meals</h3>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-2xl font-black tabular-nums tracking-tighter">90m</span>
+                                    <span class="text-[8px] font-bold text-zinc-500 uppercase block">EXECUTION TIME</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- START HERE: THE DECISION WIDGET -->
+        <section id="decision" class="py-24 px-6 border-b border-zinc-900 bg-zinc-950">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row items-baseline justify-between mb-16 gap-4">
+                    <h2 class="text-4xl font-black tracking-tighter uppercase italic">Decision Engine</h2>
+                    <p class="text-zinc-500 font-bold text-xs uppercase tracking-widest">Select Constraints to Fetch Optimized Path</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <!-- Step 01 -->
+                    <div class="hyper-border p-8 rounded-3xl" :class="decisionGoal === 'Weight Loss' ? 'border-[#D9FF00]' : ''">
+                        <span class="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-10 block">01 / Objective</span>
+                        <div class="space-y-4">
+                            <template x-for="goal in ['Weight Loss', 'Muscle Gain', 'Cheap & Quick']">
+                                <button @click="decisionGoal = goal" 
+                                        :class="decisionGoal === goal ? 'text-[#D9FF00]' : 'text-zinc-500'"
+                                        class="flex items-center justify-between w-full text-left font-black tracking-tight text-xl group transition-all">
+                                    <span x-text="goal"></span>
+                                    <div class="w-4 h-4 rounded-full border border-zinc-700 flex items-center justify-center">
+                                        <div class="w-2 h-2 rounded-full bg-[#D9FF00] transition-opacity" :class="decisionGoal === goal ? 'opacity-100' : 'opacity-0'"></div>
+                                    </div>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Step 02 -->
+                    <div class="hyper-border p-8 rounded-3xl">
+                        <span class="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-10 block">02 / Method</span>
+                        <select x-model="decisionMethod" class="w-full bg-zinc-900 border border-zinc-800 p-4 rounded-xl font-bold tracking-tight text-xl outline-none focus:border-[#D9FF00] appearance-none">
+                            <option>Batch Cooking</option>
+                            <option>Freezer Dump</option>
+                            <option>Slow Cooker</option>
+                            <option>No-Cook Cold</option>
+                        </select>
+                    </div>
+
+                    <!-- Result Panel -->
+                    <div class="lg:col-span-2 bg-[#D9FF00] rounded-3xl p-8 flex flex-col justify-between text-black relative overflow-hidden group">
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-8">
+                                <span class="text-[10px] font-black uppercase tracking-widest bg-black text-white px-2 py-1 rounded">Recommended System</span>
+                                <span class="text-xs font-black italic">INDEX-V4.2</span>
+                            </div>
+                            <h4 class="text-4xl font-black tracking-tighter leading-none mb-4" x-text="'The ' + decisionGoal + ' ' + decisionMethod + ' Protocol'"></h4>
+                            <p class="font-bold text-sm max-w-xs opacity-70">Custom-generated execution plan focusing on caloric density and storage shelf-life.</p>
+                        </div>
+                        <div class="mt-12 flex gap-4 relative z-10">
+                            <button class="flex-1 bg-black text-white py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-[1.02] transition-transform">Get The Full Plan</button>
+                            <button class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center hover:bg-white/40 transition-colors">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg>
+                            </button>
+                        </div>
+                        <!-- Abstract Graphic -->
+                        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-black/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOP CLUSTERS: THE AUTHORITY PACKS -->
+        <section id="clusters" class="py-24 px-6 max-w-7xl mx-auto">
+            <div class="flex items-center gap-4 mb-16">
+                <div class="h-[2px] w-24 bg-[#D9FF00]"></div>
+                <h2 class="text-xs font-black tracking-[0.5em] uppercase text-zinc-500">Core Authority Pillars</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <!-- Cluster Card: Method Focus -->
+                <div class="md:col-span-7 bento-card p-10 flex flex-col justify-between group overflow-hidden relative">
+                    <div class="relative z-10">
+                        <span class="text-[#D9FF00] font-black text-[10px] tracking-widest uppercase mb-4 block">System 01</span>
+                        <h3 class="text-5xl font-black tracking-tighter mb-6 leading-none italic">LOGISTICS<br>BY METHOD</h3>
+                        <p class="text-zinc-400 max-w-sm font-medium mb-8">Specialized batching protocols for Crockpot, Air-Fryer, and Freezer-first strategies.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-[9px] font-black uppercase tracking-widest group-hover:border-[#D9FF00] transition-all">Instant Pot</span>
+                            <span class="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-[9px] font-black uppercase tracking-widest group-hover:border-[#D9FF00] transition-all">Slow-Cooker</span>
+                            <span class="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-[9px] font-black uppercase tracking-widest group-hover:border-[#D9FF00] transition-all">No-Cook</span>
+                        </div>
+                    </div>
+                    <div class="absolute right-0 bottom-0 opacity-10 group-hover:opacity-30 transition-opacity transform group-hover:scale-110 duration-700">
+                        <svg width="300" height="300" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                    </div>
+                </div>
+
+                <!-- Cluster Card: Persona Focus -->
+                <div class="md:col-span-5 bento-card p-10 flex flex-col justify-between bg-zinc-100 text-black">
+                    <div>
+                        <div class="w-12 h-12 bg-black text-[#D9FF00] rounded-xl flex items-center justify-center mb-8">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        </div>
+                        <h3 class="text-4xl font-black tracking-tighter mb-4 leading-none uppercase">PERSONA<br>FLOWS</h3>
+                        <p class="font-bold text-zinc-600 mb-6">Optimized meal systems for postpartum recovery, student life, and picky toddlers.</p>
+                    </div>
+                    <a href="#" class="group flex items-center justify-between text-xs font-black uppercase tracking-widest border-t border-zinc-200 pt-6">
+                        Explore Personas
+                        <svg class="w-5 h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </a>
+                </div>
+
+                <!-- Cluster Card: The 5-Day Plan (Retention) -->
+                <div class="md:col-span-12 bento-card p-8 md:p-12 bg-[#111] flex flex-col md:flex-row items-center gap-12 group">
+                    <div class="flex-1">
+                        <h3 class="text-5xl md:text-7xl font-black tracking-tighter italic uppercase mb-6 leading-[0.85]">The Weekly<br>Blueprint</h3>
+                        <p class="text-zinc-500 font-bold mb-8 max-w-lg italic uppercase text-sm tracking-widest">A standardized 5-day cycle: Sunday Prep to Friday Night Survival.</p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                            <div class="p-4 border border-zinc-800 rounded-xl">
+                                <span class="text-2xl font-black tabular-nums tracking-tighter block text-[#D9FF00]">15</span>
+                                <span class="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Total Meals</span>
+                            </div>
+                            <div class="p-4 border border-zinc-800 rounded-xl">
+                                <span class="text-2xl font-black tabular-nums tracking-tighter block text-[#D9FF00]">$45</span>
+                                <span class="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Budget Avg</span>
+                            </div>
+                            <div class="p-4 border border-zinc-800 rounded-xl">
+                                <span class="text-2xl font-black tabular-nums tracking-tighter block text-[#D9FF00]">0</span>
+                                <span class="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Waste Score</span>
+                            </div>
+                            <div class="p-4 border border-zinc-800 rounded-xl">
+                                <span class="text-2xl font-black tabular-nums tracking-tighter block text-[#D9FF00]">35g</span>
+                                <span class="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Protein Avg</span>
+                            </div>
+                        </div>
+                        <button class="bg-[#D9FF00] text-black w-full py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-white transition-all transform hover:-translate-y-1">Download Current Protocol</button>
+                    </div>
+                    <div class="w-full md:w-1/3 aspect-[4/5] bg-zinc-900 rounded-3xl overflow-hidden relative border border-zinc-800">
+                        <img src="https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover opacity-60 mix-blend-luminosity hover:opacity-100 hover:mix-blend-normal transition-all duration-1000" alt="Meal Containers">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FACET MEGA-NAV: THE CHIP GRID (30-60 LINKS) -->
+        <section class="bg-black py-24 border-y border-zinc-900 overflow-hidden">
+            <div class="px-6 max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+                    <div>
+                        <h2 class="text-xs font-black tracking-[0.5em] uppercase text-zinc-500 mb-4 italic">The Global Index</h2>
+                        <h3 class="text-5xl font-black tracking-tighter leading-none uppercase">Universal Taxonomy</h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="text-[10px] font-black uppercase bg-[#D9FF00] text-black px-3 py-1 rounded">54 Active Dimensions</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-12">
+                    <!-- Column: Method -->
+                    <div>
+                        <h4 class="text-[10px] font-black uppercase tracking-widest text-zinc-700 mb-6 border-b border-zinc-900 pb-2">By Method</h4>
+                        <ul class="space-y-3">
+                            <template x-for="item in ['Crockpot', 'Slow-Cooker', 'Instant-Pot', 'Air-Fryer', 'Microwave', 'Sheet-Pan', 'One-Pan', 'No-Cook', 'Freezer', 'Grill', 'Oven']">
+                                <li><a href="#" class="text-xs font-bold text-zinc-500 hover:text-[#D9FF00] transition-colors" x-text="item"></a></li>
+                            </template>
+                        </ul>
+                    </div>
+                    <!-- Column: Persona -->
+                    <div>
+                        <h4 class="text-[10px] font-black uppercase tracking-widest text-zinc-700 mb-6 border-b border-zinc-900 pb-2">By Persona</h4>
+                        <ul class="space-y-3">
+                            <template x-for="item in ['Work / Office', 'College Student', 'Picky Eaters', 'Toddlers', 'Pregnancy', 'Postpartum', 'Bariatric', 'PCOS', 'Cholesterol-Lowering']">
+                                <li><a href="#" class="text-xs font-bold text-zinc-500 hover:text-[#D9FF00] transition-colors" x-text="item"></a></li>
+                            </template>
+                        </ul>
+                    </div>
+                    <!-- Column: Goal & Diet -->
+                    <div>
+                        <h4 class="text-[10px] font-black uppercase tracking-widest text-zinc-700 mb-6 border-b border-zinc-900 pb-2">By Goal/Diet</h4>
+                        <ul class="space-y-3">
+                            <template x-for="item in ['Weight-Loss', 'Muscle-Gain', 'Healthy', 'Vegan', 'Vegetarian', 'Low-Carb', 'Keto', 'Low-Calorie', 'Gluten-Free', 'Dairy-Free']">
+                                <li><a href="#" class="text-xs font-bold text-zinc-500 hover:text-[#D9FF00] transition-colors" x-text="item"></a></li>
+                            </template>
+                        </ul>
+                    </div>
+                    <!-- Column: Ingredients & Logistics -->
+                    <div>
+                        <h4 class="text-[10px] font-black uppercase tracking-widest text-zinc-700 mb-6 border-b border-zinc-900 pb-2">By Ingredient</h4>
+                        <ul class="space-y-3">
+                            <template x-for="item in ['Chicken', 'Ground-Beef', 'Ground-Turkey', 'Salmon', 'Shrimp', 'Steak', 'High-Fiber', 'Budget-Friendly', 'Quick & Simple']">
+                                <li><a href="#" class="text-xs font-bold text-zinc-500 hover:text-[#D9FF00] transition-colors" x-text="item"></a></li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DATA STREAM FOOTER (STYLIZED) -->
+        <section class="bg-zinc-950 py-12 border-b border-zinc-900 relative">
+            <div class="data-stream overflow-hidden whitespace-nowrap flex py-2 border-y border-[#D9FF00]/10">
+                <div class="flex animate-marquee gap-8 items-center">
+                    <template x-for="i in 5">
+                        <div class="flex gap-8 items-center">
+                            <span class="text-[10px] font-black tracking-tighter text-[#D9FF00]">INDEX UPDATED: 2024-05-12</span>
+                            <span class="w-1 h-1 rounded-full bg-zinc-800"></span>
+                            <span class="text-[10px] font-black tracking-tighter text-zinc-500">NEW CLUSTER: POSTPARTUM FREEZER STASH [54 PAGES]</span>
+                            <span class="w-1 h-1 rounded-full bg-zinc-800"></span>
+                            <span class="text-[10px] font-black tracking-tighter text-[#D9FF00]">TRAFFIC WINNER: CROCKPOT NO-MICROWAVE</span>
+                            <span class="w-1 h-1 rounded-full bg-zinc-800"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER: SYSTEM DIRECTORY -->
+    <footer class="bg-black py-20 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-2 mb-6 group cursor-pointer">
+                    <div class="w-3 h-3 bg-[#D9FF00] rounded-full group-hover:scale-150 transition-transform"></div>
+                    <span class="text-xl font-black tracking-tighter italic uppercase">Logistics.io</span>
+                </div>
+                <p class="text-zinc-500 text-sm max-w-xs mb-10 leading-relaxed font-medium">The universal meal prep taxonomy for modern logistics and high-performance nutrition planning.</p>
+                <div class="flex items-center gap-4">
+                    <div class="bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg text-[9px] font-black tracking-widest text-zinc-400">
+                        LATENCY: 12MS
+                    </div>
+                    <div class="bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg text-[9px] font-black tracking-widest text-[#D9FF00]">
+                        INDEX: LIVE
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-700 mb-8 italic">Authority</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-500">
+                    <li><a href="#" class="hover:text-white transition-colors">Meal Prep Hub</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">High Protein Hub</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Store SKUs</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Fast Food Hacks</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-700 mb-8 italic">Resources</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-500">
+                    <li><a href="#" class="hover:text-white transition-colors">Sunday Protocols</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Shopping Engine</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Nutrition Matrix</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Email Vault</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-700 mb-8 italic">Legal</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-500">
+                    <li><a href="#" class="hover:text-white transition-colors">Privacy Data</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Terms of Logic</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4 text-zinc-700">
+            <span class="text-[10px] font-black uppercase tracking-[0.3em]">© 2024 Index Authority Network. Part of MealPrepIdeas.co Group.</span>
+            <div class="flex gap-8">
+                <span class="text-[10px] font-black uppercase tracking-widest">System Status: Optimal</span>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            animation: marquee 40s linear infinite;
+        }
+    </style>
+
+    <script>
+        // Custom interactive script for the Hub
+        document.addEventListener('DOMContentLoaded', () => {
+            // Magnetic effect on the decision engine cards
+            const cards = document.querySelectorAll('.hyper-border');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

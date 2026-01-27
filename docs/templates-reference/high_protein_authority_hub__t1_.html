@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Protein Authority | ProteinMeals.co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-lime: #D9FF00;
+            --brand-charcoal: #0F0F0F;
+            --brand-gray: #1A1A1A;
+            --ui-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--brand-charcoal);
+            color: #FFFFFF;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-grid {
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--brand-charcoal); }
+        ::-webkit-scrollbar-thumb { background: var(--brand-lime); border-radius: 10px; }
+
+        .hyper-border {
+            position: relative;
+            background: var(--brand-gray);
+            border: 1px solid var(--ui-border);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .hyper-border:hover {
+            border-color: var(--brand-lime);
+            box-shadow: 0 0 30px rgba(217, 255, 0, 0.1);
+        }
+
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--brand-lime);
+            box-shadow: 0 0 15px var(--brand-lime);
+            animation: scan 4s linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        .glass-nav {
+            backdrop-filter: blur(12px);
+            background: rgba(15, 15, 15, 0.8);
+            border-bottom: 1px solid var(--ui-border);
+        }
+
+        .macro-card {
+            background: linear-gradient(145deg, #1A1A1A 0%, #0F0F0F 100%);
+            border: 1px solid var(--ui-border);
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;xs="<svg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'n\'><feTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/></filter><rect width=\'100%\' height=\'100%\' filter=\'url(%23n)\' opacity=\'0.05\'/></svg>"');
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        [x-cloak] { display: none !important; }
+
+        .stat-glow {
+            text-shadow: 0 0 20px rgba(217, 255, 0, 0.3);
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20  20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+</head>
+<body class="bg-grid" x-data="{ 
+    query: {
+        goal: 'muscle-gain',
+        diet: 'none',
+        method: 'any',
+        constraint: 'none'
+    },
+    get resultsCount() {
+        let base = 842;
+        if(this.query.goal !== 'muscle-gain') base -= 200;
+        if(this.query.diet !== 'none') base -= 150;
+        return base;
+    }
+}">
+
+    <div class="noise-overlay"></div>
+
+    <!-- STICKY HEADER -->
+    <header class="glass-nav sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-8">
+            <div class="flex flex-col leading-none">
+                <span class="text-[10px] uppercase tracking-[0.3em] text-zinc-500 mb-1 font-bold">Authority Pillar</span>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-[#D9FF00] rounded-full"></div>
+                    <span class="text-xl font-black tracking-tighter italic">PROTEINMEALS.CO</span>
+                </div>
+            </div>
+            <nav class="hidden lg:flex space-x-6 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                <a href="#" class="text-white border-b-2 border-[#D9FF00] pb-1">High-Protein Hub</a>
+                <a href="#" class="hover:text-white transition-colors">MealPrepIdeas.co</a>
+                <a href="#" class="hover:text-white transition-colors">Store Index</a>
+                <a href="#" class="hover:text-white transition-colors">Chain Guide</a>
+            </nav>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <div class="hidden md:block">
+                <div class="flex items-center gap-3 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg">
+                    <span class="text-[10px] font-bold text-zinc-500">LIVE FEED:</span>
+                    <span class="text-[10px] font-bold animate-pulse text-[#D9FF00]">NEW TRADER JOE'S SKUS DETECTED</span>
+                </div>
+            </div>
+            <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center border border-zinc-700 cursor-pointer hover:border-[#D9FF00] transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- T1 HERO: THE MACRO INTENT PILLAR -->
+        <section class="relative pt-24 pb-32 px-6 overflow-hidden border-b border-zinc-900">
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-4 mb-8">
+                            <span class="px-3 py-1 bg-[#D9FF00] text-black text-[10px] font-black uppercase tracking-widest rounded">Pillar 02</span>
+                            <span class="text-[10px] text-zinc-500 font-black uppercase tracking-[0.4em]">Optimizing Biological Output</span>
+                        </div>
+                        <h1 class="text-7xl md:text-9xl font-black tracking-tighter leading-[0.85] mb-8">
+                            HIGH<br><span class="text-zinc-800">PROTEIN</span><br>SYSTEMS
+                        </h1>
+                        <p class="max-w-xl text-zinc-400 text-lg font-medium leading-relaxed">
+                            The definitive data-layer for macro-intent. We map calorie bands, specific diet constraints, and retail availability to high-leverage protein sources.
+                        </p>
+                    </div>
+
+                    <!-- Macro Calculator Teaser Widget -->
+                    <div class="w-full md:w-96 p-8 bg-zinc-900 border border-zinc-800 rounded-3xl relative overflow-hidden group">
+                        <div class="scanner-line"></div>
+                        <h3 class="text-xs font-black tracking-widest text-zinc-500 uppercase mb-6">Target Macro Profile</h3>
+                        <div class="space-y-6">
+                            <div x-data="{ protein: 180 }">
+                                <div class="flex justify-between text-[10px] font-black uppercase mb-2">
+                                    <span class="text-zinc-500">Daily Protein Goal</span>
+                                    <span class="text-[#D9FF00]" x-text="protein + 'G'"></span>
+                                </div>
+                                <input type="range" min="100" max="300" x-model="protein" class="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#D9FF00]">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 bg-zinc-950 rounded-xl border border-zinc-800">
+                                    <span class="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Calories</span>
+                                    <span class="text-xl font-black tabular-nums">2,400</span>
+                                </div>
+                                <div class="p-4 bg-zinc-950 rounded-xl border border-zinc-800">
+                                    <span class="block text-[10px] font-bold text-zinc-500 uppercase mb-1">P:E Ratio</span>
+                                    <span class="text-xl font-black tabular-nums text-[#D9FF00]">2.4</span>
+                                </div>
+                            </div>
+                            <button class="w-full py-4 bg-white text-black text-xs font-black uppercase tracking-widest rounded-xl hover:bg-[#D9FF00] transition-all">
+                                Lock Parameters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Background Decorative Elements -->
+            <div class="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#D9FF00]/5 to-transparent pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-[#D9FF00]/10 blur-[120px] rounded-full pointer-events-none"></div>
+        </section>
+
+        <!-- START HERE: THE DECISION ENGINE -->
+        <section class="py-24 px-6 max-w-7xl mx-auto">
+            <div class="flex items-center gap-4 mb-12">
+                <div class="h-[1px] flex-grow bg-zinc-900"></div>
+                <h2 class="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-600 whitespace-nowrap">Decision Engine v1.0</h2>
+                <div class="h-[1px] flex-grow bg-zinc-900"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <!-- Selectors (8 columns) -->
+                <div class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-8 bg-zinc-900/50 border border-zinc-800 rounded-3xl hover:border-zinc-700 transition-all">
+                        <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">01. Primary Goal</label>
+                        <div class="flex flex-wrap gap-2">
+                            <template x-for="g in ['Weight-Loss', 'Muscle-Gain', 'Healthy']">
+                                <button @click="query.goal = g" 
+                                        :class="query.goal === g ? 'bg-[#D9FF00] text-black border-[#D9FF00]' : 'text-zinc-400 border-zinc-800'"
+                                        class="px-4 py-2 border rounded-full text-[11px] font-bold uppercase transition-all"
+                                        x-text="g.replace('-', ' ')"></button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="p-8 bg-zinc-900/50 border border-zinc-800 rounded-3xl hover:border-zinc-700 transition-all">
+                        <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">02. Dietary Constraints</label>
+                        <select x-model="query.diet" class="w-full bg-transparent border-b-2 border-zinc-800 py-2 text-xl font-bold focus:border-[#D9FF00] outline-none transition-all appearance-none cursor-pointer">
+                            <option value="none">No Restrictions</option>
+                            <option value="low-carb">Low Carb / Keto</option>
+                            <option value="vegan">Vegan / Plant-Based</option>
+                            <option value="gf-df">Gluten & Dairy Free</option>
+                            <option value="high-fiber">High Fiber Focused</option>
+                        </select>
+                    </div>
+
+                    <div class="p-8 bg-zinc-900/50 border border-zinc-800 rounded-3xl hover:border-zinc-700 transition-all">
+                        <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">03. Logistics / Method</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <template x-for="m in ['Air Fryer', 'Crockpot', 'Microwave', 'Frozen SKUs']">
+                                <button class="p-3 border border-zinc-800 rounded-xl text-[10px] font-bold uppercase hover:bg-zinc-800 transition-colors text-left flex justify-between items-center group">
+                                    <span x-text="m"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-zinc-700 group-hover:bg-[#D9FF00]"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="p-8 bg-zinc-900/50 border border-zinc-800 rounded-3xl hover:border-zinc-700 transition-all">
+                        <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">04. Retail Preference</label>
+                        <div class="flex items-center gap-4">
+                            <div class="flex -space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-zinc-800 border-2 border-zinc-900 flex items-center justify-center text-[10px] font-bold">TJ</div>
+                                <div class="w-10 h-10 rounded-full bg-zinc-800 border-2 border-zinc-900 flex items-center justify-center text-[10px] font-bold">CO</div>
+                                <div class="w-10 h-10 rounded-full bg-zinc-800 border-2 border-zinc-900 flex items-center justify-center text-[10px] font-bold">WM</div>
+                                <div class="w-10 h-10 rounded-full bg-zinc-800 border-2 border-zinc-900 flex items-center justify-center text-[10px] font-bold">AL</div>
+                            </div>
+                            <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Filter by store inventory</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Counter (3 columns) -->
+                <div class="lg:col-span-3 bg-[#D9FF00] rounded-3xl p-8 flex flex-col justify-between items-center text-center">
+                    <div>
+                        <span class="text-black/60 text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">Engine Match</span>
+                        <div class="text-8xl font-black tracking-tighter text-black tabular-nums" x-text="resultsCount">842</div>
+                        <span class="text-black font-bold uppercase text-[10px] tracking-widest">Available Strategies</span>
+                    </div>
+                    <button class="w-full bg-black text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-[0.98] transition-all">
+                        View Results →
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOP CLUSTERS: THE HIGH PROTEIN PACKS -->
+        <section class="py-24 px-6 border-t border-zinc-900 bg-zinc-950/50">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex justify-between items-end mb-16">
+                    <div>
+                        <h2 class="text-4xl md:text-5xl font-black tracking-tighter mb-4">AUTHORITY PACKS</h2>
+                        <p class="text-zinc-500 font-medium">Pre-indexed collections of high-intent high-protein strategies.</p>
+                    </div>
+                    <div class="hidden md:flex gap-4">
+                        <button class="w-12 h-12 border border-zinc-800 rounded-full flex items-center justify-center hover:border-[#D9FF00] transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                        <button class="w-12 h-12 border border-zinc-800 rounded-full flex items-center justify-center hover:border-[#D9FF00] transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Card 1: Retail Frozen -->
+                    <a href="#" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=600" class="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:scale-110 transition-transform duration-1000" alt="Frozen SKUs">
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-8">
+                                <span class="px-2 py-1 bg-zinc-800 text-[9px] font-black uppercase tracking-widest rounded">SKU Index</span>
+                                <span class="text-[#D9FF00] text-xs font-black">150+ PGS</span>
+                            </div>
+                            <h3 class="text-3xl font-black tracking-tighter mb-4 leading-none">Frozen High-Protein Deep-Dive</h3>
+                            <p class="text-zinc-400 text-sm font-medium leading-relaxed">Trader Joe's, Costco, and Walmart frozen SKUs sorted by absolute protein-to-calorie efficiency.</p>
+                        </div>
+                        <div class="relative z-10 pt-8 border-t border-zinc-800 mt-8 flex justify-between items-center">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Retail Facet</span>
+                            <div class="flex gap-1">
+                                <span class="w-1 h-1 bg-[#D9FF00]"></span>
+                                <span class="w-1 h-1 bg-[#D9FF00]"></span>
+                                <span class="w-1 h-1 bg-zinc-700"></span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Card 2: Fast Food Survival -->
+                    <a href="#" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden bg-white">
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-8">
+                                <span class="px-2 py-1 bg-black text-white text-[9px] font-black uppercase tracking-widest rounded">Chain Hacks</span>
+                                <span class="text-black text-xs font-black">94% ACCURACY</span>
+                            </div>
+                            <h3 class="text-3xl font-black tracking-tighter mb-4 leading-none text-black">Fast Food Macro Modification</h3>
+                            <p class="text-zinc-600 text-sm font-medium leading-relaxed">How to hack Chick-Fil-A, Chipotle, and Panda Express menu items to hit 50g+ protein under 600 cals.</p>
+                        </div>
+                        <div class="relative z-10 space-y-3 mt-8">
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 border border-zinc-200 rounded text-[9px] font-bold text-black uppercase">Chipotle</span>
+                                <span class="px-2 py-1 border border-zinc-200 rounded text-[9px] font-bold text-black uppercase">Chick-Fil-A</span>
+                                <span class="px-2 py-1 border border-zinc-200 rounded text-[9px] font-bold text-black uppercase">Panera</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-zinc-200 rounded-full overflow-hidden">
+                                <div class="w-3/4 h-full bg-black"></div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Card 3: Clinical Constraints -->
+                    <a href="#" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden bg-zinc-900 border-l-4 border-l-[#D9FF00]">
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-8">
+                                <span class="px-2 py-1 bg-zinc-800 text-[9px] font-black uppercase tracking-widest rounded">Trust Tier</span>
+                                <span class="text-zinc-500 text-[9px] font-black uppercase tracking-widest">High Retention</span>
+                            </div>
+                            <h3 class="text-3xl font-black tracking-tighter mb-4 leading-none">Biological & Health Targets</h3>
+                            <p class="text-zinc-400 text-sm font-medium leading-relaxed">Protein-forward protocols specifically designed for PCOS management, bariatric recovery, and cholesterol control.</p>
+                        </div>
+                        <div class="relative z-10 mt-8 grid grid-cols-2 gap-4">
+                            <div class="text-center p-3 bg-zinc-950 rounded-xl border border-zinc-800">
+                                <span class="block text-xl font-black">8.2k</span>
+                                <span class="text-[8px] text-zinc-500 uppercase font-bold">Daily Users</span>
+                            </div>
+                            <div class="text-center p-3 bg-zinc-950 rounded-xl border border-zinc-800">
+                                <span class="block text-xl font-black">98%</span>
+                                <span class="text-[8px] text-zinc-500 uppercase font-bold">Stickiness</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- FACET MEGA-NAV: 30-60 LINKS -->
+        <section class="py-24 px-6 max-w-7xl mx-auto">
+            <div class="mb-12">
+                <h4 class="text-xs font-black tracking-[0.4em] text-zinc-600 uppercase mb-2">Global Taxonomy Explorer</h4>
+                <div class="h-1 w-24 bg-[#D9FF00]"></div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-8 gap-y-12">
+                <!-- Diet Facets -->
+                <div>
+                    <h5 class="text-[10px] font-black uppercase text-white mb-6 tracking-widest">By Diet</h5>
+                    <ul class="space-y-3 text-xs font-bold text-zinc-500">
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">High Protein Vegan</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Keto Protein Meals</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Low Calorie Bands</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Gluten-Free Macros</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Dairy-Free Muscle</a></li>
+                    </ul>
+                </div>
+                <!-- Method Facets -->
+                <div>
+                    <h5 class="text-[10px] font-black uppercase text-white mb-6 tracking-widest">By Method</h5>
+                    <ul class="space-y-3 text-xs font-bold text-zinc-500">
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Air Fryer Protein</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Slow Cooker Batch</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Instant Pot High-Pro</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Microwave Survival</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">No-Cook Macros</a></li>
+                    </ul>
+                </div>
+                <!-- Constraint Facets -->
+                <div>
+                    <h5 class="text-[10px] font-black uppercase text-white mb-6 tracking-widest">By Constraint</h5>
+                    <ul class="space-y-3 text-xs font-bold text-zinc-500">
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">High Fiber Protein</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Low Sodium Choices</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Budget Protein Prep</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Quick/Simple Macros</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">No-Microwave Lunch</a></li>
+                    </ul>
+                </div>
+                <!-- Persona Facets -->
+                <div>
+                    <h5 class="text-[10px] font-black uppercase text-white mb-6 tracking-widest">By Persona</h5>
+                    <ul class="space-y-3 text-xs font-bold text-zinc-500">
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Office Lunch Prep</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">College Student Gains</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Postpartum Recovery</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Bariatric Support</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Picky Eater Hacks</a></li>
+                    </ul>
+                </div>
+                <!-- Ingredient Facets -->
+                <div>
+                    <h5 class="text-[10px] font-black uppercase text-white mb-6 tracking-widest">By Ingredient</h5>
+                    <ul class="space-y-3 text-xs font-bold text-zinc-500">
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Chicken Breast Prep</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Ground Turkey Ideas</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Wild Salmon Prep</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Lean Steak Meals</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Plant Protein Bases</a></li>
+                    </ul>
+                </div>
+                <!-- Retail Facets -->
+                <div>
+                    <h5 class="text-[10px] font-black uppercase text-white mb-6 tracking-widest">By Retailer</h5>
+                    <ul class="space-y-3 text-xs font-bold text-zinc-500">
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Trader Joe's List</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Costco Bulk Protein</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Aldi Finds Index</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Walmart SKU Guide</a></li>
+                        <li><a href="#" class="hover:text-[#D9FF00] transition-colors">Whole Foods Choice</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURED PLANS: 5-DAY HIGH PROTEIN PROTOCOL -->
+        <section class="bg-[#D9FF00] text-black py-24 overflow-hidden relative">
+            <div class="px-6 max-w-7xl mx-auto flex flex-col md:flex-row gap-16 items-center">
+                <div class="flex-1 relative z-10">
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="w-10 h-[2px] bg-black"></div>
+                        <span class="text-[10px] font-black uppercase tracking-widest">The High Protein Standard</span>
+                    </div>
+                    <h2 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-8 uppercase">THE 200G<br>PROTOCOL</h2>
+                    <p class="text-xl font-medium mb-12 text-black/80 max-w-lg">
+                        The ultimate execution plan for high-performance athletes. 5 days of meals, 200g protein daily, under 2400 calories. Sunday prep: 105 mins.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="px-10 py-5 bg-black text-white text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform">Download Plan (PDF)</button>
+                        <button class="px-10 py-5 border-2 border-black text-black text-xs font-black uppercase tracking-widest rounded-full hover:bg-black hover:text-white transition-all">View Batch Guide</button>
+                    </div>
+                </div>
+                <div class="flex-1 relative scale-110 md:scale-100">
+                    <div class="bg-white p-10 rounded-3xl border-2 border-black rotate-2 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)]">
+                        <div class="flex justify-between items-center mb-10 border-b border-zinc-200 pb-4">
+                            <span class="text-xs font-black tracking-widest">EXECUTION STEPS</span>
+                            <span class="px-2 py-1 bg-black text-white text-[9px] font-black uppercase">LIVE v2.4</span>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4">
+                                <span class="w-6 h-6 rounded-full bg-black text-white text-[10px] flex items-center justify-center flex-shrink-0 font-black">01</span>
+                                <p class="text-sm font-bold leading-tight">Batch cook 5lbs Lean Protein (Turkey/Chicken) with signature spice blend.</p>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <span class="w-6 h-6 rounded-full bg-black text-white text-[10px] flex items-center justify-center flex-shrink-0 font-black">02</span>
+                                <p class="text-sm font-bold leading-tight">Partition 1.5 cups roasted cruciferous vegetables across 10 glass containers.</p>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <span class="w-6 h-6 rounded-full bg-black text-white text-[10px] flex items-center justify-center flex-shrink-0 font-black">03</span>
+                                <p class="text-sm font-bold leading-tight text-zinc-400 line-through">Apply calorie-dense sauces (substitute for Greek Yogurt base).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER: SYSTEM DIRECTORY -->
+    <footer class="bg-black border-t border-zinc-900 py-24 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-16">
+            <div class="col-span-1 md:col-span-2">
+                <div class="flex items-center gap-2 mb-8">
+                    <div class="w-3 h-3 bg-[#D9FF00] rounded-full"></div>
+                    <span class="text-2xl font-black tracking-tighter italic">PROTEINMEALS.CO</span>
+                </div>
+                <p class="text-zinc-500 text-sm max-w-sm mb-10 leading-relaxed font-medium">
+                    The macro-intent pillar of the Authority Network. We provide the structural data needed to automate high-protein nutrition for real-world scenarios.
+                </p>
+                <div class="flex gap-4">
+                    <div class="w-12 h-12 border border-zinc-800 rounded-xl flex items-center justify-center hover:bg-[#D9FF00] hover:text-black transition-all cursor-pointer">IG</div>
+                    <div class="w-12 h-12 border border-zinc-800 rounded-xl flex items-center justify-center hover:bg-[#D9FF00] hover:text-black transition-all cursor-pointer">TW</div>
+                    <div class="w-12 h-12 border border-zinc-800 rounded-xl flex items-center justify-center hover:bg-[#D9FF00] hover:text-black transition-all cursor-pointer">TT</div>
+                </div>
+            </div>
+
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-[0.2em] text-white mb-8">Core Pillar</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-500">
+                    <li><a href="#" class="hover:text-[#D9FF00]">High-Protein Hub</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Meal-Prep Hub</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Recipe Schema</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Batch Protocols</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-[0.2em] text-white mb-8">Data Facets</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-500">
+                    <li><a href="#" class="hover:text-[#D9FF00]">Retail SKU Matrix</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Chain Menu Hacks</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Calorie Banding</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Macro-Ratios</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-[0.2em] text-white mb-8">Legal/API</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-500">
+                    <li><a href="#" class="hover:text-[#D9FF00]">Nutrition Disclaimer</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Privacy Protocol</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">API Documentation</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">System Status</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto mt-24 pt-12 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-8">
+            <span class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">© 2024 AUTHORITY NETWORK. BUILT FOR BIOLOGICAL OPTIMIZATION.</span>
+            <div class="flex gap-8 text-[10px] font-black uppercase tracking-widest text-zinc-600">
+                <span>V1.0.4-PROD</span>
+                <span class="text-[#D9FF00]">ALL SYSTEMS OPERATIONAL</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Optional: Interactive feedback for the Decision Engine
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.classList.add('scale-95');
+                setTimeout(() => this.classList.remove('scale-95'), 100);
+            });
+        });
+    </script>
+</body>
+</html>

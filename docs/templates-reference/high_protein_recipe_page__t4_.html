@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T4 Recipe: Lemon Garlic Chicken Bowl | The Grocery Index</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-lime: #D9FF00;
+            --brand-charcoal: #0F0F0F;
+            --brand-gray: #1A1A1A;
+            --ui-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--brand-charcoal);
+            color: #FFFFFF;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-grid {
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--brand-charcoal); }
+        ::-webkit-scrollbar-thumb { background: var(--brand-lime); border-radius: 10px; }
+
+        .hyper-border {
+            position: relative;
+            background: var(--brand-gray);
+            border: 1px solid var(--ui-border);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .hyper-border:hover {
+            border-color: var(--brand-lime);
+            box-shadow: 0 0 30px rgba(217, 255, 0, 0.1);
+        }
+
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--brand-lime);
+            box-shadow: 0 0 15px var(--brand-lime);
+            animation: scan 4s linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        .glass-nav {
+            backdrop-filter: blur(12px);
+            background: rgba(15, 15, 15, 0.8);
+            border-bottom: 1px solid var(--ui-border);
+        }
+
+        .macro-card {
+            background: linear-gradient(145deg, #1A1A1A 0%, #0F0F0F 100%);
+            border-left: 4px solid var(--brand-lime);
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;xs="<svg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'n\'><feTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/></filter><rect width=\'100%\' height=\'100%\' filter=\'url(%23n)\' opacity=\'0.05\'/></svg>"');
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .pe-ratio-gauge {
+            background: conic-gradient(from 180deg at 50% 50%, #D9FF00 var(--percentage), #1A1A1A 0);
+        }
+
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-grid" x-data="{ dietView: 'original', servings: 4 }">
+
+    <div class="noise-overlay"></div>
+
+    <!-- STICKY HEADER -->
+    <header class="glass-nav sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-8">
+            <a href="/" class="flex flex-col leading-none">
+                <span class="text-[10px] uppercase tracking-[0.3em] text-zinc-500 mb-1 font-bold">Authority Network</span>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-[#D9FF00] rounded-full"></div>
+                    <span class="text-xl font-black tracking-tighter italic">INDEX.01</span>
+                </div>
+            </a>
+            <nav class="hidden md:flex space-x-6 text-xs font-bold uppercase tracking-widest text-zinc-400">
+                <a href="/meal-prep/" class="hover:text-white transition-colors">Meal Prep</a>
+                <span class="text-zinc-800">/</span>
+                <a href="/high-protein/" class="hover:text-white transition-colors">High Protein</a>
+            </nav>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <div class="hidden lg:block bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase">
+                Schema: <span class="text-[#D9FF00]">Recipe + HowTo</span>
+            </div>
+            <button class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center border border-zinc-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- RECIPE HERO: TECHNICAL BREAKDOWN -->
+        <section class="border-b border-zinc-900">
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+                <!-- Data Panel -->
+                <div class="p-8 md:p-16 flex flex-col justify-center border-r border-zinc-900">
+                    <div class="flex gap-3 mb-6">
+                        <span class="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] font-black uppercase tracking-widest text-[#D9FF00]">High-Protein</span>
+                        <span class="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] font-black uppercase tracking-widest text-zinc-400">One-Pan</span>
+                        <span class="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] font-black uppercase tracking-widest text-zinc-400">Low-Carb</span>
+                    </div>
+                    
+                    <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-6">LEMON GARLIC<br>CHICKEN BOWL</h1>
+                    <p class="text-zinc-500 font-medium text-lg max-w-md mb-10">A high-yield, cold-stable meal prep staple optimized for maximum protein density and 5-day storage life.</p>
+
+                    <!-- Core Macro Board -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+                        <div class="macro-card p-4">
+                            <span class="block text-[10px] font-black uppercase text-zinc-500 mb-1">Protein</span>
+                            <span class="text-2xl font-black">48g</span>
+                        </div>
+                        <div class="macro-card p-4">
+                            <span class="block text-[10px] font-black uppercase text-zinc-500 mb-1">Calories</span>
+                            <span class="text-2xl font-black text-zinc-400">420</span>
+                        </div>
+                        <div class="macro-card p-4">
+                            <span class="block text-[10px] font-black uppercase text-zinc-500 mb-1">P:E Ratio</span>
+                            <span class="text-2xl font-black text-[#D9FF00]">2.4</span>
+                        </div>
+                        <div class="macro-card p-4">
+                            <span class="block text-[10px] font-black uppercase text-zinc-500 mb-1">Time</span>
+                            <span class="text-2xl font-black text-zinc-400">25m</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-6">
+                        <div class="flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2">
+                            <span class="text-[10px] font-black uppercase text-zinc-500">Yield</span>
+                            <div class="flex items-center gap-3">
+                                <button @click="servings--" :disabled="servings <= 1" class="text-zinc-500 hover:text-white">-</button>
+                                <span class="text-sm font-black w-4 text-center" x-text="servings"></span>
+                                <button @click="servings++" class="text-zinc-500 hover:text-white">+</button>
+                            </div>
+                        </div>
+                        <button class="bg-[#D9FF00] text-black px-8 py-3 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform">Save Protocol</button>
+                    </div>
+                </div>
+
+                <!-- Visual Asset -->
+                <div class="relative group h-[500px] lg:h-auto overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&q=80&w=1200" 
+                         class="absolute inset-0 w-full h-full object-cover grayscale-[0.2] group-hover:scale-110 transition-transform duration-1000" alt="Lemon Garlic Chicken">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    <div class="scanner-line"></div>
+                    
+                    <!-- P:E Ratio Gauge Overlay -->
+                    <div class="absolute bottom-10 right-10 flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-full border-4 border-zinc-800 flex items-center justify-center p-1">
+                            <div class="pe-ratio-gauge w-full h-full rounded-full flex items-center justify-center" style="--percentage: 75%">
+                                <div class="bg-zinc-950 w-[85%] h-[85%] rounded-full flex flex-col items-center justify-center">
+                                    <span class="text-xs font-black leading-none">P:E</span>
+                                    <span class="text-lg font-black text-[#D9FF00]">2.4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="mt-2 text-[8px] font-black uppercase tracking-[0.3em] text-zinc-400">Elite Density</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INGREDIENTS & SWAP ENGINE -->
+        <section class="max-w-7xl mx-auto py-20 px-6">
+            <div class="flex flex-col lg:flex-row gap-16">
+                
+                <!-- Left: Ingredients List -->
+                <div class="flex-[1.5]">
+                    <div class="flex items-center justify-between mb-8 pb-4 border-b border-zinc-900">
+                        <h3 class="text-3xl font-black tracking-tighter uppercase">Inventory List</h3>
+                        <div class="flex bg-zinc-900 p-1 rounded-lg">
+                            <button @click="dietView = 'original'" :class="dietView === 'original' ? 'bg-zinc-800 text-white' : 'text-zinc-500'" class="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-md transition-all">Original</button>
+                            <button @click="dietView = 'vegan'" :class="dietView === 'vegan' ? 'bg-[#D9FF00] text-black' : 'text-zinc-500'" class="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-md transition-all">Vegan Swap</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                        <!-- Dynamic Alpine-controlled Ingredients -->
+                        <template x-if="dietView === 'original'">
+                            <div class="contents">
+                                <div class="flex items-center justify-between py-4 border-b border-zinc-900">
+                                    <span class="text-sm font-medium"><span class="text-[#D9FF00] font-bold" x-text="2 * servings/4">2</span> lbs Chicken Breast, Diced</span>
+                                    <span class="text-[10px] text-zinc-500 font-bold uppercase">96g Protein</span>
+                                </div>
+                                <div class="flex items-center justify-between py-4 border-b border-zinc-900">
+                                    <span class="text-sm font-medium"><span class="text-[#D9FF00] font-bold" x-text="4 * servings/4">4</span> Cloves Garlic, Minced</span>
+                                    <span class="text-[10px] text-zinc-500 font-bold uppercase">Flavor</span>
+                                </div>
+                                <div class="flex items-center justify-between py-4 border-b border-zinc-900">
+                                    <span class="text-sm font-medium"><span class="text-[#D9FF00] font-bold" x-text="3 * servings/4">3</span> cups Broccoli Florets</span>
+                                    <span class="text-[10px] text-zinc-500 font-bold uppercase">High Fiber</span>
+                                </div>
+                                <div class="flex items-center justify-between py-4 border-b border-zinc-900">
+                                    <span class="text-sm font-medium"><span class="text-[#D9FF00] font-bold" x-text="1 * servings/4">1</span> cup Quinoa, Cooked</span>
+                                    <span class="text-[10px] text-zinc-500 font-bold uppercase">Carb Base</span>
+                                </div>
+                            </div>
+                        </template>
+                        <template x-if="dietView === 'vegan'">
+                            <div class="contents">
+                                <div class="flex items-center justify-between py-4 border-b border-[#D9FF00]/30 bg-[#D9FF00]/5 px-2">
+                                    <span class="text-sm font-medium"><span class="text-[#D9FF00] font-bold" x-text="24 * servings/4">24</span> oz Extra Firm Tofu, Pressed</span>
+                                    <span class="text-[10px] text-[#D9FF00] font-bold uppercase">VEGAN PROTEIN</span>
+                                </div>
+                                <div class="flex items-center justify-between py-4 border-b border-zinc-900 px-2">
+                                    <span class="text-sm font-medium"><span class="text-[#D9FF00] font-bold" x-text="4 * servings/4">4</span> Cloves Garlic, Minced</span>
+                                    <span class="text-[10px] text-zinc-500 font-bold uppercase">Flavor</span>
+                                </div>
+                                <div class="flex items-center justify-between py-4 border-b border-zinc-900 px-2">
+                                    <span class="text-sm font-medium"><span class="text-[#D9FF00] font-bold" x-text="3 * servings/4">3</span> cups Broccoli Florets</span>
+                                    <span class="text-[10px] text-zinc-500 font-bold uppercase">High Fiber</span>
+                                </div>
+                                <div class="flex items-center justify-between py-4 border-b border-zinc-900 px-2">
+                                    <span class="text-sm font-medium"><span class="text-[#D9FF00] font-bold" x-text="2 * servings/4">2</span> tbsp Nutritional Yeast</span>
+                                    <span class="text-[10px] text-[#D9FF00] font-bold uppercase">Umami</span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <!-- MEAL PREP NOTES -->
+                    <div class="mt-12 p-8 bg-zinc-900 rounded-3xl border border-zinc-800 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10">
+                            <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M20 3H4v2h16V3zm-2 14v2H6v-2h12zm2-10H4v2h16V7zm-2 4v2H6v-2h12z"/></svg>
+                        </div>
+                        <h4 class="text-xs font-black tracking-[0.4em] text-[#D9FF00] uppercase mb-4">Meal Prep Logistics</h4>
+                        <ul class="space-y-4">
+                            <li class="flex gap-4">
+                                <div class="w-1.5 h-1.5 bg-[#D9FF00] rounded-full mt-1.5"></div>
+                                <p class="text-sm text-zinc-400"><strong class="text-white">Storage:</strong> Use airtight glass containers. Lasts 5 days in refrigeration (40°F / 4°C).</p>
+                            </li>
+                            <li class="flex gap-4">
+                                <div class="w-1.5 h-1.5 bg-[#D9FF00] rounded-full mt-1.5"></div>
+                                <p class="text-sm text-zinc-400"><strong class="text-white">Batching:</strong> Double the recipe to hit 8 portions. Use two sheet pans to avoid steaming the vegetables.</p>
+                            </li>
+                            <li class="flex gap-4">
+                                <div class="w-1.5 h-1.5 bg-[#D9FF00] rounded-full mt-1.5"></div>
+                                <p class="text-sm text-zinc-400"><strong class="text-white">Reheat:</strong> Microwave for 90s at 70% power to prevent chicken from drying out.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Right: Step-by-Step Logic -->
+                <div class="flex-1">
+                    <h3 class="text-3xl font-black tracking-tighter uppercase mb-8">Execution Steps</h3>
+                    <div class="space-y-8">
+                        <div class="flex gap-6 group">
+                            <span class="text-4xl font-black text-zinc-800 group-hover:text-[#D9FF00] transition-colors tabular-nums">01</span>
+                            <div>
+                                <h5 class="text-lg font-black uppercase mb-2">The Macro Prep</h5>
+                                <p class="text-sm text-zinc-500 leading-relaxed">Dice chicken into uniform 1-inch cubes. Pat dry with paper towels to ensure browning. Toss with lemon juice, zest, and half the garlic.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6 group">
+                            <span class="text-4xl font-black text-zinc-800 group-hover:text-[#D9FF00] transition-colors tabular-nums">02</span>
+                            <div>
+                                <h5 class="text-lg font-black uppercase mb-2">High Heat Sear</h5>
+                                <p class="text-sm text-zinc-500 leading-relaxed">Heat a large non-stick skillet over medium-high. Add chicken in a single layer. Do not crowd. Cook for 4-5 mins until internal temp hits 165°F.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6 group">
+                            <span class="text-4xl font-black text-zinc-800 group-hover:text-[#D9FF00] transition-colors tabular-nums">03</span>
+                            <div>
+                                <h5 class="text-lg font-black uppercase mb-2">Veggie Steam-Sauté</h5>
+                                <p class="text-sm text-zinc-500 leading-relaxed">Remove chicken. Add broccoli and 2 tbsp water. Cover for 2 mins to steam, then remove lid, add remaining garlic, and sauté until tender-crisp.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6 group">
+                            <span class="text-4xl font-black text-zinc-800 group-hover:text-[#D9FF00] transition-colors tabular-nums">04</span>
+                            <div>
+                                <h5 class="text-lg font-black uppercase mb-2">The Assembly</h5>
+                                <p class="text-sm text-zinc-500 leading-relaxed">Divide quinoa into 4 containers. Top with chicken and broccoli. Garnish with fresh parsley and an extra squeeze of lemon.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SOCIAL PROOF / TRUST -->
+                    <div class="mt-12 border-t border-zinc-900 pt-8">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="flex -space-x-2">
+                                <div class="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-950"></div>
+                                <div class="w-8 h-8 rounded-full bg-zinc-700 border border-zinc-950"></div>
+                                <div class="w-8 h-8 rounded-full bg-zinc-600 border border-zinc-950"></div>
+                            </div>
+                            <span class="text-[10px] font-black uppercase text-zinc-500">1,402 community preps this week</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INTERNAL LINK GRAPH: THE RAILS -->
+        <section class="border-y border-zinc-900 bg-zinc-950 py-16">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <div>
+                        <h6 class="text-[10px] font-black uppercase tracking-widest text-[#D9FF00] mb-6">Primary Category</h6>
+                        <a href="/high-protein/method/one-pan/" class="group block hyper-border p-6 rounded-2xl">
+                            <span class="text-xs font-black text-zinc-500 block mb-2 uppercase">Explore more</span>
+                            <span class="text-2xl font-black group-hover:text-[#D9FF00] transition-colors">One-Pan Protein</span>
+                        </a>
+                    </div>
+                    <div>
+                        <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Related Ingredients</h6>
+                        <div class="flex flex-wrap gap-2">
+                            <a href="/ingredient/chicken/" class="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] font-bold uppercase hover:border-white transition-colors">Chicken Breast</a>
+                            <a href="/ingredient/broccoli/" class="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] font-bold uppercase hover:border-white transition-colors">Broccoli</a>
+                            <a href="/ingredient/quinoa/" class="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] font-bold uppercase hover:border-white transition-colors">Quinoa</a>
+                        </div>
+                    </div>
+                    <div>
+                        <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Full Execution Plans</h6>
+                        <a href="/plans/5-day-high-protein-meal-prep/" class="flex items-center justify-between p-4 bg-zinc-900 rounded-xl hover:bg-zinc-800 transition-colors">
+                            <span class="text-xs font-black uppercase">5-Day High Protein Prep</span>
+                            <svg class="w-4 h-4 text-[#D9FF00]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER: SYSTEM DIRECTORY -->
+    <footer class="bg-black border-t border-zinc-900 py-20 px-6 mt-auto">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-2 mb-6">
+                    <div class="w-3 h-3 bg-[#D9FF00] rounded-full"></div>
+                    <span class="text-xl font-black tracking-tighter italic text-white">INDEX.01</span>
+                </div>
+                <p class="text-zinc-500 text-sm max-w-xs mb-8">Universal taxonomy for meal-prep logistics and protein optimization.</p>
+                <div class="flex space-x-4">
+                    <div class="w-10 h-10 border border-zinc-800 rounded flex items-center justify-center text-zinc-500 hover:text-white transition-colors cursor-pointer">IG</div>
+                    <div class="w-10 h-10 border border-zinc-800 rounded flex items-center justify-center text-zinc-500 hover:text-white transition-colors cursor-pointer">TW</div>
+                </div>
+            </div>
+            
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Taxonomy</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-400">
+                    <li><a href="#" class="hover:text-[#D9FF00]">Meal-Prep Hub</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">High-Protein Hub</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Store Index</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Constraints</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-400">
+                    <li><a href="#" class="hover:text-[#D9FF00]">Low Sodium</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">No Microwave</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Budget Friendly</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Retails</h6>
+                <ul class="space-y-4 text-xs font-bold text-zinc-400">
+                    <li><a href="#" class="hover:text-[#D9FF00]">Trader Joe's</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Aldi</a></li>
+                    <li><a href="#" class="hover:text-[#D9FF00]">Costco</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4">
+            <span class="text-[10px] font-bold text-zinc-700 uppercase tracking-widest">© 2024 Index Authority Network. Build v2.4.1</span>
+            <div class="flex gap-8">
+                <a href="#" class="text-[10px] font-bold text-zinc-700 uppercase tracking-widest hover:text-white">API Access</a>
+                <a href="#" class="text-[10px] font-bold text-zinc-700 uppercase tracking-widest hover:text-white">Data Sources</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Magnetic hyper-border effect
+        document.querySelectorAll('.hyper-border').forEach(btn => {
+            btn.addEventListener('mousemove', e => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                btn.style.setProperty('--mouse-x', `${x}px`);
+                btn.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>
