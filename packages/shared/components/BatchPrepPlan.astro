@@ -32,7 +32,14 @@ const {
   title, description, canonicalUrl, planName, planId = 'P5-001',
   totalMeals = 15, prepTime = '90 min', weeklyBudget = '$52', avgProtein = '42g',
   days = [], shoppingList = [], prepSteps = [],
+  site,
 } = Astro.props;
+
+// Auto-detect site for cross-hub links
+const siteHref = Astro.site?.href || Astro.site?.toString() || '';
+const detectedSite = site || (siteHref.includes('proteinmeals') ? 'proteinmeals' : 'mealprepideas');
+const isProteinmeals = detectedSite === 'proteinmeals';
+const mpBase = isProteinmeals ? 'https://mealprepideas.co' : '';
 
 const daysJson = JSON.stringify(days);
 
@@ -62,7 +69,7 @@ const structuredData = JSON.stringify({
   <main class="flex-grow" x-data={`{ activeDay: 1, showFullList: false, days: ${daysJson} }`}>
     <BreadcrumbNav items={[
       { label: 'Home', href: '/' },
-      { label: 'Meal Prep', href: '/meal-prep/' },
+      { label: 'Meal Prep', href: `${mpBase}/meal-prep/` },
       { label: planName },
     ]} />
 

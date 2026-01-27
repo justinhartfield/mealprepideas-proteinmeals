@@ -6,3 +6,4 @@ export { recipes, type Recipe } from './recipes';
 export { plans, type MealPlan } from './plans';
 export { stores, type RetailerData } from './stores';
 export { facetContent, type FacetPageContent } from './facetContent';
+export { personaContent, getPersonaContent, type PersonaContent } from './personas';

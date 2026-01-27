@@ -17,7 +17,14 @@ interface Props {
   site?: "mealprepideas" | "proteinmeals";
 }
 
-const { recipe, relatedRecipes = [] } = Astro.props;
+const { recipe, relatedRecipes = [], site } = Astro.props;
+
+// Auto-detect site and cross-hub base URL
+const siteHref = Astro.site?.href || Astro.site?.toString() || '';
+const detectedSite = site || (siteHref.includes('proteinmeals') ? 'proteinmeals' : 'mealprepideas');
+const isProteinmeals = detectedSite === 'proteinmeals';
+const mpBase = isProteinmeals ? 'https://mealprepideas.co' : '';
+const hpBase = isProteinmeals ? '' : 'https://proteinmeals.co';
 
 // Build image path — local image for this recipe slug
 const localImagePath = `/images/recipes/${recipe.slug}.jpg`;
@@ -99,8 +106,8 @@ const structuredData = JSON.stringify({
   <HeaderNav
     statusText="Schema: Recipe + HowTo"
     navLinks={[
-      { href: '/meal-prep/', label: 'Meal Prep' },
-      { href: '/high-protein/', label: 'High Protein' },
+      { href: `${mpBase}/meal-prep/`, label: 'Meal Prep' },
+      { href: `${hpBase}/high-protein/`, label: 'High Protein' },
     ]}
   />
 

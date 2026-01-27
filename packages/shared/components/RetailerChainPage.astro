@@ -129,7 +129,7 @@ const combinedSchemaJson = JSON.stringify(allSchemas);
   }`}>
     <BreadcrumbNav items={[
       { label: 'Home', href: '/' },
-      { label: isStore ? 'Meal Prep Hub' : 'High Protein Hub', href: isStore ? '/meal-prep/' : '/high-protein/' },
+      { label: hubPath === '/meal-prep/' ? 'Meal Prep Hub' : 'High Protein Hub', href: hubPath },
       { label: entityName },
     ]} />
 

@@ -11,6 +11,7 @@ import RetailerChainPage from '@mealprepideas/shared/components/RetailerChainPag
 import { generateSingleFacetPaths, slugToDisplay } from '@mealprepideas/shared/utils/urls';
 import { getRecipesMatchingAnyFacet, getFacetContent, buildFacetKey } from '@mealprepideas/shared/utils/content';
 import { stores } from '@mealprepideas/shared/data/content/stores';
+import { personaContent } from '@mealprepideas/shared/data/content/personas';
 import type { FacetKey } from '@mealprepideas/shared/data/taxonomy';
 
 export function getStaticPaths() {
@@ -30,6 +31,7 @@ const isStoreOrChain = facetType === 'store' || facetType === 'chain';
 
 // --- PERSONA RENDERING ---
 let personaRecipes: any[] = [];
+const persona = isPersona ? personaContent.find(p => p.slug === facetValue) : undefined;
 if (isPersona) {
   const matchingRecipes = getRecipesMatchingAnyFacet('meal-prep', 'persona', facetValue!);
   personaRecipes = matchingRecipes.map((r, i) => ({
@@ -113,9 +115,12 @@ const exploreColumns = [
     description={`Complete meal prep guide for ${displayValue.toLowerCase()}. Recipes, plans, and tips tailored to your needs.`}
     canonicalUrl={`https://mealprepideas.co/meal-prep/persona/${facetValue}/`}
     conditionName={displayValue}
-    conditionType="persona"
-    definition={`Comprehensive meal prep guide tailored for ${displayValue.toLowerCase()}. Browse curated recipes, weekly plans, and nutrition tips designed specifically for your lifestyle.`}
+    conditionType={persona?.conditionType || 'persona'}
+    definition={persona?.definition || `Comprehensive meal prep guide tailored for ${displayValue.toLowerCase()}. Browse curated recipes, weekly plans, and nutrition tips designed specifically for your lifestyle.`}
+    disclaimer={persona?.disclaimer}
+    nutritionRules={persona?.nutritionRules || []}
     recipes={personaRecipes}
+    faqs={persona?.faqs || []}
   />
 ) : isStoreOrChain && storeData ? (
   <RetailerChainPage

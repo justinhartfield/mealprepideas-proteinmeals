@@ -79,7 +79,7 @@ const proteinColumns = [
 ];
 
 // Auto-detect site from the Astro site config URL
-const siteUrl = Astro.site?.hostname || '';
+const siteUrl = Astro.site?.href || Astro.site?.toString() || Astro.site?.hostname || '';
 const autoSite = siteUrl.includes('proteinmeals') ? 'proteinmeals' : 'mealprepideas';
 
 const {
