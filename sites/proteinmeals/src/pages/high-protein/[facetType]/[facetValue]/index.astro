@@ -1,12 +1,16 @@
 ---
 /**
  * proteinmeals.co/high-protein/[facetType]/[facetValue]/ — Single Facet Category (T2)
- * Uses DietCategory or MethodCategory (NEW components)
+ * Renders PersonaConditionPage for persona, RetailerChainPage for store/chain,
+ * MethodCategory for method, DietCategory for everything else.
  */
 import DietCategory from '@mealprepideas/shared/components/DietCategory.astro';
 import MethodCategory from '@mealprepideas/shared/components/MethodCategory.astro';
+import PersonaConditionPage from '@mealprepideas/shared/components/PersonaConditionPage.astro';
+import RetailerChainPage from '@mealprepideas/shared/components/RetailerChainPage.astro';
 import { generateSingleFacetPaths, slugToDisplay } from '@mealprepideas/shared/utils/urls';
 import { getRecipesMatchingAnyFacet, getFacetContent, buildFacetKey } from '@mealprepideas/shared/utils/content';
+import { stores } from '@mealprepideas/shared/data/content/stores';
 import type { FacetKey } from '@mealprepideas/shared/data/taxonomy';
 
 export function getStaticPaths() {
@@ -21,7 +25,38 @@ const displayValue = slugToDisplay(facetValue!);
 const displayType = slugToDisplay(facetType!);
 
 const isMethod = facetType === 'method';
+const isPersona = facetType === 'persona';
+const isStoreOrChain = facetType === 'store' || facetType === 'chain';
 
+// --- PERSONA RENDERING ---
+let personaRecipes: any[] = [];
+if (isPersona) {
+  const matchingRecipes = getRecipesMatchingAnyFacet('high-protein', 'persona', facetValue!);
+  personaRecipes = matchingRecipes.map((r, i) => ({
+    id: i + 1,
+    title: r.title,
+    slug: r.slug,
+    protein: `${r.protein}g`,
+    cal: `${r.calories}`,
+    tags: Object.values(r.facets).filter(Boolean) as string[],
+    img: '/images/recipes/' + r.slug + '.jpg',
+  }));
+}
+
+// --- STORE/CHAIN RENDERING ---
+let storeData: typeof stores[number] | undefined;
+if (isStoreOrChain) {
+  storeData = stores.find(s => s.slug === facetValue);
+}
+
+function calculateAvgPE(topPicks: typeof stores[number]['topPicks']): string {
+  const valid = topPicks.filter(p => p.protein && p.calories && p.calories > 0);
+  if (valid.length === 0) return '—';
+  const avg = valid.reduce((sum, p) => sum + (p.protein! / (p.calories! / 100)), 0) / valid.length;
+  return avg.toFixed(1);
+}
+
+// --- DEFAULT (Diet/Method) RENDERING ---
 // Look up real content data
 const seoContent = getFacetContent(buildFacetKey(facetType!, facetValue!), 'high-protein');
 const realRecipes = getRecipesMatchingAnyFacet('high-protein', facetType!, facetValue!);
@@ -72,7 +107,43 @@ const exploreColumns = [
 ];
 ---
 
-{isMethod ? (
+{isPersona ? (
+  <PersonaConditionPage
+    title={`High Protein for ${displayValue} | ProteinMeals.co`}
+    description={`High protein meal guide for ${displayValue.toLowerCase()}. Recipes, macros, and nutrition tips tailored to your needs.`}
+    canonicalUrl={`https://proteinmeals.co/high-protein/persona/${facetValue}/`}
+    conditionName={displayValue}
+    conditionType="persona"
+    definition={`High protein nutrition guide tailored for ${displayValue.toLowerCase()}. Browse curated recipes, macro breakdowns, and expert tips designed specifically for your goals.`}
+    recipes={personaRecipes}
+  />
+) : isStoreOrChain && storeData ? (
+  <RetailerChainPage
+    title={`${storeData.name} High Protein Guide | ProteinMeals.co`}
+    description={storeData.description}
+    canonicalUrl={`https://proteinmeals.co/high-protein/${facetType}/${facetValue}/`}
+    entityName={storeData.name}
+    entityType={storeData.type === 'grocery' ? 'store' : 'chain'}
+    tagline={storeData.tagline}
+    entityDescription={storeData.description}
+    totalSKUs={storeData.topPicks.length}
+    avgPE={calculateAvgPE(storeData.topPicks)}
+    skus={storeData.topPicks.map((pick, i) => ({
+      id: `SKU-${String(i + 1).padStart(3, '0')}`,
+      name: pick.name,
+      category: pick.category,
+      protein: pick.protein ? `${pick.protein}g` : '—',
+      cals: pick.calories ? `${pick.calories}` : '—',
+      price: pick.price || '—',
+      peScore: pick.protein && pick.calories ? (pick.protein / (pick.calories / 100)).toFixed(1) : '—',
+    }))}
+    topPicks={storeData.topPicks.slice(0, 3).map(p => ({
+      name: p.name,
+      protein: p.protein ? `${p.protein}g` : '—',
+      reason: p.tip,
+    }))}
+  />
+) : isMethod ? (
   <MethodCategory
     hub="high-protein"
     facetType={facetType!}

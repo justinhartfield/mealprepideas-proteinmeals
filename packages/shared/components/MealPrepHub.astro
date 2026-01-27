@@ -7,6 +7,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import FacetNav from './FacetNav.astro';
+import ExploreByBlock from './ExploreByBlock.astro';
 import { recipes } from '../data/content/recipes';
 import { plans } from '../data/content/plans';
 import {
@@ -74,6 +75,7 @@ const facetGroups = [
       { label: 'Work / Office', href: '/meal-prep/persona/work/' },
       { label: 'College Student', href: '/meal-prep/persona/college/' },
       { label: 'Picky Eaters', href: '/meal-prep/persona/picky-eaters/' },
+      { label: 'Kids', href: '/meal-prep/persona/kids/' },
       { label: 'Toddlers', href: '/meal-prep/persona/toddler/' },
       { label: 'Pregnancy', href: '/meal-prep/persona/pregnancy/' },
       { label: 'Postpartum', href: '/meal-prep/persona/postpartum/' },
@@ -93,18 +95,96 @@ const facetGroups = [
   },
   {
     title: 'By Ingredient',
-    items: ['Chicken', 'Ground-Beef', 'Ground-Turkey', 'Salmon', 'Shrimp', 'Steak']
+    items: ['Chicken', 'Ground-Beef', 'Ground-Turkey', 'Salmon', 'Shrimp', 'Steak', 'Salad']
       .map(v => ({ label: v, href: `/meal-prep/ingredient/${v.toLowerCase()}/` })),
   },
   {
     title: 'By Constraint',
-    items: ['High-Fiber', 'Budget', 'Quick', 'Simple', 'For-The-Week', 'Cheap']
+    items: ['High-Fiber', 'Low-Sodium', 'Low-Fat', 'Budget', 'Cheap', 'Quick', 'Simple', 'For-The-Week', 'No-Microwave']
       .map(v => ({ label: v, href: `/meal-prep/constraint/${v.toLowerCase()}/` })),
   },
   {
-    title: 'By Store',
-    items: ["Trader Joe's", 'Costco', 'Walmart', 'Aldi', 'Whole Foods']
-      .map(v => ({ label: v, href: `/stores/${v.toLowerCase().replace(/['\s]+/g, '-').replace(/--/g, '-')}/` })),
+    title: 'Popular Stores',
+    items: [
+      { label: "Trader Joe's", href: '/meal-prep/store/trader-joes/' },
+      { label: 'Costco', href: '/meal-prep/store/costco/' },
+      { label: 'Walmart', href: '/meal-prep/store/walmart/' },
+      { label: 'Aldi', href: '/meal-prep/store/aldi/' },
+      { label: 'Whole Foods', href: '/meal-prep/store/whole-foods/' },
+      { label: 'Kroger', href: '/meal-prep/store/kroger/' },
+      { label: 'Publix', href: '/meal-prep/store/publix/' },
+      { label: 'Target', href: '/meal-prep/store/target/' },
+      { label: "Sam's Club", href: '/meal-prep/store/sams-club/' },
+      { label: 'H-E-B', href: '/meal-prep/store/heb/' },
+    ],
+  },
+  {
+    title: 'Popular Chains',
+    items: [
+      { label: 'Chick-fil-A', href: '/meal-prep/chain/chick-fil-a/' },
+      { label: "McDonald's", href: '/meal-prep/chain/mcdonalds/' },
+      { label: 'Chipotle', href: '/meal-prep/chain/chipotle/' },
+      { label: 'Panera', href: '/meal-prep/chain/panera/' },
+      { label: 'Subway', href: '/meal-prep/chain/subway/' },
+      { label: 'Taco Bell', href: '/meal-prep/chain/taco-bell/' },
+      { label: "Wendy's", href: '/meal-prep/chain/wendys/' },
+      { label: 'Sweetgreen', href: '/meal-prep/chain/sweetgreen/' },
+    ],
+  },
+];
+
+// ExploreByBlock columns for additional internal links on the hub
+const exploreColumns = [
+  {
+    title: 'By Meal',
+    links: [
+      { label: 'Breakfast Prep', href: '/meal-prep/meal/breakfast/' },
+      { label: 'Lunch Prep', href: '/meal-prep/meal/lunch/' },
+      { label: 'Dinner Prep', href: '/meal-prep/meal/dinner/' },
+      { label: 'Snacks Prep', href: '/meal-prep/meal/snacks/' },
+    ],
+  },
+  {
+    title: 'By Method',
+    links: [
+      { label: 'Crockpot', href: '/meal-prep/method/crockpot/' },
+      { label: 'Slow Cooker', href: '/meal-prep/method/slow-cooker/' },
+      { label: 'Instant Pot', href: '/meal-prep/method/instant-pot/' },
+      { label: 'Air Fryer', href: '/meal-prep/method/air-fryer/' },
+      { label: 'Sheet Pan', href: '/meal-prep/method/sheet-pan/' },
+      { label: 'Microwave', href: '/meal-prep/method/microwave/' },
+      { label: 'No Cook', href: '/meal-prep/method/no-cook/' },
+      { label: 'Freezer', href: '/meal-prep/method/freezer/' },
+      { label: 'One Pan', href: '/meal-prep/method/one-pan/' },
+      { label: 'Grill', href: '/meal-prep/method/grill/' },
+      { label: 'Oven', href: '/meal-prep/method/oven/' },
+    ],
+  },
+  {
+    title: 'By Diet',
+    links: [
+      { label: 'Vegan', href: '/meal-prep/diet/vegan/' },
+      { label: 'Vegetarian', href: '/meal-prep/diet/vegetarian/' },
+      { label: 'Low Carb', href: '/meal-prep/diet/low-carb/' },
+      { label: 'Keto', href: '/meal-prep/diet/keto/' },
+      { label: 'Low Calorie', href: '/meal-prep/diet/low-calorie/' },
+      { label: 'Gluten Free', href: '/meal-prep/diet/gluten-free/' },
+      { label: 'Dairy Free', href: '/meal-prep/diet/dairy-free/' },
+    ],
+  },
+  {
+    title: 'By Goal & Constraint',
+    links: [
+      { label: 'Weight Loss', href: '/meal-prep/goal/weight-loss/' },
+      { label: 'Muscle Gain', href: '/meal-prep/goal/muscle-gain/' },
+      { label: 'Healthy', href: '/meal-prep/goal/healthy/' },
+      { label: 'Budget', href: '/meal-prep/constraint/budget/' },
+      { label: 'Quick', href: '/meal-prep/constraint/quick/' },
+      { label: 'Simple', href: '/meal-prep/constraint/simple/' },
+      { label: 'For The Week', href: '/meal-prep/constraint/for-the-week/' },
+      { label: 'High Fiber', href: '/meal-prep/constraint/high-fiber/' },
+      { label: 'No Microwave', href: '/meal-prep/constraint/no-microwave/' },
+    ],
   },
 ];
 
@@ -428,6 +508,9 @@ const structuredData = JSON.stringify({
 
     <!-- FACET MEGA-NAV -->
     <FacetNav layout="columns" sectionTitle="Universal Taxonomy" badge="54 Active Dimensions" groups={facetGroups} />
+
+    <!-- EXPLORE BY BLOCKS — Internal link density for T1 hub -->
+    <ExploreByBlock headline="EXPLORE ALL CATEGORIES" subtitle="Full Taxonomy Navigation" columns={exploreColumns} variant="light" />
 
     <!-- DATA STREAM -->
     <section class="py-12 relative" style="background: var(--bg-tertiary); border-bottom: 1px solid var(--border-default);">

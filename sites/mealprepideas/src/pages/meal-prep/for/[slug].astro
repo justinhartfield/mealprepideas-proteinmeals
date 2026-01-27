@@ -1,7 +1,8 @@
 ---
-import PersonaConditionPage from '@mealprepideas/shared/components/PersonaConditionPage.astro';
+/**
+ * mealprepideas.co/meal-prep/for/[slug] — REDIRECT to canonical /meal-prep/persona/[slug]/
+ */
 import { facets } from '@mealprepideas/shared/data/taxonomy';
-import { getRecipesMatchingAnyFacet } from '@mealprepideas/shared/utils/content';
 
 export function getStaticPaths() {
   return facets.persona.values.map(persona => ({
@@ -11,22 +12,18 @@ export function getStaticPaths() {
 }
 
 const { persona } = Astro.props;
-const label = persona.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
-const matchingRecipes = getRecipesMatchingAnyFacet('meal-prep', 'persona', persona);
+const canonicalUrl = `https://mealprepideas.co/meal-prep/persona/${persona}/`;
+const redirectPath = `/meal-prep/persona/${persona}/`;
 ---
-<PersonaConditionPage
-  title={`Meal Prep for ${label} | MealPrepIdeas.co`}
-  description={`Complete meal prep guide for ${label.toLowerCase()}. Recipes, plans, and tips tailored to your needs.`}
-  conditionName={label}
-  conditionType="persona"
-  definition={`Comprehensive meal prep guide tailored for ${label.toLowerCase()}. Browse curated recipes, weekly plans, and nutrition tips designed specifically for your lifestyle.`}
-  recipes={matchingRecipes.map((r, i) => ({
-    id: i + 1,
-    title: r.title,
-    slug: r.slug,
-    protein: `${r.protein}g`,
-    cal: `${r.calories}`,
-    tags: Object.values(r.facets).filter(Boolean) as string[],
-    img: '/images/recipes/' + r.slug + '.jpg',
-  }))}
-/>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href={canonicalUrl} />
+  <meta http-equiv="refresh" content={`0;url=${redirectPath}`} />
+  <title>Redirecting…</title>
+</head>
+<body>
+  <p>Redirecting to <a href={redirectPath}>{redirectPath}</a>…</p>
+</body>
+</html>

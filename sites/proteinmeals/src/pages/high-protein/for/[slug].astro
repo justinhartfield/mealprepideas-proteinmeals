@@ -1,7 +1,8 @@
 ---
-import PersonaConditionPage from '@mealprepideas/shared/components/PersonaConditionPage.astro';
+/**
+ * proteinmeals.co/high-protein/for/[slug] — REDIRECT to canonical /high-protein/persona/[slug]/
+ */
 import { facets } from '@mealprepideas/shared/data/taxonomy';
-import { getRecipesMatchingAnyFacet } from '@mealprepideas/shared/utils/content';
 
 export function getStaticPaths() {
   return facets.persona.values.map(persona => ({
@@ -11,22 +12,18 @@ export function getStaticPaths() {
 }
 
 const { persona } = Astro.props;
-const label = persona.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
-const matchingRecipes = getRecipesMatchingAnyFacet('high-protein', 'persona', persona);
+const canonicalUrl = `https://proteinmeals.co/high-protein/persona/${persona}/`;
+const redirectPath = `/high-protein/persona/${persona}/`;
 ---
-<PersonaConditionPage
-  title={`High Protein for ${label} | ProteinMeals.co`}
-  description={`High protein meal guide for ${label.toLowerCase()}. Recipes, macros, and nutrition tips tailored to your needs.`}
-  conditionName={label}
-  conditionType="persona"
-  definition={`High protein nutrition guide tailored for ${label.toLowerCase()}. Browse curated recipes, macro breakdowns, and expert tips designed specifically for your goals.`}
-  recipes={matchingRecipes.map((r, i) => ({
-    id: i + 1,
-    title: r.title,
-    slug: r.slug,
-    protein: `${r.protein}g`,
-    cal: `${r.calories}`,
-    tags: Object.values(r.facets).filter(Boolean) as string[],
-    img: '/images/recipes/' + r.slug + '.jpg',
-  }))}
-/>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href={canonicalUrl} />
+  <meta http-equiv="refresh" content={`0;url=${redirectPath}`} />
+  <title>Redirecting…</title>
+</head>
+<body>
+  <p>Redirecting to <a href={redirectPath}>{redirectPath}</a>…</p>
+</body>
+</html>

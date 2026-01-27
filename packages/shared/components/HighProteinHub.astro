@@ -7,6 +7,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import FacetNav from './FacetNav.astro';
+import ExploreByBlock from './ExploreByBlock.astro';
 import { recipes } from '../data/content/recipes';
 import { stores } from '../data/content/stores';
 import { plans } from '../data/content/plans';
@@ -52,12 +53,12 @@ const storeCount = getStoreCount();
 const planCount = getPlanCount();
 const fastFoodChainCount = getFastFoodChains().length;
 
-// Store abbreviation badges with links
+// Store abbreviation badges with links (canonical hub paths)
 const storeBadges = [
-  { abbr: 'TJ', slug: 'trader-joes' },
-  { abbr: 'CO', slug: 'costco' },
-  { abbr: 'WM', slug: 'walmart' },
-  { abbr: 'AL', slug: 'aldi' },
+  { abbr: 'TJ', slug: 'trader-joes', href: '/high-protein/store/trader-joes/' },
+  { abbr: 'CO', slug: 'costco', href: '/high-protein/store/costco/' },
+  { abbr: 'WM', slug: 'walmart', href: '/high-protein/store/walmart/' },
+  { abbr: 'AL', slug: 'aldi', href: '/high-protein/store/aldi/' },
 ];
 
 interface Props {
@@ -71,7 +72,9 @@ const { title, description, canonicalUrl } = Astro.props;
 const facetGroups = [
   { title: 'By Diet', items: [
     { label: 'High Protein Vegan', href: '/high-protein/diet/vegan/' },
+    { label: 'Vegetarian Protein', href: '/high-protein/diet/vegetarian/' },
     { label: 'Keto Protein Meals', href: '/high-protein/diet/keto/' },
+    { label: 'Low Carb Protein', href: '/high-protein/diet/low-carb/' },
     { label: 'Low Calorie Bands', href: '/high-protein/diet/low-calorie/' },
     { label: 'Gluten-Free Macros', href: '/high-protein/diet/gluten-free/' },
     { label: 'Dairy-Free Muscle', href: '/high-protein/diet/dairy-free/' },
@@ -79,38 +82,113 @@ const facetGroups = [
   { title: 'By Method', items: [
     { label: 'Air Fryer Protein', href: '/high-protein/method/air-fryer/' },
     { label: 'Slow Cooker Batch', href: '/high-protein/method/slow-cooker/' },
+    { label: 'Crockpot Protein', href: '/high-protein/method/crockpot/' },
     { label: 'Instant Pot High-Pro', href: '/high-protein/method/instant-pot/' },
     { label: 'Microwave Survival', href: '/high-protein/method/microwave/' },
+    { label: 'Sheet Pan Protein', href: '/high-protein/method/sheet-pan/' },
+    { label: 'One Pan Meals', href: '/high-protein/method/one-pan/' },
     { label: 'No-Cook Macros', href: '/high-protein/method/no-cook/' },
+    { label: 'Freezer Protein', href: '/high-protein/method/freezer/' },
+    { label: 'Grill Protein', href: '/high-protein/method/grill/' },
+    { label: 'Oven Protein', href: '/high-protein/method/oven/' },
   ] },
   { title: 'By Constraint', items: [
     { label: 'High Fiber Protein', href: '/high-protein/constraint/high-fiber/' },
     { label: 'Low Sodium Choices', href: '/high-protein/constraint/low-sodium/' },
+    { label: 'Low Fat Protein', href: '/high-protein/constraint/low-fat/' },
     { label: 'Budget Protein Prep', href: '/high-protein/constraint/budget/' },
-    { label: 'Quick/Simple Macros', href: '/high-protein/constraint/quick/' },
+    { label: 'Cheap Protein', href: '/high-protein/constraint/cheap/' },
+    { label: 'Quick Protein', href: '/high-protein/constraint/quick/' },
+    { label: 'Simple Protein', href: '/high-protein/constraint/simple/' },
+    { label: 'For The Week', href: '/high-protein/constraint/for-the-week/' },
     { label: 'No-Microwave Lunch', href: '/high-protein/constraint/no-microwave/' },
   ] },
   { title: 'By Persona', items: [
     { label: 'Office Lunch Prep', href: '/high-protein/persona/work/' },
     { label: 'College Student Gains', href: '/high-protein/persona/college/' },
+    { label: 'Picky Eater Hacks', href: '/high-protein/persona/picky-eaters/' },
+    { label: 'Kids Protein', href: '/high-protein/persona/kids/' },
+    { label: 'Toddler Protein', href: '/high-protein/persona/toddler/' },
+    { label: 'Pregnancy Protein', href: '/high-protein/persona/pregnancy/' },
     { label: 'Postpartum Recovery', href: '/high-protein/persona/postpartum/' },
     { label: 'Bariatric Support', href: '/high-protein/persona/bariatric/' },
-    { label: 'Picky Eater Hacks', href: '/high-protein/persona/picky-eaters/' },
+    { label: 'PCOS Protein', href: '/high-protein/persona/pcos/' },
+    { label: 'Cholesterol Protein', href: '/high-protein/persona/cholesterol/' },
   ] },
   { title: 'By Ingredient', items: [
     { label: 'Chicken Breast Prep', href: '/high-protein/ingredient/chicken/' },
+    { label: 'Ground Beef Protein', href: '/high-protein/ingredient/ground-beef/' },
     { label: 'Ground Turkey Ideas', href: '/high-protein/ingredient/ground-turkey/' },
     { label: 'Wild Salmon Prep', href: '/high-protein/ingredient/salmon/' },
-    { label: 'Lean Steak Meals', href: '/high-protein/ingredient/steak/' },
     { label: 'Shrimp Meals', href: '/high-protein/ingredient/shrimp/' },
+    { label: 'Lean Steak Meals', href: '/high-protein/ingredient/steak/' },
+    { label: 'Salad Protein', href: '/high-protein/ingredient/salad/' },
   ] },
-  { title: 'By Store / Chain', items: [
-    { label: "Trader Joe's List", href: '/stores/trader-joes/' },
-    { label: 'Costco Bulk Protein', href: '/stores/costco/' },
-    { label: 'Aldi Finds Index', href: '/stores/aldi/' },
-    { label: 'Chick-fil-A Guide', href: '/stores/chick-fil-a/' },
-    { label: 'Chipotle Hacks', href: '/stores/chipotle/' },
+  { title: 'Popular Stores', items: [
+    { label: "Trader Joe's", href: '/high-protein/store/trader-joes/' },
+    { label: 'Costco', href: '/high-protein/store/costco/' },
+    { label: 'Walmart', href: '/high-protein/store/walmart/' },
+    { label: 'Aldi', href: '/high-protein/store/aldi/' },
+    { label: 'Whole Foods', href: '/high-protein/store/whole-foods/' },
+    { label: 'Kroger', href: '/high-protein/store/kroger/' },
+    { label: 'Target', href: '/high-protein/store/target/' },
+    { label: 'Sprouts', href: '/high-protein/store/sprouts/' },
   ] },
+  { title: 'Popular Chains', items: [
+    { label: 'Chick-fil-A', href: '/high-protein/chain/chick-fil-a/' },
+    { label: "McDonald's", href: '/high-protein/chain/mcdonalds/' },
+    { label: 'Chipotle', href: '/high-protein/chain/chipotle/' },
+    { label: 'Panera', href: '/high-protein/chain/panera/' },
+    { label: 'Subway', href: '/high-protein/chain/subway/' },
+    { label: 'Sweetgreen', href: '/high-protein/chain/sweetgreen/' },
+    { label: 'CAVA', href: '/high-protein/chain/cava/' },
+    { label: 'Five Guys', href: '/high-protein/chain/five-guys/' },
+  ] },
+];
+
+// ExploreByBlock columns for additional internal links
+const exploreColumns = [
+  {
+    title: 'By Meal',
+    links: [
+      { label: 'Breakfast Protein', href: '/high-protein/meal/breakfast/' },
+      { label: 'Lunch Protein', href: '/high-protein/meal/lunch/' },
+      { label: 'Dinner Protein', href: '/high-protein/meal/dinner/' },
+      { label: 'Protein Snacks', href: '/high-protein/meal/snacks/' },
+    ],
+  },
+  {
+    title: 'By Goal',
+    links: [
+      { label: 'Weight Loss Protein', href: '/high-protein/goal/weight-loss/' },
+      { label: 'Muscle Gain Protein', href: '/high-protein/goal/muscle-gain/' },
+      { label: 'Healthy Protein', href: '/high-protein/goal/healthy/' },
+    ],
+  },
+  {
+    title: 'By Diet',
+    links: [
+      { label: 'Vegan Protein', href: '/high-protein/diet/vegan/' },
+      { label: 'Keto Protein', href: '/high-protein/diet/keto/' },
+      { label: 'Low Carb Protein', href: '/high-protein/diet/low-carb/' },
+      { label: 'Low Calorie', href: '/high-protein/diet/low-calorie/' },
+      { label: 'Gluten Free', href: '/high-protein/diet/gluten-free/' },
+      { label: 'Dairy Free', href: '/high-protein/diet/dairy-free/' },
+      { label: 'Vegetarian', href: '/high-protein/diet/vegetarian/' },
+    ],
+  },
+  {
+    title: 'By Constraint',
+    links: [
+      { label: 'Budget Protein', href: '/high-protein/constraint/budget/' },
+      { label: 'Quick Protein', href: '/high-protein/constraint/quick/' },
+      { label: 'High Fiber', href: '/high-protein/constraint/high-fiber/' },
+      { label: 'Low Sodium', href: '/high-protein/constraint/low-sodium/' },
+      { label: 'Simple Protein', href: '/high-protein/constraint/simple/' },
+      { label: 'For The Week', href: '/high-protein/constraint/for-the-week/' },
+      { label: 'No Microwave', href: '/high-protein/constraint/no-microwave/' },
+    ],
+  },
 ];
 ---
 
@@ -272,7 +350,7 @@ const facetGroups = [
             <div class="flex items-center gap-4">
               <div class="flex -space-x-3">
                 {storeBadges.map(badge => (
-                  <a href={`/stores/${badge.slug}/`} class="w-10 h-10 rounded-full flex items-center justify-center text-[10px] font-bold hover:scale-110 transition-transform"
+                  <a href={badge.href} class="w-10 h-10 rounded-full flex items-center justify-center text-[10px] font-bold hover:scale-110 transition-transform"
                        style="background: var(--bg-tertiary); border: 2px solid var(--bg-primary); color: var(--text-primary);">{badge.abbr}</a>
                 ))}
               </div>
@@ -351,7 +429,7 @@ const facetGroups = [
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <!-- Retail Frozen -->
-          <a href="/stores/trader-joes/" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden">
+          <a href="/high-protein/store/trader-joes/" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden">
             <div class="relative z-10">
               <div class="flex justify-between items-start mb-8">
                 <span class="px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded"
@@ -366,7 +444,7 @@ const facetGroups = [
             </div>
           </a>
           <!-- Fast Food -->
-          <a href="/stores/chick-fil-a/" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden"
+          <a href="/high-protein/chain/chick-fil-a/" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden"
              style="background: var(--bg-tertiary);">
             <div class="relative z-10">
               <div class="flex justify-between items-start mb-8">
@@ -457,6 +535,9 @@ const facetGroups = [
 
     <!-- FACET MEGA-NAV -->
     <FacetNav layout="columns" sectionTitle="Global Taxonomy Explorer" groups={facetGroups} />
+
+    <!-- EXPLORE BY BLOCKS — Internal link density for T1 hub -->
+    <ExploreByBlock headline="EXPLORE ALL CATEGORIES" subtitle="Full Taxonomy Navigation" columns={exploreColumns} variant="light" />
 
     <!-- 5-DAY PROTOCOL -->
     <section class="py-24 overflow-hidden relative" style="background-color: var(--accent-primary); color: var(--text-inverse);">
