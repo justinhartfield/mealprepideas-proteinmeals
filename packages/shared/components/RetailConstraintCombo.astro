@@ -1,7 +1,7 @@
 ---
 /**
  * RetailConstraintCombo — Retail + Constraint Combo (T3)
- * Converted from: retail___constraint_combo__t3_.html
+ * Theme-aware: uses CSS custom properties
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
@@ -30,30 +30,42 @@ const breadcrumbs = [
   { label: `${headline} + ${headlineAccent}` },
 ];
 const itemsJson = JSON.stringify(items);
+
+const faqStructuredData = faqs.length > 0 ? JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(faq => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+}) : null;
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
   <HeaderNav />
 
+  {faqStructuredData && <script type="application/ld+json" set:html={faqStructuredData} />}
+
   <main class="flex-grow" x-data={`{ filter: 'all', faqOpen: null, items: ${itemsJson} }`}>
     <!-- HERO -->
-    <section class="relative pt-20 pb-16 px-6 border-b border-zinc-900">
+    <section class="relative pt-20 pb-16 px-6 border-b" style="border-color: var(--border-default);">
       <div class="max-w-7xl mx-auto">
         <BreadcrumbNav items={breadcrumbs} />
         <div class="grid md:grid-cols-12 gap-12 mt-8">
           <div class="md:col-span-8">
-            <span class="bg-[#D9FF00] text-black text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest inline-block mb-6">T3: Retail × Constraint</span>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest inline-block mb-6" style="background-color: var(--accent-primary); color: var(--text-inverse);">T3: Retail × Constraint</span>
             <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-6">
-              {headline} + <span class="text-[#D9FF00]">{headlineAccent}</span>
+              {headline} + <span style="color: var(--accent-primary);">{headlineAccent}</span>
             </h1>
-            <p class="text-xl text-zinc-400 max-w-2xl leading-relaxed">{subheadline}</p>
+            <p class="text-xl max-w-2xl leading-relaxed" style="color: var(--text-secondary);">{subheadline}</p>
           </div>
           <div class="md:col-span-4">
-            <div class="bg-[#D9FF00] text-black rounded-3xl p-8">
+            <div class="rounded-3xl p-8" style="background-color: var(--accent-primary); color: var(--text-inverse);">
               <h3 class="text-[10px] font-black uppercase tracking-widest mb-6">SKU Summary</h3>
               <div class="text-5xl font-black mb-2">{items.length}</div>
               <span class="text-xs font-bold opacity-70">Verified Products</span>
-              <div class="mt-6 pt-6 border-t border-black/20 text-sm font-bold opacity-70">
+              <div class="mt-6 pt-6 text-sm font-bold opacity-70" style="border-top: 1px solid rgba(0,0,0,0.2);">
                 {retailer && <div>Retailer: {retailer}</div>}
                 {constraint && <div>Filter: {constraint}</div>}
               </div>
@@ -71,7 +83,7 @@ const itemsJson = JSON.stringify(items);
           {['all', 'Poultry', 'Dairy', 'Snacks'].map(f => (
             <button
               x-on:click={`filter = '${f}'`}
-              x-bind:class={`filter === '${f}' ? 'bg-[#D9FF00] text-black' : 'text-zinc-500 bg-zinc-900'`}
+              x-bind:class={`filter === '${f}' ? 'pill-active' : 'theme-pill-inactive'`}
               class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all"
             >{f === 'all' ? 'All' : f}</button>
           ))}
@@ -79,7 +91,7 @@ const itemsJson = JSON.stringify(items);
       </div>
 
       <!-- Header -->
-      <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-zinc-600 border-b border-zinc-800">
+      <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-black uppercase tracking-widest border-b" style="color: var(--text-tertiary); border-color: var(--border-default);">
         <div class="col-span-1">SKU</div>
         <div class="col-span-4">Product</div>
         <div class="col-span-2">Protein</div>
@@ -89,28 +101,28 @@ const itemsJson = JSON.stringify(items);
       </div>
 
       <template x-for="item in items.filter(i => filter === 'all' || i.tag === filter)" x-bind:key="item.id">
-        <div class="data-row grid grid-cols-12 gap-4 px-6 py-5 border-b border-zinc-900 items-center transition-all group cursor-pointer hover:bg-zinc-900/50">
-          <div class="col-span-1 text-[10px] font-black text-zinc-600" x-text="item.id"></div>
+        <div class="data-row grid grid-cols-12 gap-4 px-6 py-5 border-b items-center transition-all group cursor-pointer" style="border-color: var(--border-default);">
+          <div class="col-span-1 text-[10px] font-black" style="color: var(--text-tertiary);" x-text="item.id"></div>
           <div class="col-span-4">
-            <h4 class="font-black tracking-tight text-sm group-hover:text-[#D9FF00] transition-colors" x-text="item.name"></h4>
+            <h4 class="font-black tracking-tight text-sm group-hover-accent-text transition-colors" x-text="item.name"></h4>
           </div>
-          <div class="col-span-2"><span class="text-[#D9FF00] font-black" x-text="item.protein"></span></div>
-          <div class="col-span-2"><span class="font-bold text-zinc-400" x-text="item.cals"></span></div>
-          <div class="col-span-1"><span class="text-xs font-bold text-zinc-500" x-text="item.price"></span></div>
-          <div class="col-span-2"><span class="text-xs font-black text-[#D9FF00]" x-text="item.score"></span></div>
+          <div class="col-span-2"><span class="font-black" style="color: var(--accent-primary);" x-text="item.protein"></span></div>
+          <div class="col-span-2"><span class="font-bold" style="color: var(--text-secondary);" x-text="item.cals"></span></div>
+          <div class="col-span-1"><span class="text-xs font-bold" style="color: var(--text-secondary);" x-text="item.price"></span></div>
+          <div class="col-span-2"><span class="text-xs font-black" style="color: var(--accent-primary);" x-text="item.score"></span></div>
         </div>
       </template>
     </section>
 
     <!-- SIBLINGS -->
     {siblings.length > 0 && (
-      <section class="py-20 px-6 border-t border-zinc-900">
+      <section class="py-20 px-6 border-t" style="border-color: var(--border-default);">
         <div class="max-w-7xl mx-auto">
           <h3 class="text-3xl font-black tracking-tight mb-8">Related Retail Indexes</h3>
           <div class="grid md:grid-cols-4 gap-4">
             {siblings.map(sib => (
-              <a href={sib.href} class="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl hover:border-[#D9FF00] transition-all group">
-                <div class="text-[10px] font-black text-zinc-600 group-hover:text-[#D9FF00] mb-2">{sib.sublabel || 'RELATED'}</div>
+              <a href={sib.href} class="p-6 border rounded-2xl hover-accent-border transition-all group" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+                <div class="text-[10px] font-black group-hover-accent-text mb-2" style="color: var(--text-tertiary);">{sib.sublabel || 'RELATED'}</div>
                 <div class="font-bold text-sm">{sib.label}</div>
               </a>
             ))}
@@ -125,12 +137,12 @@ const itemsJson = JSON.stringify(items);
         <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">FAQ</h4>
         <div class="space-y-4">
           {faqs.map((faq, i) => (
-            <div class="border border-zinc-800 rounded-2xl overflow-hidden">
-              <button x-on:click={`faqOpen === ${i} ? faqOpen = null : faqOpen = ${i}`} class="w-full flex justify-between items-center p-6 text-left hover:bg-zinc-900 transition-colors">
+            <div class="border rounded-2xl overflow-hidden" style="border-color: var(--border-default);">
+              <button x-on:click={`faqOpen === ${i} ? faqOpen = null : faqOpen = ${i}`} class="w-full flex justify-between items-center p-6 text-left hover-bg-secondary transition-colors">
                 <span class="text-sm font-black">{faq.question}</span>
-                <span class="text-2xl font-black text-[#D9FF00]" x-text={`faqOpen === ${i} ? '−' : '+'`}></span>
+                <span class="text-2xl font-black" style="color: var(--accent-primary);" x-text={`faqOpen === ${i} ? '−' : '+'`}></span>
               </button>
-              <div x-show={`faqOpen === ${i}`} x-cloak class="p-6 bg-zinc-900/50 border-t border-zinc-800 text-zinc-400 text-sm leading-relaxed">{faq.answer}</div>
+              <div x-show={`faqOpen === ${i}`} x-cloak class="p-6 border-t text-sm leading-relaxed" style="background-color: color-mix(in srgb, var(--bg-secondary) 50%, transparent); border-color: var(--border-default); color: var(--text-secondary);">{faq.answer}</div>
             </div>
           ))}
         </div>

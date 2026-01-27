@@ -1,6 +1,7 @@
 ---
 /**
  * BreadcrumbNav — Breadcrumb navigation with schema.org BreadcrumbList
+ * Theme-aware: uses CSS custom properties
  */
 interface BreadcrumbItem {
   label: string;
@@ -25,14 +26,14 @@ const structuredData = JSON.stringify({
 });
 ---
 
-<nav class="px-6 py-6 max-w-7xl mx-auto flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-600">
+<nav class="px-6 py-6 max-w-7xl mx-auto flex items-center gap-2 text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">
   {items.map((item, i) => (
     <>
-      {i > 0 && <span class="text-zinc-800">/</span>}
+      {i > 0 && <span style="color: var(--text-tertiary); opacity: 0.5;">/</span>}
       {item.href ? (
-        <a href={item.href} class="hover:text-white transition-colors">{item.label}</a>
+        <a href={item.href} class="hover-text-primary transition-colors">{item.label}</a>
       ) : (
-        <span class="text-[#D9FF00]">{item.label}</span>
+        <span style="color: var(--accent-primary);">{item.label}</span>
       )}
     </>
   ))}

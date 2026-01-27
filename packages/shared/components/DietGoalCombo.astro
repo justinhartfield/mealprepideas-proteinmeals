@@ -1,7 +1,7 @@
 ---
 /**
  * DietGoalCombo — Diet + Goal Combo (T3)
- * Converted from: diet___goal_combo__t3_.html (updated to dark design)
+ * Theme-aware: uses CSS custom properties
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
@@ -30,34 +30,46 @@ const breadcrumbs = [
   { label: `${headline} ${headlineAccent}` },
 ];
 const recipesJson = JSON.stringify(recipes);
+
+const faqStructuredData = faqs.length > 0 ? JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(faq => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+}) : null;
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
   <HeaderNav />
 
+  {faqStructuredData && <script type="application/ld+json" set:html={faqStructuredData} />}
+
   <main class="flex-grow" x-data={`{ filter: 'all', faqOpen: null, recipes: ${recipesJson} }`}>
     <!-- HERO -->
-    <section class="relative pt-20 pb-16 px-6 border-b border-zinc-900">
+    <section class="relative pt-20 pb-16 px-6 border-b" style="border-color: var(--border-default);">
       <div class="max-w-7xl mx-auto">
         <BreadcrumbNav items={breadcrumbs} />
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mt-8">
           <div class="max-w-2xl">
             <div class="flex items-center gap-3 mb-4">
-              <span class="bg-[#D9FF00] text-black text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">T3: Two-Facet Intersection</span>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest" style="background-color: var(--accent-primary); color: var(--text-inverse);">T3: Two-Facet Intersection</span>
             </div>
             <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-6">
-              {headline} <span class="text-[#D9FF00]">{headlineAccent}</span>
+              {headline} <span style="color: var(--accent-primary);">{headlineAccent}</span>
             </h1>
-            <p class="text-xl text-zinc-400 leading-relaxed">{subheadline}</p>
+            <p class="text-xl leading-relaxed" style="color: var(--text-secondary);">{subheadline}</p>
           </div>
-          <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl w-full md:w-64">
-            <div class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4">Macro Intent</div>
+          <div class="border p-6 rounded-3xl w-full md:w-64" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+            <div class="text-[10px] font-black uppercase tracking-widest mb-4" style="color: var(--text-secondary);">Macro Intent</div>
             <div class="flex justify-between items-end mb-2">
               <span class="text-sm font-bold">Protein Min.</span>
-              <span class="text-2xl font-black text-[#D9FF00]">30g</span>
+              <span class="text-2xl font-black" style="color: var(--accent-primary);">30g</span>
             </div>
-            <div class="w-full bg-zinc-800 h-1 rounded-full overflow-hidden">
-              <div class="bg-[#D9FF00] h-full w-[85%]"></div>
+            <div class="w-full h-1 rounded-full overflow-hidden" style="background-color: var(--bg-tertiary);">
+              <div class="h-full w-[85%]" style="background-color: var(--accent-primary);"></div>
             </div>
           </div>
         </div>
@@ -68,21 +80,22 @@ const recipesJson = JSON.stringify(recipes);
     <section class="max-w-7xl mx-auto py-16 px-6 grid md:grid-cols-3 gap-12">
       <div class="md:col-span-2">
         <h3 class="text-2xl font-black mb-6 flex items-center gap-3">
-          <span class="w-8 h-8 rounded-full bg-[#D9FF00] text-black flex items-center justify-center text-sm font-black">?</span>
+          <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-black" style="background-color: var(--accent-primary); color: var(--text-inverse);">?</span>
           The Solution Framework
         </h3>
-        <div class="space-y-6 text-lg text-zinc-400">
+        <div class="space-y-6 text-lg" style="color: var(--text-secondary);">
           <p>{subheadline}</p>
         </div>
       </div>
-      <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
-        <h4 class="text-xs font-black uppercase tracking-widest text-zinc-500 mb-6">Quick Filters</h4>
+      <div class="border rounded-3xl p-8" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+        <h4 class="text-xs font-black uppercase tracking-widest mb-6" style="color: var(--text-secondary);">Quick Filters</h4>
         <div class="flex flex-col gap-2">
           {['all', 'no-cook', 'one-pan', 'air-fryer', 'crockpot'].map(f => (
             <button
               x-on:click={`filter = '${f}'`}
-              x-bind:class={`filter === '${f}' ? 'bg-[#D9FF00] text-black' : 'hover:bg-zinc-800 text-zinc-300'`}
+              x-bind:class={`filter === '${f}' ? 'pill-active' : 'hover-bg-tertiary'`}
               class="w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all"
+              x-bind:style={`filter === '${f}' ? '' : 'color: var(--text-secondary)'`}
             >{f === 'all' ? 'All Protocols' : f.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())}</button>
           ))}
         </div>
@@ -90,35 +103,35 @@ const recipesJson = JSON.stringify(recipes);
     </section>
 
     <!-- RECIPE GRID -->
-    <section class="bg-zinc-950 py-24 px-6 overflow-hidden relative">
+    <section class="py-24 px-6 overflow-hidden relative" style="background-color: var(--bg-primary);">
       <div class="max-w-7xl mx-auto relative z-10">
         <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
           <div>
-            <span class="text-[10px] font-black uppercase tracking-widest text-[#D9FF00] mb-4 block">The Ranking Machine</span>
+            <span class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--accent-primary);">The Ranking Machine</span>
             <h2 class="text-4xl md:text-5xl font-black tracking-tight">Top {headline} <br/>{headlineAccent} Protocols</h2>
           </div>
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <template x-for="(recipe, index) in recipes.filter(r => filter === 'all' || r.method === filter)" x-bind:key="recipe.id">
-            <div class="hyper-border rounded-3xl p-6 group hover:border-[#D9FF00] transition-all cursor-pointer">
+            <div class="hyper-border rounded-3xl p-6 group transition-all cursor-pointer">
               <div class="flex justify-between items-start mb-6">
-                <span class="text-4xl font-black text-zinc-800 group-hover:text-[#D9FF00]/50 transition-colors" x-text="index + 1"></span>
-                <span class="bg-zinc-800 text-[9px] font-black px-2 py-1 rounded uppercase" x-text="recipe.tag"></span>
+                <span class="text-4xl font-black group-hover-accent-opacity transition-colors" style="color: var(--text-tertiary);" x-text="index + 1"></span>
+                <span class="text-[9px] font-black px-2 py-1 rounded uppercase" style="background-color: var(--bg-tertiary);" x-text="recipe.tag"></span>
               </div>
               <h4 class="text-2xl font-bold mb-4" x-text="recipe.title"></h4>
               <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="bg-zinc-950 rounded-xl p-3 border border-zinc-800">
-                  <div class="text-[10px] font-black uppercase text-zinc-500">Protein</div>
-                  <div class="text-lg font-black text-[#D9FF00]" x-text="recipe.protein"></div>
+                <div class="rounded-xl p-3 border" style="background-color: var(--bg-primary); border-color: var(--border-default);">
+                  <div class="text-[10px] font-black uppercase" style="color: var(--text-secondary);">Protein</div>
+                  <div class="text-lg font-black" style="color: var(--accent-primary);" x-text="recipe.protein"></div>
                 </div>
-                <div class="bg-zinc-950 rounded-xl p-3 border border-zinc-800">
-                  <div class="text-[10px] font-black uppercase text-zinc-500">Calories</div>
+                <div class="rounded-xl p-3 border" style="background-color: var(--bg-primary); border-color: var(--border-default);">
+                  <div class="text-[10px] font-black uppercase" style="color: var(--text-secondary);">Calories</div>
                   <div class="text-lg font-black" x-text="recipe.cal"></div>
                 </div>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-xs font-bold text-zinc-600 uppercase tracking-widest" x-text="'Method: ' + recipe.method"></span>
-                <div class="w-8 h-8 rounded-full border border-zinc-700 flex items-center justify-center group-hover:bg-[#D9FF00] group-hover:border-[#D9FF00] transition-all">
+                <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-tertiary);" x-text="'Method: ' + recipe.method"></span>
+                <div class="w-8 h-8 rounded-full border flex items-center justify-center group-hover-accent-bg group-hover-accent-border transition-all" style="border-color: var(--border-default);">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </div>
               </div>
@@ -130,16 +143,16 @@ const recipesJson = JSON.stringify(recipes);
 
     <!-- SIBLINGS / RELATED -->
     {siblings.length > 0 && (
-      <section class="py-24 px-6 border-t border-zinc-900">
+      <section class="py-24 px-6 border-t" style="border-color: var(--border-default);">
         <div class="max-w-7xl mx-auto">
           <div class="mb-12">
-            <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">Related Systems</span>
+            <span class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-secondary);">Related Systems</span>
             <h3 class="text-3xl font-black tracking-tight">Explore Sibling Nodes.</h3>
           </div>
           <div class="grid md:grid-cols-4 gap-4">
             {siblings.map(sib => (
-              <a href={sib.href} class="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl hover:border-[#D9FF00] transition-all group">
-                <div class="text-[10px] font-black text-zinc-600 group-hover:text-[#D9FF00] mb-2">{sib.sublabel || 'NEXT FACET'}</div>
+              <a href={sib.href} class="p-6 border rounded-2xl hover-accent-border transition-all group" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+                <div class="text-[10px] font-black group-hover-accent-text mb-2" style="color: var(--text-tertiary);">{sib.sublabel || 'NEXT FACET'}</div>
                 <div class="font-bold text-sm">{sib.label}</div>
               </a>
             ))}
@@ -154,12 +167,12 @@ const recipesJson = JSON.stringify(recipes);
         <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">TECHNICAL FAQ</h4>
         <div class="space-y-4">
           {faqs.map((faq, index) => (
-            <div class="border border-zinc-800 rounded-2xl overflow-hidden">
-              <button x-on:click={`faqOpen === ${index} ? faqOpen = null : faqOpen = ${index}`} class="w-full flex justify-between items-center p-6 text-left hover:bg-zinc-900 transition-colors">
+            <div class="border rounded-2xl overflow-hidden" style="border-color: var(--border-default);">
+              <button x-on:click={`faqOpen === ${index} ? faqOpen = null : faqOpen = ${index}`} class="w-full flex justify-between items-center p-6 text-left hover-bg-secondary transition-colors">
                 <span class="text-sm font-black uppercase tracking-wider">{faq.question}</span>
-                <span class="text-2xl font-black text-[#D9FF00]" x-text={`faqOpen === ${index} ? '−' : '+'`}></span>
+                <span class="text-2xl font-black" style="color: var(--accent-primary);" x-text={`faqOpen === ${index} ? '−' : '+'`}></span>
               </button>
-              <div x-show={`faqOpen === ${index}`} x-cloak class="p-6 bg-zinc-900/50 border-t border-zinc-800 text-zinc-400 text-sm leading-relaxed">{faq.answer}</div>
+              <div x-show={`faqOpen === ${index}`} x-cloak class="p-6 border-t text-sm leading-relaxed" style="background-color: color-mix(in srgb, var(--bg-secondary) 50%, transparent); border-color: var(--border-default); color: var(--text-secondary);">{faq.answer}</div>
             </div>
           ))}
         </div>

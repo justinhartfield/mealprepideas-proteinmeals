@@ -1,7 +1,8 @@
 ---
 /**
  * MealPrepRecipe — Meal Prep Recipe Page (T4)
- * Converted from: meal_prep_recipe_page__t4_.html
+ * Theme-aware: uses CSS custom properties
+ * Includes Schema.org Recipe structured data
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
@@ -44,14 +45,42 @@ const {
 
 const ingredientsJson = JSON.stringify(ingredients);
 
+// Helper to parse time string like "15m" → "PT15M"
+function toISO8601Duration(t: string): string {
+  const m = t.match(/(\d+)\s*h/);
+  const mins = t.match(/(\d+)\s*m/);
+  let iso = 'PT';
+  if (m) iso += m[1] + 'H';
+  if (mins) iso += mins[1] + 'M';
+  return iso === 'PT' ? `PT${t.replace(/[^0-9]/g, '')}M` : iso;
+}
+
+// Find protein/calories from macros
+const proteinMacro = macros.find(m => m.label.toLowerCase() === 'protein');
+const calorieMacro = macros.find(m => m.label.toLowerCase() === 'calories');
+
 const structuredData = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'Recipe',
   name: recipeName,
-  prepTime: `PT${prepTime.replace('m', 'M')}`,
-  cookTime: `PT${cookTime.replace('m', 'M')}`,
-  totalTime: `PT${totalTime.replace('m', 'M')}`,
+  description: description || `${recipeName} — optimized meal prep recipe.`,
+  image: heroImage,
+  prepTime: toISO8601Duration(prepTime),
+  cookTime: toISO8601Duration(cookTime),
+  totalTime: toISO8601Duration(totalTime),
   recipeYield: `${servings} servings`,
+  recipeCategory: 'Meal Prep',
+  nutrition: {
+    '@type': 'NutritionInformation',
+    ...(proteinMacro ? { proteinContent: proteinMacro.value } : {}),
+    ...(calorieMacro ? { calories: `${calorieMacro.value} cal` } : {}),
+  },
+  recipeIngredient: ingredients.map(i => i.text),
+  recipeInstructions: steps.map(s => ({
+    '@type': 'HowToStep',
+    name: s.title,
+    text: s.detail,
+  })),
 });
 ---
 
@@ -71,35 +100,35 @@ const structuredData = JSON.stringify({
       <div class="grid md:grid-cols-12 gap-12">
         <div class="md:col-span-7">
           <div class="flex items-center gap-3 mb-6">
-            <span class="bg-[#D9FF00] text-black text-[10px] font-black px-2 py-0.5 rounded uppercase">Recipe {recipeId}</span>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--accent-primary); color: var(--text-inverse);">Recipe {recipeId}</span>
             {tags.map(tag => (
-              <span class="bg-zinc-800 text-[10px] font-black px-2 py-0.5 rounded uppercase">{tag}</span>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--bg-tertiary);">{tag}</span>
             ))}
           </div>
           <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-8">{recipeName}</h1>
           <div class="grid grid-cols-3 gap-4 mb-8">
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
-              <span class="text-[10px] font-black text-zinc-500 uppercase block mb-1">Prep</span>
+            <div class="border rounded-xl p-4 text-center" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+              <span class="text-[10px] font-black uppercase block mb-1" style="color: var(--text-secondary);">Prep</span>
               <span class="text-xl font-black">{prepTime}</span>
             </div>
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
-              <span class="text-[10px] font-black text-zinc-500 uppercase block mb-1">Cook</span>
+            <div class="border rounded-xl p-4 text-center" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+              <span class="text-[10px] font-black uppercase block mb-1" style="color: var(--text-secondary);">Cook</span>
               <span class="text-xl font-black">{cookTime}</span>
             </div>
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
-              <span class="text-[10px] font-black text-zinc-500 uppercase block mb-1">Total</span>
-              <span class="text-xl font-black text-[#D9FF00]">{totalTime}</span>
+            <div class="border rounded-xl p-4 text-center" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+              <span class="text-[10px] font-black uppercase block mb-1" style="color: var(--text-secondary);">Total</span>
+              <span class="text-xl font-black" style="color: var(--accent-primary);">{totalTime}</span>
             </div>
           </div>
           <!-- Macros -->
-          <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Macro Profile (Per Serving)</h3>
+          <div class="border rounded-2xl p-6" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+            <h3 class="text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-secondary);">Macro Profile (Per Serving)</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
               {macros.map(m => (
                 <div>
                   <div class="flex justify-between text-[10px] font-black mb-2">
-                    <span class="text-zinc-500">{m.label}</span>
-                    <span class="text-[#D9FF00]">{m.value}</span>
+                    <span style="color: var(--text-secondary);">{m.label}</span>
+                    <span style="color: var(--accent-primary);">{m.value}</span>
                   </div>
                   <div class="macro-bar">
                     <div class="macro-fill" style={`width: ${m.percent}%`}></div>
@@ -110,7 +139,7 @@ const structuredData = JSON.stringify({
           </div>
         </div>
         <div class="md:col-span-5">
-          <div class="aspect-[4/5] rounded-3xl overflow-hidden border border-zinc-800 relative group">
+          <div class="aspect-[4/5] rounded-3xl overflow-hidden border relative group" style="border-color: var(--border-default);">
             <img src={heroImage} class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt={recipeName} />
             <div class="recipe-gradient absolute inset-0"></div>
             <div class="scanner-line"></div>
@@ -121,30 +150,31 @@ const structuredData = JSON.stringify({
 
     <!-- INGREDIENTS -->
     {ingredients.length > 0 && (
-      <section class="py-16 px-6 bg-zinc-950 border-y border-zinc-900">
+      <section class="py-16 px-6 border-y" style="background-color: var(--bg-primary); border-color: var(--border-default);">
         <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
           <div>
             <h2 class="text-3xl font-black tracking-tighter mb-8">Ingredients</h2>
             <div class="flex items-center gap-4 mb-6">
-              <span class="text-[10px] font-black text-zinc-500 uppercase">Servings:</span>
+              <span class="text-[10px] font-black uppercase" style="color: var(--text-secondary);">Servings:</span>
               <div class="flex items-center gap-2">
-                <button x-on:click="servings = Math.max(1, servings - 1)" class="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center hover:bg-zinc-700">−</button>
+                <button x-on:click="servings = Math.max(1, servings - 1)" class="w-8 h-8 rounded-lg flex items-center justify-center hover-bg-tertiary transition-colors" style="background-color: var(--bg-tertiary);">−</button>
                 <span class="text-xl font-black w-8 text-center" x-text="servings"></span>
-                <button x-on:click="servings++" class="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center hover:bg-zinc-700">+</button>
+                <button x-on:click="servings++" class="w-8 h-8 rounded-lg flex items-center justify-center hover-bg-tertiary transition-colors" style="background-color: var(--bg-tertiary);">+</button>
               </div>
             </div>
             <div class="space-y-3">
               {ingredients.map(ing => (
-                <label class="flex items-center gap-4 p-3 rounded-xl hover:bg-zinc-900 transition-colors cursor-pointer group">
+                <label class="flex items-center gap-4 p-3 rounded-xl hover-bg-secondary transition-colors cursor-pointer group">
                   <div
                     x-on:click={`toggleIngredient('${ing.id}')`}
-                    x-bind:class={`checkedIngredients.includes('${ing.id}') ? 'bg-[#D9FF00] border-[#D9FF00]' : 'border-zinc-700'`}
+                    x-bind:class={`checkedIngredients.includes('${ing.id}') ? 'pill-active' : ''`}
+                    x-bind:style={`checkedIngredients.includes('${ing.id}') ? 'background-color: var(--accent-primary); border-color: var(--accent-primary)' : 'border-color: var(--border-default)'`}
                     class="w-5 h-5 border-2 rounded flex items-center justify-center flex-shrink-0"
                   >
-                    <svg x-show={`checkedIngredients.includes('${ing.id}')`} class="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
+                    <svg x-show={`checkedIngredients.includes('${ing.id}')`} class="w-3 h-3" style="color: var(--text-inverse);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
                   </div>
                   <span
-                    x-bind:class={`checkedIngredients.includes('${ing.id}') ? 'line-through text-zinc-600' : ''`}
+                    x-bind:style={`checkedIngredients.includes('${ing.id}') ? 'text-decoration: line-through; color: var(--text-tertiary)' : ''`}
                     class="text-sm font-bold transition-colors"
                   >{ing.text}</span>
                 </label>
@@ -155,18 +185,18 @@ const structuredData = JSON.stringify({
             <h2 class="text-3xl font-black tracking-tighter mb-8">Storage & Reheat</h2>
             <div class="space-y-4 mb-8">
               {storageNotes.map(note => (
-                <div class="flex items-center gap-3 p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
-                  <span class="w-2 h-2 bg-[#D9FF00] rounded-full flex-shrink-0"></span>
+                <div class="flex items-center gap-3 p-4 border rounded-xl" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+                  <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-primary);"></span>
                   <span class="text-sm font-bold">{note}</span>
                 </div>
               ))}
             </div>
-            <button x-on:click="showReheat = !showReheat" class="w-full bg-zinc-800 border border-zinc-700 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:border-[#D9FF00] transition-all">
+            <button x-on:click="showReheat = !showReheat" class="w-full border py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover-accent-border transition-all" style="background-color: var(--bg-tertiary); border-color: var(--border-default);">
               <span x-text="showReheat ? 'Hide Reheat Protocol' : 'Show Reheat Protocol'"></span>
             </button>
             <div x-show="showReheat" x-cloak class="mt-4 space-y-3">
               {reheatNotes.map(note => (
-                <div class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl text-sm font-bold">{note}</div>
+                <div class="p-4 border rounded-xl text-sm font-bold" style="background-color: var(--bg-secondary); border-color: var(--border-default);">{note}</div>
               ))}
             </div>
           </div>
@@ -181,11 +211,11 @@ const structuredData = JSON.stringify({
         <div class="space-y-8">
           {steps.map(step => (
             <div class="flex gap-6">
-              <div class="flex-shrink-0 w-12 h-12 bg-[#D9FF00] text-black rounded-2xl flex items-center justify-center font-black text-sm">{step.number}</div>
-              <div class="flex-1 pb-8 border-b border-zinc-800">
+              <div class="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm" style="background-color: var(--accent-primary); color: var(--text-inverse);">{step.number}</div>
+              <div class="flex-1 pb-8 border-b" style="border-color: var(--border-default);">
                 <h4 class="text-xl font-black mb-2">{step.title}</h4>
-                <p class="text-zinc-400 leading-relaxed">{step.detail}</p>
-                {step.time && <span class="text-[10px] font-black text-[#D9FF00] mt-2 inline-block">{step.time}</span>}
+                <p style="color: var(--text-secondary);" class="leading-relaxed">{step.detail}</p>
+                {step.time && <span class="text-[10px] font-black mt-2 inline-block" style="color: var(--accent-primary);">{step.time}</span>}
               </div>
             </div>
           ))}

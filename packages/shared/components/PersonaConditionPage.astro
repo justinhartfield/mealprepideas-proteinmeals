@@ -1,7 +1,7 @@
 ---
 /**
  * PersonaConditionPage — Persona/Condition Page (T8)
- * Converted from: persona_condition_page__t8_.html
+ * Theme-aware: uses CSS custom properties
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
@@ -32,10 +32,22 @@ const {
 } = Astro.props;
 
 const recipesJson = JSON.stringify(recipes);
+
+const faqStructuredData = faqs.length > 0 ? JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(faq => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+}) : null;
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
   <HeaderNav />
+
+  {faqStructuredData && <script type="application/ld+json" set:html={faqStructuredData} />}
 
   <main class="flex-grow" x-data={`{ faqOpen: null, recipes: ${recipesJson} }`}>
     <BreadcrumbNav items={[
@@ -49,13 +61,13 @@ const recipesJson = JSON.stringify(recipes);
       <div class="grid md:grid-cols-12 gap-12">
         <div class="md:col-span-8">
           <div class="flex items-center gap-3 mb-6">
-            <span class="bg-[#D9FF00] text-black text-[10px] font-black px-2 py-0.5 rounded uppercase">T8: {conditionType}</span>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--accent-primary); color: var(--text-inverse);">T8: {conditionType}</span>
           </div>
-          <h1 class="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-8">{conditionName}<br/><span class="text-zinc-700">INDEX</span></h1>
+          <h1 class="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-8">{conditionName}<br/><span style="color: var(--text-tertiary);">INDEX</span></h1>
           {definition && (
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 mb-8">
-              <h2 class="text-xs font-black uppercase tracking-[0.3em] text-[#D9FF00] mb-4">Clinical Definition</h2>
-              <p class="text-zinc-400 text-lg leading-relaxed" set:html={definition} />
+            <div class="border rounded-2xl p-8 mb-8" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+              <h2 class="text-xs font-black uppercase tracking-[0.3em] mb-4" style="color: var(--accent-primary);">Clinical Definition</h2>
+              <p class="text-lg leading-relaxed" style="color: var(--text-secondary);" set:html={definition} />
             </div>
           )}
           {disclaimer && (
@@ -68,18 +80,18 @@ const recipesJson = JSON.stringify(recipes);
         <div class="md:col-span-4">
           <div class="hyper-border rounded-3xl p-8">
             <div class="scanner-line"></div>
-            <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Condition Profile</h3>
+            <h3 class="text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-secondary);">Condition Profile</h3>
             <div class="space-y-4">
-              <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-                <span class="text-xs font-bold text-zinc-500">Type</span>
+              <div class="flex justify-between items-center border-b pb-3" style="border-color: var(--border-default);">
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">Type</span>
                 <span class="text-sm font-black capitalize">{conditionType}</span>
               </div>
-              <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-                <span class="text-xs font-bold text-zinc-500">Protocols</span>
-                <span class="text-sm font-black text-[#D9FF00]">{recipes.length}+</span>
+              <div class="flex justify-between items-center border-b pb-3" style="border-color: var(--border-default);">
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">Protocols</span>
+                <span class="text-sm font-black" style="color: var(--accent-primary);">{recipes.length}+</span>
               </div>
-              <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-                <span class="text-xs font-bold text-zinc-500">Rules</span>
+              <div class="flex justify-between items-center border-b pb-3" style="border-color: var(--border-default);">
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">Rules</span>
                 <span class="text-sm font-black">{nutritionRules.length}</span>
               </div>
             </div>
@@ -90,7 +102,7 @@ const recipesJson = JSON.stringify(recipes);
 
     <!-- NUTRITION RULES -->
     {nutritionRules.length > 0 && (
-      <section class="py-16 px-6 bg-zinc-950 border-y border-zinc-900">
+      <section class="py-16 px-6 border-y" style="background-color: var(--bg-primary); border-color: var(--border-default);">
         <div class="max-w-7xl mx-auto">
           <h2 class="text-3xl font-black tracking-tighter mb-8">Nutrition Rules</h2>
           <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -99,18 +111,22 @@ const recipesJson = JSON.stringify(recipes);
                 'rounded-2xl p-6 border',
                 rule.severity === 'critical' ? 'bg-red-950/20 border-red-900/50' :
                 rule.severity === 'important' ? 'bg-yellow-950/20 border-yellow-900/50' :
-                'bg-zinc-900 border-zinc-800'
-              ]}>
+                ''
+              ]}
+              style={rule.severity !== 'critical' && rule.severity !== 'important' ? 'background-color: var(--bg-secondary); border-color: var(--border-default)' : ''}
+              >
                 <div class="flex items-center gap-3 mb-4">
                   <span class:list={[
                     'w-2 h-2 rounded-full',
                     rule.severity === 'critical' ? 'bg-red-500' :
-                    rule.severity === 'important' ? 'bg-yellow-500' : 'bg-[#D9FF00]'
-                  ]}></span>
+                    rule.severity === 'important' ? 'bg-yellow-500' : ''
+                  ]}
+                  style={rule.severity !== 'critical' && rule.severity !== 'important' ? 'background-color: var(--accent-primary)' : ''}
+                  ></span>
                   <h4 class="font-black text-sm uppercase">{rule.nutrient}</h4>
                 </div>
-                <p class="text-[#D9FF00] font-bold mb-2">{rule.recommendation}</p>
-                <p class="text-sm text-zinc-400">{rule.reason}</p>
+                <p class="font-bold mb-2" style="color: var(--accent-primary);">{rule.recommendation}</p>
+                <p class="text-sm" style="color: var(--text-secondary);">{rule.reason}</p>
               </div>
             ))}
           </div>
@@ -125,19 +141,19 @@ const recipesJson = JSON.stringify(recipes);
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <template x-for="recipe in recipes" x-bind:key="recipe.id">
             <div class="hyper-border rounded-2xl p-6 group">
-              <h4 class="text-xl font-black mb-4 group-hover:text-[#D9FF00] transition-colors" x-text="recipe.title"></h4>
+              <h4 class="text-xl font-black mb-4 group-hover-accent-text transition-colors" x-text="recipe.title"></h4>
               <div class="flex gap-2 mb-4">
                 <template x-for="tag in recipe.tags">
-                  <span class="bg-zinc-800 text-[9px] font-black px-2 py-0.5 rounded uppercase" x-text="tag"></span>
+                  <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--bg-tertiary);" x-text="tag"></span>
                 </template>
               </div>
               <div class="grid grid-cols-2 gap-3">
-                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-center">
-                  <span class="text-[9px] font-bold text-zinc-500 uppercase block">Protein</span>
-                  <span class="font-black text-[#D9FF00]" x-text="recipe.protein"></span>
+                <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
+                  <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Protein</span>
+                  <span class="font-black" style="color: var(--accent-primary);" x-text="recipe.protein"></span>
                 </div>
-                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-center">
-                  <span class="text-[9px] font-bold text-zinc-500 uppercase block">Calories</span>
+                <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
+                  <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Calories</span>
                   <span class="font-black" x-text="recipe.cal"></span>
                 </div>
               </div>
@@ -154,12 +170,12 @@ const recipesJson = JSON.stringify(recipes);
 
     <!-- RELATED CONDITIONS -->
     {relatedConditions.length > 0 && (
-      <section class="py-16 px-6 max-w-7xl mx-auto border-t border-zinc-900">
+      <section class="py-16 px-6 max-w-7xl mx-auto border-t" style="border-color: var(--border-default);">
         <h3 class="text-2xl font-black tracking-tight mb-8">Related Conditions</h3>
         <div class="grid md:grid-cols-4 gap-4">
           {relatedConditions.map(c => (
-            <a href={c.href} class="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl hover:border-[#D9FF00] transition-all group">
-              <div class="font-bold text-sm group-hover:text-[#D9FF00] transition-colors">{c.label}</div>
+            <a href={c.href} class="p-6 border rounded-2xl hover-accent-border transition-all group" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+              <div class="font-bold text-sm group-hover-accent-text transition-colors">{c.label}</div>
             </a>
           ))}
         </div>
@@ -172,12 +188,12 @@ const recipesJson = JSON.stringify(recipes);
         <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">FAQ</h4>
         <div class="space-y-4">
           {faqs.map((faq, i) => (
-            <div class="border border-zinc-800 rounded-2xl overflow-hidden">
-              <button x-on:click={`faqOpen === ${i} ? faqOpen = null : faqOpen = ${i}`} class="w-full flex justify-between items-center p-6 text-left hover:bg-zinc-900 transition-colors">
+            <div class="border rounded-2xl overflow-hidden" style="border-color: var(--border-default);">
+              <button x-on:click={`faqOpen === ${i} ? faqOpen = null : faqOpen = ${i}`} class="w-full flex justify-between items-center p-6 text-left hover-bg-secondary transition-colors">
                 <span class="text-sm font-black">{faq.question}</span>
-                <span class="text-2xl font-black text-[#D9FF00]" x-text={`faqOpen === ${i} ? '−' : '+'`}></span>
+                <span class="text-2xl font-black" style="color: var(--accent-primary);" x-text={`faqOpen === ${i} ? '−' : '+'`}></span>
               </button>
-              <div x-show={`faqOpen === ${i}`} x-cloak class="p-6 bg-zinc-900/50 border-t border-zinc-800 text-zinc-400 text-sm leading-relaxed">{faq.answer}</div>
+              <div x-show={`faqOpen === ${i}`} x-cloak class="p-6 border-t text-sm leading-relaxed" style="background-color: color-mix(in srgb, var(--bg-secondary) 50%, transparent); border-color: var(--border-default); color: var(--text-secondary);">{faq.answer}</div>
             </div>
           ))}
         </div>

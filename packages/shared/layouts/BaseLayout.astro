@@ -378,6 +378,26 @@ const { title, description = '', canonicalUrl, structuredData } = Astro.props;
       background: conic-gradient(from 180deg at 50% 50%, var(--accent-primary) var(--percentage), var(--bg-secondary) 0);
     }
 
+    /* Theme-aware hover utilities (for components migrated from hardcoded dark colors) */
+    .hover-accent-bg:hover { background-color: var(--accent-primary) !important; }
+    .hover-accent-text:hover { color: var(--accent-primary) !important; }
+    .hover-accent-border:hover { border-color: var(--border-hover) !important; }
+    .hover-inverse-text:hover { color: var(--text-inverse) !important; }
+    .hover-text-primary:hover { color: var(--text-primary) !important; }
+    .hover-bg-secondary:hover { background-color: var(--bg-secondary) !important; }
+    .hover-bg-tertiary:hover { background-color: var(--bg-tertiary) !important; }
+
+    /* Group hover variants */
+    .group:hover .group-hover-accent-text { color: var(--accent-primary); }
+    .group:hover .group-hover-accent-bg { background-color: var(--accent-primary); }
+    .group:hover .group-hover-inverse-text { color: var(--text-inverse); }
+    .group:hover .group-hover-accent-border { border-color: var(--border-hover); }
+    .group:hover .group-hover-accent-opacity { color: color-mix(in srgb, var(--accent-primary) 50%, transparent); }
+
+    /* FAQ panel theme */
+    .theme-faq-panel { background-color: var(--bg-secondary); border-color: var(--border-default); }
+    .theme-faq-body { background-color: color-mix(in srgb, var(--bg-secondary) 50%, transparent); }
+
     /* Alpine Cloak */
     [x-cloak] { display: none !important; }
 
