@@ -47,7 +47,7 @@ export const stores: RetailerData[] = [
         calories: 140,
         protein: 2,
         category: 'Frozen',
-        tip: 'Pan-fry (don't boil!) with olive oil for crispy results. Pair with a high-protein source.',
+        tip: "Pan-fry (don't boil!) with olive oil for crispy results. Pair with a high-protein source.",
       },
       {
         name: 'Chicken Tikka Masala (Frozen)',
@@ -71,7 +71,7 @@ export const stores: RetailerData[] = [
         calories: 70,
         protein: 6,
         category: 'Proteins',
-        tip: 'Best value organic eggs you'll find anywhere. Hard-boil a batch every Sunday.',
+        tip: "Best value organic eggs you'll find anywhere. Hard-boil a batch every Sunday.",
       },
       {
         name: 'Frozen Brown Rice (3-pack)',
@@ -79,7 +79,7 @@ export const stores: RetailerData[] = [
         calories: 220,
         protein: 5,
         category: 'Grains',
-        tip: 'Microwaves in 3 minutes. The ultimate meal prep shortcut when you don't want to cook rice.',
+        tip: "Microwaves in 3 minutes. The ultimate meal prep shortcut when you don't want to cook rice.",
       },
       {
         name: 'Greek Yogurt (Whole Milk)',
@@ -150,7 +150,7 @@ export const stores: RetailerData[] = [
         calories: 180,
         protein: 25,
         category: 'Proteins',
-        tip: 'Wild sockeye at about $9/lb — you\'ll pay $14+/lb elsewhere. Individually wrapped portions.',
+        tip: "Wild sockeye at about $9/lb — you\'ll pay $14+/lb elsewhere. Individually wrapped portions.",
       },
       {
         name: 'Organic Eggs (24-pack)',
@@ -171,9 +171,9 @@ export const stores: RetailerData[] = [
     ],
     budgetTips: [
       'Always check the monthly coupon booklet before shopping. Protein items frequently go on sale.',
-      'Split bulk purchases with a friend if you can't use everything before it expires.',
+      "Split bulk purchases with a friend if you can't use everything before it expires.",
       'Their prepared foods section (pizza, chicken, muffins) is NOT a good deal per protein gram. Skip it.',
-      'Buy their store brand (Kirkland) for almost everything — it's usually identical to premium brands.',
+      "Buy their store brand (Kirkland) for almost everything — it's usually identical to premium brands.",
       'The $4.99 rotisserie chicken is a loss leader. Build your weekly meals around it.',
     ],
     avoidList: [
@@ -197,7 +197,7 @@ export const stores: RetailerData[] = [
         calories: 120,
         protein: 26,
         category: 'Proteins',
-        tip: 'About $2.33/lb — the cheapest protein per gram you\'ll find. Thaw, season, and batch bake.',
+        tip: "About $2.33/lb — the cheapest protein per gram you\'ll find. Thaw, season, and batch bake.",
       },
       {
         name: 'Great Value Brown Rice (5 lb bag)',
@@ -221,7 +221,7 @@ export const stores: RetailerData[] = [
         calories: 140,
         protein: 17,
         category: 'Proteins',
-        tip: 'A dollar more than Costco but you don\'t need a membership. Same shred-and-prep strategy.',
+        tip: "A dollar more than Costco but you don\'t need a membership. Same shred-and-prep strategy.",
       },
       {
         name: 'Great Value Frozen Stir-Fry Vegetables',
@@ -284,10 +284,10 @@ export const stores: RetailerData[] = [
         calories: 170,
         protein: 7,
         category: 'Grains',
-        tip: 'Organic quinoa under $4 — that's Costco-level pricing without buying 5 lbs.',
+        tip: "Organic quinoa under $4 — that's Costco-level pricing without buying 5 lbs.",
       },
       {
-        name: 'Dakota\'s Pride Canned Chickpeas',
+        name: "Dakota\'s Pride Canned Chickpeas",
         price: '$0.75',
         calories: 100,
         protein: 6,
@@ -474,7 +474,7 @@ export const stores: RetailerData[] = [
     name: "McDonald's",
     type: 'fast-food',
     hub: 'high-protein',
-    tagline: 'Yes, you can eat high-protein at McDonald\'s. Here\'s exactly how.',
+    tagline: "Yes, you can eat high-protein at McDonald\'s. Here\'s exactly how.",
     description: "McDonald's gets a bad rap, but with the right order you can hit 40g+ protein for under $6. The trick is skipping the combos and building your own macro-friendly meal from the value menu and basic entrees.",
     topPicks: [
       {
@@ -507,7 +507,7 @@ export const stores: RetailerData[] = [
         calories: 350,
         protein: 37,
         category: 'Salads',
-        tip: 'When available, this is the best thing McDonald\'s offers for macros. Use vinaigrette dressing.',
+        tip: "When available, this is the best thing McDonald\'s offers for macros. Use vinaigrette dressing.",
       },
       {
         name: '4-Piece Chicken McNuggets',
@@ -545,7 +545,7 @@ export const stores: RetailerData[] = [
     name: 'Chipotle',
     type: 'fast-food',
     hub: 'high-protein',
-    tagline: 'The bodybuilder\'s fast-casual favorite. Customizable, protein-heavy bowls on demand.',
+    tagline: "The bodybuilder\'s fast-casual favorite. Customizable, protein-heavy bowls on demand.",
     description: "Chipotle is arguably the best fast-food option for high-protein eating. Their build-your-own format lets you control macros precisely, and a well-ordered bowl can deliver 60g+ protein. The nutrition calculator on their site makes it easy to plan ahead.",
     topPicks: [
       {
