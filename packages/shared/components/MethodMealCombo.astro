@@ -1,0 +1,137 @@
+---
+/**
+ * MethodMealCombo — Method + Meal Combo (T3)
+ * Converted from: method___meal_combo__t3_.html
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeaderNav from './HeaderNav.astro';
+import FooterNav from './FooterNav.astro';
+import BreadcrumbNav from './BreadcrumbNav.astro';
+import ExploreByBlock from './ExploreByBlock.astro';
+
+interface Recipe {
+  id: number; title: string; protein: string; cal: string; tags?: string[]; score?: number;
+}
+interface FAQ { question: string; answer: string; }
+
+interface Props {
+  title: string; description?: string; canonicalUrl?: string;
+  hub: string; facetA: { type: string; value: string }; facetB: { type: string; value: string };
+  headline: string; headlineAccent: string; subheadline: string;
+  recipes?: Recipe[]; faqs?: FAQ[];
+  siblings?: { href: string; label: string; sublabel?: string }[];
+}
+
+const { title, description, canonicalUrl, hub, facetA, facetB, headline, headlineAccent, subheadline, recipes = [], faqs = [], siblings = [] } = Astro.props;
+const hubPath = hub === 'meal-prep' ? '/meal-prep/' : '/high-protein/';
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: hub === 'meal-prep' ? 'Meal Prep' : 'High Protein', href: hubPath },
+  { label: `${headline} ${headlineAccent}` },
+];
+const recipesJson = JSON.stringify(recipes);
+---
+
+<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
+  <HeaderNav />
+
+  <main class="flex-grow" x-data={`{ dietFilter: 'all', faqOpen: null, recipes: ${recipesJson} }`}>
+    <!-- HERO -->
+    <section class="relative pt-20 pb-16 px-6 border-b border-zinc-900">
+      <div class="max-w-7xl mx-auto">
+        <BreadcrumbNav items={breadcrumbs} />
+        <div class="flex items-center gap-3 mb-6 mt-8">
+          <span class="bg-[#D9FF00] text-black text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">T3: Method × Meal</span>
+        </div>
+        <h1 class="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-6">
+          {headline} <span class="text-[#D9FF00]">{headlineAccent}</span>
+        </h1>
+        <p class="text-xl text-zinc-400 max-w-2xl leading-relaxed">{subheadline}</p>
+      </div>
+    </section>
+
+    <!-- DATA TABLE GRID -->
+    <section class="py-16 px-6 max-w-7xl mx-auto">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-black tracking-tighter">Protocol Index</h2>
+        <div class="flex gap-2">
+          {['all', 'vegan', 'low-carb'].map(f => (
+            <button
+              x-on:click={`dietFilter = '${f}'`}
+              x-bind:class={`dietFilter === '${f}' ? 'bg-[#D9FF00] text-black' : 'text-zinc-500 bg-zinc-900'`}
+              class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all"
+            >{f === 'all' ? 'All' : f.replace('-', ' ')}</button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Table Header -->
+      <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-zinc-600 border-b border-zinc-800">
+        <div class="col-span-1">#</div>
+        <div class="col-span-5">Recipe Title</div>
+        <div class="col-span-2">Protein</div>
+        <div class="col-span-2">Calories</div>
+        <div class="col-span-2">Score</div>
+      </div>
+
+      <!-- Rows -->
+      <template x-for="(recipe, index) in recipes" x-bind:key="recipe.id">
+        <div class="data-row grid grid-cols-12 gap-4 px-6 py-5 border-b border-zinc-900 items-center transition-all group cursor-pointer">
+          <div class="col-span-1 text-2xl font-black text-zinc-800 group-hover:text-[#D9FF00] transition-colors" x-text="index + 1"></div>
+          <div class="col-span-5">
+            <h4 class="font-black tracking-tight group-hover:text-[#D9FF00] transition-colors" x-text="recipe.title"></h4>
+          </div>
+          <div class="col-span-2">
+            <span class="text-[#D9FF00] font-black" x-text="recipe.protein"></span>
+          </div>
+          <div class="col-span-2">
+            <span class="font-bold text-zinc-400" x-text="recipe.cal"></span>
+          </div>
+          <div class="col-span-2 flex items-center gap-2">
+            <span class="font-black" x-text="recipe.score ? recipe.score.toFixed(1) : '—'"></span>
+            <div class="flex-1 bg-zinc-800 h-1 rounded-full overflow-hidden">
+              <div class="h-full bg-[#D9FF00]" x-bind:style="'width: ' + ((recipe.score || 0) * 10) + '%'"></div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </section>
+
+    <!-- SIBLINGS -->
+    {siblings.length > 0 && (
+      <section class="py-20 px-6 border-t border-zinc-900">
+        <div class="max-w-7xl mx-auto">
+          <h3 class="text-3xl font-black tracking-tight mb-8">Explore Related</h3>
+          <div class="grid md:grid-cols-4 gap-4">
+            {siblings.map(sib => (
+              <a href={sib.href} class="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl hover:border-[#D9FF00] transition-all group">
+                <div class="text-[10px] font-black text-zinc-600 group-hover:text-[#D9FF00] mb-2">{sib.sublabel || 'RELATED'}</div>
+                <div class="font-bold text-sm">{sib.label}</div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- FAQ -->
+    {faqs.length > 0 && (
+      <section class="py-24 px-6 max-w-4xl mx-auto">
+        <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">FAQ</h4>
+        <div class="space-y-4">
+          {faqs.map((faq, i) => (
+            <div class="border border-zinc-800 rounded-2xl overflow-hidden">
+              <button x-on:click={`faqOpen === ${i} ? faqOpen = null : faqOpen = ${i}`} class="w-full flex justify-between items-center p-6 text-left hover:bg-zinc-900 transition-colors">
+                <span class="text-sm font-black">{faq.question}</span>
+                <span class="text-2xl font-black text-[#D9FF00]" x-text={`faqOpen === ${i} ? '−' : '+'`}></span>
+              </button>
+              <div x-show={`faqOpen === ${i}`} x-cloak class="p-6 bg-zinc-900/50 border-t border-zinc-800 text-zinc-400 text-sm leading-relaxed">{faq.answer}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+
+  <FooterNav copyrightSuffix="Index Authority Network. T3: Method × Meal." />
+</BaseLayout>

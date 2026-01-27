@@ -1,0 +1,190 @@
+---
+/**
+ * HighProteinRecipe — High Protein Recipe Page (T4)
+ * Converted from: high_protein_recipe_page__t4_.html
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeaderNav from './HeaderNav.astro';
+import FooterNav from './FooterNav.astro';
+import BreadcrumbNav from './BreadcrumbNav.astro';
+
+interface Ingredient { id: string; text: string; }
+interface Step { number: string; title: string; detail: string; time?: string; }
+interface Macro { label: string; value: string; percent: number; color?: string; }
+
+interface Props {
+  title: string; description?: string; canonicalUrl?: string;
+  recipeName: string; recipeId?: string;
+  prepTime?: string; cookTime?: string; totalTime?: string; servings?: number;
+  proteinPerServing?: string; caloriesPerServing?: string; peRatio?: string;
+  macros?: Macro[];
+  ingredients?: Ingredient[];
+  steps?: Step[];
+  dietVariants?: { name: string; adjustments: string }[];
+  heroImage?: string;
+  tags?: string[];
+}
+
+const {
+  title, description, canonicalUrl, recipeName, recipeId = 'HP-001',
+  prepTime = '10m', cookTime = '20m', totalTime = '30m', servings = 4,
+  proteinPerServing = '48g', caloriesPerServing = '485', peRatio = '2.8',
+  macros = [
+    { label: 'Protein', value: '48g', percent: 85 },
+    { label: 'Carbs', value: '28g', percent: 40 },
+    { label: 'Fat', value: '14g', percent: 35 },
+    { label: 'Fiber', value: '6g', percent: 25 },
+  ],
+  ingredients = [],
+  steps = [],
+  dietVariants = [],
+  heroImage = 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&q=80&w=1200',
+  tags = [],
+} = Astro.props;
+
+const structuredData = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Recipe',
+  name: recipeName,
+  prepTime: `PT${prepTime.replace('m', 'M')}`,
+  cookTime: `PT${cookTime.replace('m', 'M')}`,
+  recipeYield: `${servings} servings`,
+  nutrition: { '@type': 'NutritionInformation', proteinContent: proteinPerServing, calories: `${caloriesPerServing} cal` },
+});
+---
+
+<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl} structuredData={structuredData}>
+  <HeaderNav
+    statusText="Schema: Recipe + HowTo"
+    navLinks={[
+      { href: '/meal-prep/', label: 'Meal Prep' },
+      { href: '/high-protein/', label: 'High Protein' },
+    ]}
+  />
+
+  <main class="flex-grow" x-data={`{ dietView: 'original', servings: ${servings} }`}>
+    <BreadcrumbNav items={[
+      { label: 'Home', href: '/' },
+      { label: 'High Protein', href: '/high-protein/' },
+      { label: recipeName },
+    ]} />
+
+    <!-- HERO -->
+    <section class="px-6 max-w-7xl mx-auto mb-16">
+      <div class="grid md:grid-cols-12 gap-12">
+        <div class="md:col-span-7">
+          <div class="flex flex-wrap items-center gap-3 mb-6">
+            <span class="bg-[#D9FF00] text-black text-[10px] font-black px-2 py-0.5 rounded uppercase">{recipeId}</span>
+            {tags.map(tag => (
+              <span class="bg-zinc-800 text-[10px] font-black px-2 py-0.5 rounded uppercase">{tag}</span>
+            ))}
+          </div>
+          <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-8">{recipeName}</h1>
+
+          <!-- Key Metrics -->
+          <div class="grid grid-cols-4 gap-3 mb-8">
+            <div class="macro-card p-4 rounded-xl">
+              <span class="text-[10px] font-black text-zinc-500 uppercase block mb-1">Protein</span>
+              <span class="text-2xl font-black text-[#D9FF00]">{proteinPerServing}</span>
+            </div>
+            <div class="macro-card p-4 rounded-xl">
+              <span class="text-[10px] font-black text-zinc-500 uppercase block mb-1">Calories</span>
+              <span class="text-2xl font-black">{caloriesPerServing}</span>
+            </div>
+            <div class="macro-card p-4 rounded-xl">
+              <span class="text-[10px] font-black text-zinc-500 uppercase block mb-1">P:E Ratio</span>
+              <span class="text-2xl font-black text-[#D9FF00]">{peRatio}</span>
+            </div>
+            <div class="macro-card p-4 rounded-xl">
+              <span class="text-[10px] font-black text-zinc-500 uppercase block mb-1">Servings</span>
+              <span class="text-2xl font-black" x-text="servings"></span>
+            </div>
+          </div>
+
+          <!-- Full Macros -->
+          <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+            <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Full Macro Breakdown</h3>
+            <div class="space-y-4">
+              {macros.map(m => (
+                <div>
+                  <div class="flex justify-between text-[10px] font-black mb-1">
+                    <span class="text-zinc-500 uppercase">{m.label}</span>
+                    <span class="text-white">{m.value}</span>
+                  </div>
+                  <div class="macro-bar">
+                    <div class="macro-fill" style={`width: ${m.percent}%`}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div class="md:col-span-5">
+          <div class="aspect-[4/5] rounded-3xl overflow-hidden border border-zinc-800 relative group">
+            <img src={heroImage} class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt={recipeName} />
+            <div class="recipe-gradient absolute inset-0"></div>
+            <div class="scanner-line"></div>
+            <div class="absolute bottom-6 left-6 right-6 bg-zinc-950/90 backdrop-blur-md p-4 rounded-xl border border-zinc-800">
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-black text-[#D9FF00] uppercase">High Protein Verified</span>
+                <span class="text-[10px] font-black text-zinc-500">{totalTime} Total</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INGREDIENTS + STEPS -->
+    <section class="py-16 px-6 bg-zinc-950 border-y border-zinc-900">
+      <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16">
+        {ingredients.length > 0 && (
+          <div>
+            <h2 class="text-3xl font-black tracking-tighter mb-8">Ingredients</h2>
+            <div class="space-y-3">
+              {ingredients.map(ing => (
+                <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-zinc-900 transition-colors">
+                  <div class="w-2 h-2 bg-[#D9FF00] rounded-full flex-shrink-0"></div>
+                  <span class="text-sm font-bold">{ing.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {steps.length > 0 && (
+          <div>
+            <h2 class="text-3xl font-black tracking-tighter mb-8">Method</h2>
+            <div class="space-y-6">
+              {steps.map(step => (
+                <div class="flex gap-4">
+                  <span class="w-8 h-8 bg-[#D9FF00] text-black rounded-full flex items-center justify-center flex-shrink-0 font-black text-xs">{step.number}</span>
+                  <div>
+                    <h4 class="font-black mb-1">{step.title}</h4>
+                    <p class="text-zinc-400 text-sm">{step.detail}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- DIET VARIANTS -->
+    {dietVariants.length > 0 && (
+      <section class="py-16 px-6 max-w-7xl mx-auto">
+        <h2 class="text-3xl font-black tracking-tighter mb-8">Diet Variants</h2>
+        <div class="grid md:grid-cols-3 gap-4">
+          {dietVariants.map(v => (
+            <div class="hyper-border rounded-2xl p-6">
+              <h4 class="font-black text-[#D9FF00] mb-3">{v.name}</h4>
+              <p class="text-sm text-zinc-400">{v.adjustments}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+
+  <FooterNav copyrightSuffix={`Index Authority Network. Recipe ${recipeId}.`} />
+</BaseLayout>

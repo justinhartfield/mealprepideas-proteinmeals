@@ -1,0 +1,198 @@
+---
+/**
+ * MealPrepRecipe — Meal Prep Recipe Page (T4)
+ * Converted from: meal_prep_recipe_page__t4_.html
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeaderNav from './HeaderNav.astro';
+import FooterNav from './FooterNav.astro';
+import BreadcrumbNav from './BreadcrumbNav.astro';
+
+interface Ingredient { id: string; text: string; }
+interface Step { number: string; title: string; detail: string; time?: string; }
+interface Macro { label: string; value: string; percent: number; }
+
+interface Props {
+  title: string; description?: string; canonicalUrl?: string;
+  recipeName: string; recipeId?: string;
+  prepTime?: string; cookTime?: string; totalTime?: string; servings?: number;
+  macros?: Macro[];
+  ingredients?: Ingredient[];
+  steps?: Step[];
+  storageNotes?: string[];
+  reheatNotes?: string[];
+  tags?: string[];
+  heroImage?: string;
+}
+
+const {
+  title, description, canonicalUrl, recipeName, recipeId = 'T4-001',
+  prepTime = '15m', cookTime = '25m', totalTime = '40m', servings = 4,
+  macros = [
+    { label: 'Protein', value: '42g', percent: 75 },
+    { label: 'Carbs', value: '35g', percent: 50 },
+    { label: 'Fat', value: '12g', percent: 30 },
+    { label: 'Calories', value: '520', percent: 60 },
+  ],
+  ingredients = [],
+  steps = [],
+  storageNotes = ['Fridge: 5 days in glass containers', 'Freezer: Up to 90 days', 'Separate sauces for best results'],
+  reheatNotes = ['Microwave: 2-3 min, stir halfway', 'Air Fryer: 350°F for 5 min'],
+  tags = [],
+  heroImage = 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=1200',
+} = Astro.props;
+
+const ingredientsJson = JSON.stringify(ingredients);
+
+const structuredData = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Recipe',
+  name: recipeName,
+  prepTime: `PT${prepTime.replace('m', 'M')}`,
+  cookTime: `PT${cookTime.replace('m', 'M')}`,
+  totalTime: `PT${totalTime.replace('m', 'M')}`,
+  recipeYield: `${servings} servings`,
+});
+---
+
+<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl} structuredData={structuredData}>
+  <HeaderNav statusText={`Recipe: ${recipeId}`} />
+
+  <main class="flex-grow" x-data={`{ servings: ${servings}, showReheat: false, checkedIngredients: [], toggleIngredient(id) { this.checkedIngredients.includes(id) ? this.checkedIngredients = this.checkedIngredients.filter(i => i !== id) : this.checkedIngredients.push(id) } }`}>
+    <!-- BREADCRUMB -->
+    <BreadcrumbNav items={[
+      { label: 'Home', href: '/' },
+      { label: 'Meal Prep', href: '/meal-prep/' },
+      { label: recipeName },
+    ]} />
+
+    <!-- HERO -->
+    <section class="px-6 max-w-7xl mx-auto mb-16">
+      <div class="grid md:grid-cols-12 gap-12">
+        <div class="md:col-span-7">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="bg-[#D9FF00] text-black text-[10px] font-black px-2 py-0.5 rounded uppercase">Recipe {recipeId}</span>
+            {tags.map(tag => (
+              <span class="bg-zinc-800 text-[10px] font-black px-2 py-0.5 rounded uppercase">{tag}</span>
+            ))}
+          </div>
+          <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-8">{recipeName}</h1>
+          <div class="grid grid-cols-3 gap-4 mb-8">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <span class="text-[10px] font-black text-zinc-500 uppercase block mb-1">Prep</span>
+              <span class="text-xl font-black">{prepTime}</span>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <span class="text-[10px] font-black text-zinc-500 uppercase block mb-1">Cook</span>
+              <span class="text-xl font-black">{cookTime}</span>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-center">
+              <span class="text-[10px] font-black text-zinc-500 uppercase block mb-1">Total</span>
+              <span class="text-xl font-black text-[#D9FF00]">{totalTime}</span>
+            </div>
+          </div>
+          <!-- Macros -->
+          <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+            <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">Macro Profile (Per Serving)</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {macros.map(m => (
+                <div>
+                  <div class="flex justify-between text-[10px] font-black mb-2">
+                    <span class="text-zinc-500">{m.label}</span>
+                    <span class="text-[#D9FF00]">{m.value}</span>
+                  </div>
+                  <div class="macro-bar">
+                    <div class="macro-fill" style={`width: ${m.percent}%`}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div class="md:col-span-5">
+          <div class="aspect-[4/5] rounded-3xl overflow-hidden border border-zinc-800 relative group">
+            <img src={heroImage} class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt={recipeName} />
+            <div class="recipe-gradient absolute inset-0"></div>
+            <div class="scanner-line"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INGREDIENTS -->
+    {ingredients.length > 0 && (
+      <section class="py-16 px-6 bg-zinc-950 border-y border-zinc-900">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
+          <div>
+            <h2 class="text-3xl font-black tracking-tighter mb-8">Ingredients</h2>
+            <div class="flex items-center gap-4 mb-6">
+              <span class="text-[10px] font-black text-zinc-500 uppercase">Servings:</span>
+              <div class="flex items-center gap-2">
+                <button x-on:click="servings = Math.max(1, servings - 1)" class="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center hover:bg-zinc-700">−</button>
+                <span class="text-xl font-black w-8 text-center" x-text="servings"></span>
+                <button x-on:click="servings++" class="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center hover:bg-zinc-700">+</button>
+              </div>
+            </div>
+            <div class="space-y-3">
+              {ingredients.map(ing => (
+                <label class="flex items-center gap-4 p-3 rounded-xl hover:bg-zinc-900 transition-colors cursor-pointer group">
+                  <div
+                    x-on:click={`toggleIngredient('${ing.id}')`}
+                    x-bind:class={`checkedIngredients.includes('${ing.id}') ? 'bg-[#D9FF00] border-[#D9FF00]' : 'border-zinc-700'`}
+                    class="w-5 h-5 border-2 rounded flex items-center justify-center flex-shrink-0"
+                  >
+                    <svg x-show={`checkedIngredients.includes('${ing.id}')`} class="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
+                  </div>
+                  <span
+                    x-bind:class={`checkedIngredients.includes('${ing.id}') ? 'line-through text-zinc-600' : ''`}
+                    class="text-sm font-bold transition-colors"
+                  >{ing.text}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h2 class="text-3xl font-black tracking-tighter mb-8">Storage & Reheat</h2>
+            <div class="space-y-4 mb-8">
+              {storageNotes.map(note => (
+                <div class="flex items-center gap-3 p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
+                  <span class="w-2 h-2 bg-[#D9FF00] rounded-full flex-shrink-0"></span>
+                  <span class="text-sm font-bold">{note}</span>
+                </div>
+              ))}
+            </div>
+            <button x-on:click="showReheat = !showReheat" class="w-full bg-zinc-800 border border-zinc-700 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:border-[#D9FF00] transition-all">
+              <span x-text="showReheat ? 'Hide Reheat Protocol' : 'Show Reheat Protocol'"></span>
+            </button>
+            <div x-show="showReheat" x-cloak class="mt-4 space-y-3">
+              {reheatNotes.map(note => (
+                <div class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl text-sm font-bold">{note}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- STEPS -->
+    {steps.length > 0 && (
+      <section class="py-24 px-6 max-w-4xl mx-auto">
+        <h2 class="text-4xl font-black tracking-tighter mb-12">Execution Protocol</h2>
+        <div class="space-y-8">
+          {steps.map(step => (
+            <div class="flex gap-6">
+              <div class="flex-shrink-0 w-12 h-12 bg-[#D9FF00] text-black rounded-2xl flex items-center justify-center font-black text-sm">{step.number}</div>
+              <div class="flex-1 pb-8 border-b border-zinc-800">
+                <h4 class="text-xl font-black mb-2">{step.title}</h4>
+                <p class="text-zinc-400 leading-relaxed">{step.detail}</p>
+                {step.time && <span class="text-[10px] font-black text-[#D9FF00] mt-2 inline-block">{step.time}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+
+  <FooterNav copyrightSuffix={`Index Authority Network. Recipe ${recipeId}.`} />
+</BaseLayout>

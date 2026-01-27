@@ -1,0 +1,148 @@
+---
+/**
+ * RetailerMealPlan — Retailer-Specific Meal Plan (T5)
+ * Converted from: retailer_specific_meal_plan__t5_.html
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeaderNav from './HeaderNav.astro';
+import FooterNav from './FooterNav.astro';
+import BreadcrumbNav from './BreadcrumbNav.astro';
+
+interface ShoppingItem { name: string; qty: string; price: string; protein?: string; aisle?: string; }
+interface DayPlan { day: string; meals: { meal: string; name: string; protein: string; cals: string }[]; }
+
+interface Props {
+  title: string; description?: string; canonicalUrl?: string;
+  planName: string; retailer: string; budget: string; planId?: string;
+  totalProtein?: string; totalMeals?: number;
+  shoppingItems?: ShoppingItem[];
+  days?: DayPlan[];
+  tips?: string[];
+}
+
+const {
+  title, description, canonicalUrl, planName, retailer, budget, planId = 'RP-001',
+  totalProtein = '175g/day', totalMeals = 15,
+  shoppingItems = [], days = [], tips = [],
+} = Astro.props;
+
+const shoppingJson = JSON.stringify(shoppingItems);
+---
+
+<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
+  <HeaderNav statusText={`Retailer: ${retailer}`} />
+
+  <main class="flex-grow" x-data={`{ activeDay: 0, items: ${shoppingJson} }`}>
+    <BreadcrumbNav items={[
+      { label: 'Home', href: '/' },
+      { label: 'High Protein', href: '/high-protein/' },
+      { label: retailer, href: '#' },
+      { label: planName },
+    ]} />
+
+    <!-- HERO -->
+    <section class="px-6 max-w-7xl mx-auto mb-16">
+      <div class="grid md:grid-cols-12 gap-12">
+        <div class="md:col-span-8">
+          <div class="flex flex-wrap items-center gap-3 mb-6">
+            <span class="bg-[#D9FF00] text-black text-[10px] font-black px-2 py-0.5 rounded uppercase">T5: Retailer Plan</span>
+            <span class="bg-zinc-800 text-[10px] font-black px-2 py-0.5 rounded uppercase">{retailer}</span>
+          </div>
+          <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-6">{planName}</h1>
+          <p class="text-xl text-zinc-400 max-w-2xl leading-relaxed">
+            A complete weekly meal plan sourced exclusively from {retailer}. Optimized for high protein on a {budget} budget.
+          </p>
+        </div>
+        <div class="md:col-span-4">
+          <div class="bg-[#D9FF00] text-black rounded-3xl p-8">
+            <h3 class="text-[10px] font-black uppercase tracking-widest mb-6">Plan Summary</h3>
+            <div class="space-y-4">
+              <div class="flex justify-between"><span class="font-bold">Budget</span><span class="font-black text-xl">{budget}</span></div>
+              <div class="flex justify-between"><span class="font-bold">Protein Avg</span><span class="font-black text-xl">{totalProtein}</span></div>
+              <div class="flex justify-between"><span class="font-bold">Total Meals</span><span class="font-black text-xl">{totalMeals}</span></div>
+            </div>
+            <button class="w-full bg-black text-white py-4 rounded-xl font-black uppercase text-xs tracking-widest mt-6 hover:bg-zinc-800 transition-colors">Download Full Plan</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOPPING LIST -->
+    {shoppingItems.length > 0 && (
+      <section class="py-16 px-6 bg-zinc-950 border-y border-zinc-900">
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-3xl font-black tracking-tighter mb-8">{retailer} Shopping List</h2>
+          <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-zinc-600 border-b border-zinc-800">
+            <div class="col-span-5">Item</div>
+            <div class="col-span-2">Qty</div>
+            <div class="col-span-2">Price</div>
+            <div class="col-span-2">Protein</div>
+            <div class="col-span-1">Aisle</div>
+          </div>
+          <template x-for="item in items" x-bind:key="item.name">
+            <div class="data-row grid grid-cols-12 gap-4 px-6 py-4 border-b border-zinc-900 items-center">
+              <div class="col-span-5 font-black text-sm" x-text="item.name"></div>
+              <div class="col-span-2 text-zinc-400" x-text="item.qty"></div>
+              <div class="col-span-2 font-bold text-[#D9FF00]" x-text="item.price"></div>
+              <div class="col-span-2 font-bold" x-text="item.protein || '—'"></div>
+              <div class="col-span-1 text-zinc-600 text-xs" x-text="item.aisle || '—'"></div>
+            </div>
+          </template>
+        </div>
+      </section>
+    )}
+
+    <!-- DAILY PLANS -->
+    {days.length > 0 && (
+      <section class="py-16 px-6 max-w-7xl mx-auto">
+        <h2 class="text-3xl font-black tracking-tighter mb-8">Daily Meal Schedule</h2>
+        <div class="flex gap-2 mb-8 overflow-x-auto">
+          {days.map((d, i) => (
+            <button
+              x-on:click={`activeDay = ${i}`}
+              x-bind:class={`activeDay === ${i} ? 'bg-[#D9FF00] text-black' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'`}
+              class="px-5 py-3 rounded-xl font-black text-sm transition-all whitespace-nowrap"
+            >{d.day}</button>
+          ))}
+        </div>
+        {days.map((d, i) => (
+          <div x-show={`activeDay === ${i}`} class="grid md:grid-cols-3 gap-6">
+            {d.meals.map(m => (
+              <div class="hyper-border rounded-2xl p-6">
+                <span class="text-[10px] font-black text-[#D9FF00] uppercase tracking-widest block mb-3">{m.meal}</span>
+                <h4 class="text-lg font-black mb-4">{m.name}</h4>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-center">
+                    <span class="text-[9px] font-bold text-zinc-500 uppercase block">Protein</span>
+                    <span class="font-black text-[#D9FF00]">{m.protein}</span>
+                  </div>
+                  <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-center">
+                    <span class="text-[9px] font-bold text-zinc-500 uppercase block">Cals</span>
+                    <span class="font-black">{m.cals}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </section>
+    )}
+
+    <!-- TIPS -->
+    {tips.length > 0 && (
+      <section class="py-16 px-6 max-w-4xl mx-auto">
+        <h2 class="text-3xl font-black tracking-tighter mb-8">{retailer} Shopping Tips</h2>
+        <div class="space-y-4">
+          {tips.map((tip, i) => (
+            <div class="flex gap-4 p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
+              <span class="w-8 h-8 bg-[#D9FF00] text-black rounded-full flex items-center justify-center flex-shrink-0 font-black text-xs">{String(i + 1).padStart(2, '0')}</span>
+              <p class="text-sm font-bold leading-relaxed">{tip}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+
+  <FooterNav copyrightSuffix={`Index Authority Network. Plan ${planId}: ${retailer}.`} />
+</BaseLayout>

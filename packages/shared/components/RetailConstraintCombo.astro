@@ -1,0 +1,142 @@
+---
+/**
+ * RetailConstraintCombo — Retail + Constraint Combo (T3)
+ * Converted from: retail___constraint_combo__t3_.html
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeaderNav from './HeaderNav.astro';
+import FooterNav from './FooterNav.astro';
+import BreadcrumbNav from './BreadcrumbNav.astro';
+
+interface SKUItem {
+  id: string; name: string; protein: string; cals: string; tag: string; price: string; score: string;
+}
+interface FAQ { question: string; answer: string; }
+
+interface Props {
+  title: string; description?: string; canonicalUrl?: string;
+  hub: string; facetA: { type: string; value: string }; facetB: { type: string; value: string };
+  headline: string; headlineAccent: string; subheadline: string;
+  retailer?: string; constraint?: string;
+  items?: SKUItem[]; faqs?: FAQ[];
+  siblings?: { href: string; label: string; sublabel?: string }[];
+}
+
+const { title, description, canonicalUrl, hub, facetA, facetB, headline, headlineAccent, subheadline, retailer = '', constraint = '', items = [], faqs = [], siblings = [] } = Astro.props;
+const hubPath = hub === 'meal-prep' ? '/meal-prep/' : '/high-protein/';
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: hub === 'meal-prep' ? 'Meal Prep' : 'High Protein', href: hubPath },
+  { label: `${headline} + ${headlineAccent}` },
+];
+const itemsJson = JSON.stringify(items);
+---
+
+<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
+  <HeaderNav />
+
+  <main class="flex-grow" x-data={`{ filter: 'all', faqOpen: null, items: ${itemsJson} }`}>
+    <!-- HERO -->
+    <section class="relative pt-20 pb-16 px-6 border-b border-zinc-900">
+      <div class="max-w-7xl mx-auto">
+        <BreadcrumbNav items={breadcrumbs} />
+        <div class="grid md:grid-cols-12 gap-12 mt-8">
+          <div class="md:col-span-8">
+            <span class="bg-[#D9FF00] text-black text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest inline-block mb-6">T3: Retail × Constraint</span>
+            <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-6">
+              {headline} + <span class="text-[#D9FF00]">{headlineAccent}</span>
+            </h1>
+            <p class="text-xl text-zinc-400 max-w-2xl leading-relaxed">{subheadline}</p>
+          </div>
+          <div class="md:col-span-4">
+            <div class="bg-[#D9FF00] text-black rounded-3xl p-8">
+              <h3 class="text-[10px] font-black uppercase tracking-widest mb-6">SKU Summary</h3>
+              <div class="text-5xl font-black mb-2">{items.length}</div>
+              <span class="text-xs font-bold opacity-70">Verified Products</span>
+              <div class="mt-6 pt-6 border-t border-black/20 text-sm font-bold opacity-70">
+                {retailer && <div>Retailer: {retailer}</div>}
+                {constraint && <div>Filter: {constraint}</div>}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKU TABLE -->
+    <section class="py-16 px-6 max-w-7xl mx-auto">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-black tracking-tighter">Product Index</h2>
+        <div class="flex gap-2">
+          {['all', 'Poultry', 'Dairy', 'Snacks'].map(f => (
+            <button
+              x-on:click={`filter = '${f}'`}
+              x-bind:class={`filter === '${f}' ? 'bg-[#D9FF00] text-black' : 'text-zinc-500 bg-zinc-900'`}
+              class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all"
+            >{f === 'all' ? 'All' : f}</button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Header -->
+      <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-zinc-600 border-b border-zinc-800">
+        <div class="col-span-1">SKU</div>
+        <div class="col-span-4">Product</div>
+        <div class="col-span-2">Protein</div>
+        <div class="col-span-2">Calories</div>
+        <div class="col-span-1">Price</div>
+        <div class="col-span-2">P:E</div>
+      </div>
+
+      <template x-for="item in items.filter(i => filter === 'all' || i.tag === filter)" x-bind:key="item.id">
+        <div class="data-row grid grid-cols-12 gap-4 px-6 py-5 border-b border-zinc-900 items-center transition-all group cursor-pointer hover:bg-zinc-900/50">
+          <div class="col-span-1 text-[10px] font-black text-zinc-600" x-text="item.id"></div>
+          <div class="col-span-4">
+            <h4 class="font-black tracking-tight text-sm group-hover:text-[#D9FF00] transition-colors" x-text="item.name"></h4>
+          </div>
+          <div class="col-span-2"><span class="text-[#D9FF00] font-black" x-text="item.protein"></span></div>
+          <div class="col-span-2"><span class="font-bold text-zinc-400" x-text="item.cals"></span></div>
+          <div class="col-span-1"><span class="text-xs font-bold text-zinc-500" x-text="item.price"></span></div>
+          <div class="col-span-2"><span class="text-xs font-black text-[#D9FF00]" x-text="item.score"></span></div>
+        </div>
+      </template>
+    </section>
+
+    <!-- SIBLINGS -->
+    {siblings.length > 0 && (
+      <section class="py-20 px-6 border-t border-zinc-900">
+        <div class="max-w-7xl mx-auto">
+          <h3 class="text-3xl font-black tracking-tight mb-8">Related Retail Indexes</h3>
+          <div class="grid md:grid-cols-4 gap-4">
+            {siblings.map(sib => (
+              <a href={sib.href} class="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl hover:border-[#D9FF00] transition-all group">
+                <div class="text-[10px] font-black text-zinc-600 group-hover:text-[#D9FF00] mb-2">{sib.sublabel || 'RELATED'}</div>
+                <div class="font-bold text-sm">{sib.label}</div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- FAQ -->
+    {faqs.length > 0 && (
+      <section class="py-24 px-6 max-w-4xl mx-auto">
+        <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">FAQ</h4>
+        <div class="space-y-4">
+          {faqs.map((faq, i) => (
+            <div class="border border-zinc-800 rounded-2xl overflow-hidden">
+              <button x-on:click={`faqOpen === ${i} ? faqOpen = null : faqOpen = ${i}`} class="w-full flex justify-between items-center p-6 text-left hover:bg-zinc-900 transition-colors">
+                <span class="text-sm font-black">{faq.question}</span>
+                <span class="text-2xl font-black text-[#D9FF00]" x-text={`faqOpen === ${i} ? '−' : '+'`}></span>
+              </button>
+              <div x-show={`faqOpen === ${i}`} x-cloak class="p-6 bg-zinc-900/50 border-t border-zinc-800 text-zinc-400 text-sm leading-relaxed">{faq.answer}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+
+  <FooterNav copyrightSuffix="Index Authority Network. T3: Retail × Constraint." />
+</BaseLayout>

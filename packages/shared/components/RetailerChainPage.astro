@@ -1,0 +1,176 @@
+---
+/**
+ * RetailerChainPage — Retailer/Chain Page (T6+T7 merged)
+ * Converted from: retailer_chain_page__t6_t7_.html
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeaderNav from './HeaderNav.astro';
+import FooterNav from './FooterNav.astro';
+import BreadcrumbNav from './BreadcrumbNav.astro';
+import FacetNav from './FacetNav.astro';
+
+interface SKU {
+  id: string; name: string; category: string; protein: string; cals: string; price: string; peScore: string;
+}
+
+interface MenuHack {
+  order: string; modifications: string; protein: string; cals: string; savings: string;
+}
+
+interface Props {
+  title: string; description?: string; canonicalUrl?: string;
+  entityName: string; entityType: 'store' | 'chain';
+  tagline?: string; entityDescription?: string;
+  totalSKUs?: number; avgPE?: string;
+  skus?: SKU[];
+  menuHacks?: MenuHack[];
+  topPicks?: { name: string; protein: string; reason: string }[];
+  relatedLinks?: { label: string; href: string }[];
+}
+
+const {
+  title, description, canonicalUrl, entityName, entityType,
+  tagline = '', entityDescription = '',
+  totalSKUs = 0, avgPE = '0',
+  skus = [], menuHacks = [], topPicks = [], relatedLinks = [],
+} = Astro.props;
+
+const skusJson = JSON.stringify(skus);
+const isStore = entityType === 'store';
+---
+
+<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
+  <HeaderNav statusText={`${entityType === 'store' ? 'Retailer' : 'Chain'}: ${entityName}`} />
+
+  <main class="flex-grow" x-data={`{ filter: 'all', skus: ${skusJson} }`}>
+    <BreadcrumbNav items={[
+      { label: 'Home', href: '/' },
+      { label: isStore ? 'Store Index' : 'Chain Guide' },
+      { label: entityName },
+    ]} />
+
+    <!-- HERO -->
+    <section class="px-6 max-w-7xl mx-auto mb-16">
+      <div class="grid md:grid-cols-12 gap-12">
+        <div class="md:col-span-8">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="bg-[#D9FF00] text-black text-[10px] font-black px-2 py-0.5 rounded uppercase">{isStore ? 'T6: Retailer' : 'T7: Chain'}</span>
+          </div>
+          <h1 class="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-6">{entityName}</h1>
+          {tagline && <p class="text-xl text-[#D9FF00] font-bold mb-4">{tagline}</p>}
+          {entityDescription && <p class="text-lg text-zinc-400 max-w-2xl leading-relaxed">{entityDescription}</p>}
+        </div>
+        <div class="md:col-span-4">
+          <div class="hyper-border rounded-3xl p-8">
+            <div class="scanner-line"></div>
+            <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-6">{isStore ? 'SKU Intelligence' : 'Menu Intelligence'}</h3>
+            <div class="space-y-6">
+              <div class="flex justify-between items-end">
+                <span class="text-xs font-bold text-zinc-500">{isStore ? 'Total SKUs' : 'Menu Items'}</span>
+                <span class="text-3xl font-black text-[#D9FF00]">{totalSKUs || skus.length}</span>
+              </div>
+              <div class="flex justify-between items-end">
+                <span class="text-xs font-bold text-zinc-500">Avg P:E Score</span>
+                <span class="text-3xl font-black">{avgPE}</span>
+              </div>
+              <button class="w-full bg-[#D9FF00] text-black py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-white transition-all">
+                {isStore ? 'Download Full SKU List' : 'View All Menu Hacks'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKU / MENU TABLE -->
+    {skus.length > 0 && (
+      <section class="py-16 px-6 bg-zinc-950 border-y border-zinc-900">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl font-black tracking-tighter">{isStore ? 'Product Index' : 'Menu Matrix'}</h2>
+            <div class="flex gap-2">
+              <button x-on:click="filter = 'all'" x-bind:class="filter === 'all' ? 'bg-[#D9FF00] text-black' : 'bg-zinc-900 text-zinc-400'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">All</button>
+            </div>
+          </div>
+
+          <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-zinc-600 border-b border-zinc-800">
+            <div class="col-span-1">ID</div>
+            <div class="col-span-4">Name</div>
+            <div class="col-span-1">Type</div>
+            <div class="col-span-2">Protein</div>
+            <div class="col-span-2">Calories</div>
+            <div class="col-span-2">P:E</div>
+          </div>
+
+          <template x-for="sku in skus" x-bind:key="sku.id">
+            <div class="data-row grid grid-cols-12 gap-4 px-6 py-4 border-b border-zinc-900 items-center group cursor-pointer">
+              <div class="col-span-1 text-[10px] font-black text-zinc-600" x-text="sku.id"></div>
+              <div class="col-span-4 font-black text-sm group-hover:text-[#D9FF00] transition-colors" x-text="sku.name"></div>
+              <div class="col-span-1 text-[10px] font-bold text-zinc-500 uppercase" x-text="sku.category"></div>
+              <div class="col-span-2 font-black text-[#D9FF00]" x-text="sku.protein"></div>
+              <div class="col-span-2 font-bold text-zinc-400" x-text="sku.cals"></div>
+              <div class="col-span-2 font-black" x-text="sku.peScore"></div>
+            </div>
+          </template>
+        </div>
+      </section>
+    )}
+
+    <!-- TOP PICKS -->
+    {topPicks.length > 0 && (
+      <section class="py-16 px-6 max-w-7xl mx-auto">
+        <h2 class="text-3xl font-black tracking-tighter mb-8">Top Picks</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          {topPicks.map((pick, i) => (
+            <div class="hyper-border rounded-2xl p-6 group">
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-4xl font-black text-zinc-800 group-hover:text-[#D9FF00]/50 transition-colors">{i + 1}</span>
+                <span class="text-[#D9FF00] font-black">{pick.protein}</span>
+              </div>
+              <h4 class="text-xl font-black mb-3">{pick.name}</h4>
+              <p class="text-sm text-zinc-400">{pick.reason}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- MENU HACKS (for chains) -->
+    {menuHacks.length > 0 && (
+      <section class="py-16 px-6 bg-[#D9FF00] text-black">
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-4xl font-black tracking-tighter mb-8">Menu Modification Guide</h2>
+          <div class="grid md:grid-cols-2 gap-6">
+            {menuHacks.map(hack => (
+              <div class="bg-white rounded-2xl p-6 border-2 border-black">
+                <h4 class="text-xl font-black mb-3">{hack.order}</h4>
+                <p class="text-sm font-bold text-zinc-600 mb-4">{hack.modifications}</p>
+                <div class="grid grid-cols-3 gap-3">
+                  <div class="text-center"><span class="text-xs font-bold text-zinc-500 block">Protein</span><span class="font-black">{hack.protein}</span></div>
+                  <div class="text-center"><span class="text-xs font-bold text-zinc-500 block">Cals</span><span class="font-black">{hack.cals}</span></div>
+                  <div class="text-center"><span class="text-xs font-bold text-zinc-500 block">Savings</span><span class="font-black">{hack.savings}</span></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- RELATED LINKS -->
+    {relatedLinks.length > 0 && (
+      <section class="py-16 px-6 max-w-7xl mx-auto">
+        <h3 class="text-2xl font-black tracking-tight mb-8">Related Indexes</h3>
+        <div class="grid md:grid-cols-4 gap-4">
+          {relatedLinks.map(link => (
+            <a href={link.href} class="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl hover:border-[#D9FF00] transition-all group">
+              <div class="font-bold text-sm group-hover:text-[#D9FF00] transition-colors">{link.label}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+
+  <FooterNav copyrightSuffix={`Index Authority Network. ${entityType === 'store' ? 'Retailer' : 'Chain'}: ${entityName}.`} />
+</BaseLayout>

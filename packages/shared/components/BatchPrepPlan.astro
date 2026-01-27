@@ -1,0 +1,160 @@
+---
+/**
+ * BatchPrepPlan — 5-Day Batch Prep Plan (T5)
+ * Converted from: 5_day_batch_prep_plan__t5_.html
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeaderNav from './HeaderNav.astro';
+import FooterNav from './FooterNav.astro';
+import BreadcrumbNav from './BreadcrumbNav.astro';
+
+interface DayPlan {
+  day: string; dayNumber: number;
+  breakfast: { name: string; protein: string; cals: string };
+  lunch: { name: string; protein: string; cals: string };
+  dinner: { name: string; protein: string; cals: string };
+}
+
+interface ShoppingItem { text: string; checked?: boolean; }
+
+interface Props {
+  title: string; description?: string; canonicalUrl?: string;
+  planName: string; planId?: string;
+  totalMeals?: number; prepTime?: string; weeklyBudget?: string; avgProtein?: string;
+  days?: DayPlan[];
+  shoppingList?: ShoppingItem[];
+  prepSteps?: { step: string; title: string; detail: string; time: string }[];
+}
+
+const {
+  title, description, canonicalUrl, planName, planId = 'P5-001',
+  totalMeals = 15, prepTime = '90 min', weeklyBudget = '$52', avgProtein = '42g',
+  days = [], shoppingList = [], prepSteps = [],
+} = Astro.props;
+
+const daysJson = JSON.stringify(days);
+---
+
+<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
+  <HeaderNav statusText={`Plan: ${planId}`} />
+
+  <main class="flex-grow" x-data={`{ activeDay: 1, showFullList: false, days: ${daysJson} }`}>
+    <BreadcrumbNav items={[
+      { label: 'Home', href: '/' },
+      { label: 'Meal Prep', href: '/meal-prep/' },
+      { label: planName },
+    ]} />
+
+    <!-- HERO -->
+    <section class="px-6 max-w-7xl mx-auto mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="bg-[#D9FF00] text-black text-[10px] font-black px-2 py-0.5 rounded uppercase">T5: 5-Day Plan</span>
+        <span class="bg-zinc-800 text-[10px] font-black px-2 py-0.5 rounded uppercase">{planId}</span>
+      </div>
+      <h1 class="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-8">{planName}</h1>
+
+      <!-- Key Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        {[
+          { value: String(totalMeals), label: 'Total Meals' },
+          { value: prepTime, label: 'Prep Time' },
+          { value: weeklyBudget, label: 'Weekly Budget' },
+          { value: avgProtein, label: 'Avg Protein/Meal' },
+        ].map(stat => (
+          <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 text-center">
+            <span class="text-3xl font-black text-[#D9FF00] block">{stat.value}</span>
+            <span class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{stat.label}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- DAY TABS -->
+    {days.length > 0 && (
+      <section class="py-16 px-6 bg-zinc-950 border-y border-zinc-900">
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-3xl font-black tracking-tighter mb-8">Daily Breakdown</h2>
+          <!-- Day Selector -->
+          <div class="flex gap-2 mb-8">
+            {days.map(d => (
+              <button
+                x-on:click={`activeDay = ${d.dayNumber}`}
+                x-bind:class={`activeDay === ${d.dayNumber} ? 'bg-[#D9FF00] text-black' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'`}
+                class="px-6 py-3 rounded-xl font-black text-sm transition-all"
+              >{d.day}</button>
+            ))}
+          </div>
+          <!-- Day Content -->
+          {days.map(d => (
+            <div x-show={`activeDay === ${d.dayNumber}`} class="grid md:grid-cols-3 gap-6">
+              {[
+                { meal: 'Breakfast', ...d.breakfast },
+                { meal: 'Lunch', ...d.lunch },
+                { meal: 'Dinner', ...d.dinner },
+              ].map(m => (
+                <div class="hyper-border rounded-2xl p-6">
+                  <span class="text-[10px] font-black text-[#D9FF00] uppercase tracking-widest block mb-3">{m.meal}</span>
+                  <h4 class="text-xl font-black mb-4">{m.name}</h4>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-center">
+                      <span class="text-[9px] font-bold text-zinc-500 uppercase block">Protein</span>
+                      <span class="text-lg font-black text-[#D9FF00]">{m.protein}</span>
+                    </div>
+                    <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-center">
+                      <span class="text-[9px] font-bold text-zinc-500 uppercase block">Calories</span>
+                      <span class="text-lg font-black">{m.cals}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- SHOPPING LIST -->
+    {shoppingList.length > 0 && (
+      <section class="py-16 px-6 max-w-4xl mx-auto">
+        <h2 class="text-3xl font-black tracking-tighter mb-8">Shopping List</h2>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
+          <div class="flex justify-between items-center mb-6 pb-4 border-b border-zinc-800">
+            <span class="text-xs font-black tracking-widest uppercase">MASTER LIST</span>
+            <span class="text-xs font-bold text-zinc-500">{planId}</span>
+          </div>
+          <div class="space-y-3">
+            {shoppingList.map(item => (
+              <div class="flex items-center gap-4">
+                <div class:list={['w-4 h-4 border-2 rounded', item.checked ? 'bg-[#D9FF00] border-[#D9FF00]' : 'border-zinc-700']}></div>
+                <span class:list={['text-sm font-bold', item.checked && 'line-through text-zinc-600']}>{item.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- PREP STEPS -->
+    {prepSteps.length > 0 && (
+      <section class="py-16 px-6 max-w-4xl mx-auto">
+        <h2 class="text-3xl font-black tracking-tighter mb-8">Sunday Prep Protocol</h2>
+        <div class="space-y-6">
+          {prepSteps.map(s => (
+            <div class="flex gap-6">
+              <div class="flex-shrink-0 w-12 h-12 bg-[#D9FF00] text-black rounded-2xl flex items-center justify-center font-black text-sm">{s.step}</div>
+              <div class="flex-1 pb-6 border-b border-zinc-800">
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="text-lg font-black">{s.title}</h4>
+                  <span class="text-[10px] font-black text-[#D9FF00]">{s.time}</span>
+                </div>
+                <p class="text-zinc-400 text-sm leading-relaxed">{s.detail}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+
+  <FooterNav copyrightSuffix={`Index Authority Network. Plan ${planId}.`} />
+</BaseLayout>
