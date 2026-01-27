@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
+import RetailerChainPage from '@mealprepideas/shared/components/RetailerChainPage.astro';
+import { stores } from '@mealprepideas/shared/data/content/stores';
+
+export function getStaticPaths() {
+  return stores.map(store => ({
+    params: { slug: store.slug },
+    props: { store },
+  }));
+}
+
+const { store } = Astro.props;
+---
+<BaseLayout title={`${store.name} Meal Prep Guide | MealPrepIdeas.co`} description={store.description}>
+  <RetailerChainPage store={store} />
+</BaseLayout>

@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
+import BatchPrepPlan from '@mealprepideas/shared/components/BatchPrepPlan.astro';
+import { plans } from '@mealprepideas/shared/data/content/plans';
+
+export function getStaticPaths() {
+  return plans
+    .filter(p => p.hub === 'high-protein')
+    .map(plan => ({
+      params: { slug: plan.slug },
+      props: { plan },
+    }));
+}
+
+const { plan } = Astro.props;
+---
+<BaseLayout title={`${plan.title} | ProteinMeals.co`} description={plan.description}>
+  <BatchPrepPlan plan={plan} />
+</BaseLayout>

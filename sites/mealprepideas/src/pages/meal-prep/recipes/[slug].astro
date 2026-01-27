@@ -1,0 +1,21 @@
+---
+import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
+import MealPrepRecipe from '@mealprepideas/shared/components/MealPrepRecipe.astro';
+import { recipes } from '@mealprepideas/shared/data/content/recipes';
+import { getRelatedRecipes } from '@mealprepideas/shared/utils/content';
+
+export function getStaticPaths() {
+  return recipes
+    .filter(r => r.hub === 'meal-prep')
+    .map(recipe => ({
+      params: { slug: recipe.slug },
+      props: { recipe },
+    }));
+}
+
+const { recipe } = Astro.props;
+const related = getRelatedRecipes(recipe, 4);
+---
+<BaseLayout title={`${recipe.title} | MealPrepIdeas.co`} description={recipe.description}>
+  <MealPrepRecipe recipe={recipe} relatedRecipes={related} />
+</BaseLayout>

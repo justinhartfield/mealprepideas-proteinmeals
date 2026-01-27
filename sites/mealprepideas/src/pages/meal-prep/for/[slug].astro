@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
+import PersonaConditionPage from '@mealprepideas/shared/components/PersonaConditionPage.astro';
+import { facets } from '@mealprepideas/shared/data/taxonomy';
+import { getRecipesMatchingAnyFacet } from '@mealprepideas/shared/utils/content';
+
+export function getStaticPaths() {
+  return facets.persona.values.map(persona => ({
+    params: { slug: persona },
+    props: { persona },
+  }));
+}
+
+const { persona } = Astro.props;
+const label = persona.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+const matchingRecipes = getRecipesMatchingAnyFacet('meal-prep', 'persona', persona);
+---
+<BaseLayout 
+  title={`Meal Prep for ${label} | MealPrepIdeas.co`} 
+  description={`Complete meal prep guide for ${label.toLowerCase()}. Recipes, plans, and tips tailored to your needs.`}
+>
+  <PersonaConditionPage 
+    persona={persona}
+    label={label}
+    hub="meal-prep"
+    recipes={matchingRecipes}
+  />
+</BaseLayout>

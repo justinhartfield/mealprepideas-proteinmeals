@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
+import PersonaConditionPage from '@mealprepideas/shared/components/PersonaConditionPage.astro';
+import { facets } from '@mealprepideas/shared/data/taxonomy';
+import { getRecipesMatchingAnyFacet } from '@mealprepideas/shared/utils/content';
+
+export function getStaticPaths() {
+  return facets.persona.values.map(persona => ({
+    params: { slug: persona },
+    props: { persona },
+  }));
+}
+
+const { persona } = Astro.props;
+const label = persona.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+const matchingRecipes = getRecipesMatchingAnyFacet('high-protein', 'persona', persona);
+---
+<BaseLayout 
+  title={`High Protein for ${label} | ProteinMeals.co`} 
+  description={`High protein meal guide for ${label.toLowerCase()}. Recipes, macros, and nutrition tips tailored to your needs.`}
+>
+  <PersonaConditionPage 
+    persona={persona}
+    label={label}
+    hub="high-protein"
+    recipes={matchingRecipes}
+  />
+</BaseLayout>
