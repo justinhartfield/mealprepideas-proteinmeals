@@ -3,65 +3,81 @@
  * HighProteinRecipe — High Protein Recipe Page (T4)
  * Theme-aware: uses CSS custom properties
  * Includes Schema.org Recipe structured data
+ * Accepts a `recipe` object from the recipe data layer
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
-
-interface Ingredient { id: string; text: string; }
-interface Step { number: string; title: string; detail: string; time?: string; }
-interface Macro { label: string; value: string; percent: number; color?: string; }
+import type { Recipe } from '../data/content/recipes';
 
 interface Props {
-  title: string; description?: string; canonicalUrl?: string;
-  recipeName: string; recipeId?: string;
-  prepTime?: string; cookTime?: string; totalTime?: string; servings?: number;
-  proteinPerServing?: string; caloriesPerServing?: string; peRatio?: string;
-  macros?: Macro[];
-  ingredients?: Ingredient[];
-  steps?: Step[];
-  dietVariants?: { name: string; adjustments: string }[];
-  heroImage?: string;
-  tags?: string[];
+  recipe: Recipe;
+  relatedRecipes?: Recipe[];
 }
 
-const {
-  title, description, canonicalUrl, recipeName, recipeId = 'HP-001',
-  prepTime = '10m', cookTime = '20m', totalTime = '30m', servings = 4,
-  proteinPerServing = '48g', caloriesPerServing = '485', peRatio = '2.8',
-  macros = [
-    { label: 'Protein', value: '48g', percent: 85 },
-    { label: 'Carbs', value: '28g', percent: 40 },
-    { label: 'Fat', value: '14g', percent: 35 },
-    { label: 'Fiber', value: '6g', percent: 25 },
-  ],
-  ingredients = [],
-  steps = [],
-  dietVariants = [],
-  heroImage = 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&q=80&w=1200',
-  tags = [],
-} = Astro.props;
+const { recipe, relatedRecipes = [] } = Astro.props;
 
-// Helper to parse time string like "15m" → "PT15M"
-function toISO8601Duration(t: string): string {
-  const h = t.match(/(\d+)\s*h/);
-  const mins = t.match(/(\d+)\s*m/);
-  let iso = 'PT';
-  if (h) iso += h[1] + 'H';
-  if (mins) iso += mins[1] + 'M';
-  return iso === 'PT' ? `PT${t.replace(/[^0-9]/g, '')}M` : iso;
+// Build image path — local image for this recipe slug
+const localImagePath = `/images/recipes/${recipe.slug}.jpg`;
+const heroImage = localImagePath;
+const fallbackImage = 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&q=80&w=1200';
+
+// Map recipe data to template values
+const recipeName = recipe.title;
+const recipeId = `HP-${recipe.slug.split('-').map(w => w[0]?.toUpperCase()).join('').slice(0, 4)}`;
+const prepTime = `${recipe.prepTime}m`;
+const cookTime = `${recipe.cookTime}m`;
+const totalTime = `${recipe.prepTime + recipe.cookTime}m`;
+const servings = recipe.servings;
+const proteinPerServing = `${recipe.protein}g`;
+const caloriesPerServing = `${recipe.calories}`;
+const peRatio = (recipe.protein * 4 / Math.max(1, recipe.calories - recipe.protein * 4)).toFixed(1);
+
+const macros = [
+  { label: 'Protein', value: `${recipe.protein}g`, percent: Math.min(100, Math.round((recipe.protein / 50) * 100)) },
+  { label: 'Carbs', value: `${recipe.carbs}g`, percent: Math.min(100, Math.round((recipe.carbs / 100) * 100)) },
+  { label: 'Fat', value: `${recipe.fat}g`, percent: Math.min(100, Math.round((recipe.fat / 65) * 100)) },
+  { label: 'Fiber', value: `${recipe.fiber || 0}g`, percent: Math.min(100, Math.round(((recipe.fiber || 0) / 30) * 100)) },
+];
+
+const ingredients = recipe.ingredients.map((text, i) => ({ id: `ing-${i}`, text }));
+const steps = recipe.instructions.map((detail, i) => ({
+  number: String(i + 1).padStart(2, '0'),
+  title: `Step ${i + 1}`,
+  detail,
+}));
+
+const tags = Object.values(recipe.facets).filter(Boolean).slice(0, 4) as string[];
+
+// Construct diet variants from facets
+const dietVariants = [
+  recipe.facets.diet && { name: `${recipe.facets.diet} Variation`, adjustments: `This recipe is optimized for ${recipe.facets.diet} dietary requirements.` },
+  recipe.facets.goal && { name: `${recipe.facets.goal} Focus`, adjustments: `Portion and macro-adjusted for ${recipe.facets.goal} goals.` },
+].filter(Boolean) as { name: string; adjustments: string }[];
+
+// Parse time to ISO8601 Duration
+function toISO8601Duration(minutes: number): string {
+  if (minutes >= 60) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `PT${h}H${m > 0 ? m + 'M' : ''}`;
+  }
+  return `PT${minutes}M`;
 }
+
+const pageTitle = `${recipeName} | ProteinMeals.co`;
+const pageDescription = recipe.description;
 
 const structuredData = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'Recipe',
   name: recipeName,
-  description: description || `${recipeName} — high protein recipe optimized for macro targets.`,
+  description: recipe.description,
   image: heroImage,
-  prepTime: toISO8601Duration(prepTime),
-  cookTime: toISO8601Duration(cookTime),
-  totalTime: toISO8601Duration(totalTime),
+  prepTime: toISO8601Duration(recipe.prepTime),
+  cookTime: toISO8601Duration(recipe.cookTime),
+  totalTime: toISO8601Duration(recipe.prepTime + recipe.cookTime),
   recipeYield: `${servings} servings`,
   recipeCategory: 'High Protein',
   nutrition: {
@@ -69,7 +85,7 @@ const structuredData = JSON.stringify({
     proteinContent: proteinPerServing,
     calories: `${caloriesPerServing} cal`,
   },
-  recipeIngredient: ingredients.map(i => i.text),
+  recipeIngredient: recipe.ingredients,
   recipeInstructions: steps.map(s => ({
     '@type': 'HowToStep',
     name: s.title,
@@ -78,7 +94,7 @@ const structuredData = JSON.stringify({
 });
 ---
 
-<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl} structuredData={structuredData}>
+<BaseLayout title={pageTitle} description={pageDescription} canonicalUrl={`/high-protein/recipes/${recipe.slug}/`} structuredData={structuredData}>
   <HeaderNav
     statusText="Schema: Recipe + HowTo"
     navLinks={[
@@ -87,7 +103,7 @@ const structuredData = JSON.stringify({
     ]}
   />
 
-  <main class="flex-grow" x-data={`{ dietView: 'original', servings: ${servings} }`}>
+  <main class="flex-grow" x-data={`{ dietView: 'original', servings: ${servings}, }`}>
     <BreadcrumbNav items={[
       { label: 'Home', href: '/' },
       { label: 'High Protein', href: '/high-protein/' },
@@ -104,7 +120,8 @@ const structuredData = JSON.stringify({
               <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--bg-tertiary);">{tag}</span>
             ))}
           </div>
-          <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-8">{recipeName}</h1>
+          <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-4">{recipeName}</h1>
+          <p class="text-base mb-8 leading-relaxed" style="color: var(--text-secondary);">{recipe.description}</p>
 
           <!-- Key Metrics -->
           <div class="grid grid-cols-4 gap-3 mb-8">
@@ -146,7 +163,15 @@ const structuredData = JSON.stringify({
         </div>
         <div class="md:col-span-5">
           <div class="aspect-[4/5] rounded-3xl overflow-hidden border relative group" style="border-color: var(--border-default);">
-            <img src={heroImage} class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt={recipeName} />
+            <img
+              src={heroImage}
+              onerror={`this.onerror=null;this.src='${fallbackImage}'`}
+              class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000"
+              alt={recipe.imageAlt || recipeName}
+              width="600"
+              height="750"
+              loading="eager"
+            />
             <div class="recipe-gradient absolute inset-0"></div>
             <div class="scanner-line"></div>
             <div class="absolute bottom-6 left-6 right-6 backdrop-blur-md p-4 rounded-xl border" style="background-color: color-mix(in srgb, var(--bg-primary) 90%, transparent); border-color: var(--border-default);">
@@ -206,6 +231,43 @@ const structuredData = JSON.stringify({
               <p class="text-sm" style="color: var(--text-secondary);">{v.adjustments}</p>
             </div>
           ))}
+        </div>
+      </section>
+    )}
+
+    <!-- RELATED RECIPES -->
+    {relatedRecipes.length > 0 && (
+      <section class="py-16 px-6 border-t" style="border-color: var(--border-default); background: var(--bg-tertiary);">
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-3xl font-black tracking-tighter mb-8">More High Protein Recipes</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {relatedRecipes.map(r => (
+              <a href={`/high-protein/recipes/${r.slug}/`} class="group rounded-2xl overflow-hidden border transition-all hover:shadow-lg" style="border-color: var(--border-default); background: var(--bg-secondary);">
+                <div class="aspect-video overflow-hidden relative">
+                  <img
+                    src={`/images/recipes/${r.slug}.jpg`}
+                    onerror={`this.onerror=null;this.src='${fallbackImage}'`}
+                    alt={r.imageAlt || r.title}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    width="400"
+                    height="225"
+                    loading="lazy"
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                </div>
+                <div class="p-4">
+                  <h3 class="font-black text-sm mb-2 group-hover:opacity-80 transition-opacity">{r.title}</h3>
+                  <div class="flex gap-3 text-[10px] font-bold" style="color: var(--text-tertiary);">
+                    <span>{r.protein}g protein</span>
+                    <span>·</span>
+                    <span>{r.calories} cal</span>
+                    <span>·</span>
+                    <span>{r.prepTime + r.cookTime}m</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
     )}

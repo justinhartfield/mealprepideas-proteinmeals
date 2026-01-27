@@ -7,6 +7,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import FacetNav from './FacetNav.astro';
+import { recipes } from '../data/content/recipes';
+
+const mealPrepRecipes = recipes.filter(r => r.hub === 'meal-prep').slice(0, 8);
+const fallbackImage = 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=800';
 
 interface Props {
   title: string;
@@ -124,7 +128,7 @@ const structuredData = JSON.stringify({
           <div class="scanner-line"></div>
           <div class="relative aspect-square rounded-3xl overflow-hidden shadow-2xl"
                style="border: 1px solid var(--border-default);">
-            <img src="https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" alt="Batch Cooking" />
+            <img src="/images/hero-meal-prep.jpg" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=1000'" class="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" alt="Organized meal prep containers with colorful food, birds eye view" width="1000" height="1000" />
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
             <div class="absolute bottom-8 left-8 right-8 backdrop-blur-md p-6 rounded-2xl"
                  style="background: var(--bg-nav); border: 1px solid var(--border-default);">
@@ -258,6 +262,51 @@ const structuredData = JSON.stringify({
             <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- FEATURED RECIPES -->
+    <section class="py-24 px-6 max-w-7xl mx-auto">
+      <div class="flex items-center gap-4 mb-12">
+        <div class="h-[2px] w-24" style="background-color: var(--accent-primary);"></div>
+        <h2 class="text-xs font-black tracking-[0.5em] uppercase" style="color: var(--text-tertiary);">Featured Recipes</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {mealPrepRecipes.map(r => (
+          <a href={`/meal-prep/recipes/${r.slug}/`} class="group rounded-2xl overflow-hidden border transition-all hover:shadow-lg hover:-translate-y-1" style="border-color: var(--border-default); background: var(--bg-secondary);">
+            <div class="aspect-video overflow-hidden relative">
+              <img
+                src={`/images/recipes/${r.slug}.jpg`}
+                onerror={`this.onerror=null;this.src='${fallbackImage}'`}
+                alt={r.imageAlt || r.title}
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                width="400"
+                height="225"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div class="absolute bottom-3 left-3">
+                <span class="px-2 py-1 rounded text-[9px] font-black uppercase" style="background-color: var(--accent-primary); color: var(--text-inverse);">{r.protein}g protein</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-black text-sm mb-2 leading-tight group-hover:opacity-80 transition-opacity">{r.title}</h3>
+              <div class="flex gap-3 text-[10px] font-bold" style="color: var(--text-tertiary);">
+                <span>{r.calories} cal</span>
+                <span>·</span>
+                <span>{r.prepTime + r.cookTime}m total</span>
+                <span>·</span>
+                <span>{r.servings} servings</span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+      <div class="text-center mt-10">
+        <a href="/meal-prep/method/crockpot/" class="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest transition-colors" style="color: var(--accent-primary);">
+          Browse All Recipes
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+        </a>
       </div>
     </section>
 

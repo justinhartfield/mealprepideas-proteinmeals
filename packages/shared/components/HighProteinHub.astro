@@ -7,6 +7,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import FacetNav from './FacetNav.astro';
+import { recipes } from '../data/content/recipes';
+
+const highProteinRecipes = recipes.filter(r => r.hub === 'high-protein').slice(0, 8);
+const fallbackImage = 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&q=80&w=800';
 
 interface Props {
   title: string;
@@ -278,6 +282,45 @@ const facetGroups = [
             </div>
           </a>
         </div>
+      </div>
+    </section>
+
+    <!-- FEATURED HIGH PROTEIN RECIPES -->
+    <section class="py-24 px-6 max-w-7xl mx-auto">
+      <div class="flex items-center gap-4 mb-12">
+        <div class="h-[1px] flex-grow" style="background: var(--border-default);"></div>
+        <h2 class="text-[10px] font-black uppercase tracking-[0.5em] whitespace-nowrap" style="color: var(--text-tertiary);">Featured High Protein Recipes</h2>
+        <div class="h-[1px] flex-grow" style="background: var(--border-default);"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {highProteinRecipes.map(r => (
+          <a href={`/high-protein/recipes/${r.slug}/`} class="group rounded-2xl overflow-hidden border transition-all hover:shadow-lg hover:-translate-y-1" style="border-color: var(--border-default); background: var(--bg-secondary);">
+            <div class="aspect-video overflow-hidden relative">
+              <img
+                src={`/images/recipes/${r.slug}.jpg`}
+                onerror={`this.onerror=null;this.src='${fallbackImage}'`}
+                alt={r.imageAlt || r.title}
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                width="400"
+                height="225"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div class="absolute bottom-3 left-3 flex gap-2">
+                <span class="px-2 py-1 rounded text-[9px] font-black uppercase" style="background-color: var(--accent-primary); color: var(--text-inverse);">{r.protein}g protein</span>
+                <span class="px-2 py-1 rounded text-[9px] font-black uppercase" style="background: rgba(0,0,0,0.6); color: white;">{r.calories} cal</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-black text-sm mb-2 leading-tight group-hover:opacity-80 transition-opacity">{r.title}</h3>
+              <div class="flex gap-3 text-[10px] font-bold" style="color: var(--text-tertiary);">
+                <span>{r.prepTime + r.cookTime}m total</span>
+                <span>·</span>
+                <span>{r.servings} servings</span>
+              </div>
+            </div>
+          </a>
+        ))}
       </div>
     </section>
 

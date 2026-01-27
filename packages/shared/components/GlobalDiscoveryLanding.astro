@@ -7,6 +7,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import FacetNav from './FacetNav.astro';
+import { recipes } from '../data/content/recipes';
+
+const featuredMealPrep = recipes.filter(r => r.hub === 'meal-prep').slice(0, 3);
+const featuredProtein = recipes.filter(r => r.hub === 'high-protein').slice(0, 3);
+const fallbackImg = 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=600';
 
 interface Props {
   title: string;
@@ -50,8 +55,8 @@ const facetChips = [
          style="border-right: 1px solid var(--border-default);"
          x-bind:class="activeHub === 'high-protein' ? 'opacity-30' : 'opacity-100'">
         <div class="absolute inset-0 transition-colors" style="background-color: var(--bg-secondary);"></div>
-        <img src="https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=1200"
-             class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-20 group-hover:opacity-40 transition-opacity duration-700" alt="Meal Prep" />
+        <img src="/images/hero-meal-prep.jpg" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=1200'"
+             class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-20 group-hover:opacity-40 transition-opacity duration-700" alt="Meal Prep" width="1200" height="675" />
         <div class="relative z-10">
           <span class="text-xs font-bold tracking-[0.5em] block mb-4" style="color: var(--accent-primary);">OPTIMIZE LOGISTICS</span>
           <h2 class="text-6xl md:text-8xl font-black tracking-tighter mb-4 leading-none" style="color: var(--text-primary);">MEAL<br/>PREP</h2>
@@ -73,8 +78,8 @@ const facetChips = [
          class="relative flex-1 group transition-all duration-700 ease-out flex flex-col justify-end p-12 overflow-hidden"
          x-bind:class="activeHub === 'meal-prep' ? 'opacity-30' : 'opacity-100'">
         <div class="absolute inset-0 transition-colors" style="background-color: var(--bg-secondary);"></div>
-        <img src="https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&q=80&w=1200"
-             class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-20 group-hover:opacity-40 transition-opacity duration-700" alt="High Protein" />
+        <img src="/images/hero-high-protein.jpg" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&q=80&w=1200'"
+             class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-20 group-hover:opacity-40 transition-opacity duration-700" alt="High Protein" width="1200" height="675" />
         <div class="relative z-10">
           <span class="text-xs font-bold tracking-[0.5em] block mb-4" style="color: var(--accent-primary);">OPTIMIZE MACROS</span>
           <h2 class="text-6xl md:text-8xl font-black tracking-tighter mb-4 leading-none" style="color: var(--text-primary);">HIGH<br/>PROTEIN</h2>
@@ -143,6 +148,78 @@ const facetChips = [
           <span class="relative z-10 text-xl font-black uppercase tracking-tight">Generate Index</span>
           <span class="relative z-10 text-[10px] font-bold opacity-60">MATCHING DATA POINTS</span>
         </button>
+      </div>
+    </section>
+
+    <!-- TRENDING RECIPES -->
+    <section class="py-20 px-6 max-w-7xl mx-auto">
+      <div class="flex items-center gap-4 mb-12">
+        <div class="h-[2px] w-16" style="background-color: var(--accent-primary);"></div>
+        <h3 class="text-xs font-black tracking-[0.5em] uppercase" style="color: var(--text-tertiary);">Trending Recipes</h3>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Meal Prep Column -->
+        <div>
+          <h4 class="text-lg font-black tracking-tight mb-6 uppercase" style="color: var(--text-primary);">Meal Prep</h4>
+          <div class="space-y-4">
+            {featuredMealPrep.map(r => (
+              <a href={`/meal-prep/recipes/${r.slug}/`} class="flex gap-4 items-center group p-3 rounded-xl transition-all hover:shadow-md" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+                <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                  <img
+                    src={`/images/recipes/${r.slug}.jpg`}
+                    onerror={`this.onerror=null;this.src='${fallbackImg}'`}
+                    alt={r.imageAlt || r.title}
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    width="80"
+                    height="80"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h5 class="font-black text-sm mb-1 truncate group-hover:opacity-80 transition-opacity">{r.title}</h5>
+                  <div class="flex gap-3 text-[10px] font-bold" style="color: var(--text-tertiary);">
+                    <span>{r.protein}g protein</span>
+                    <span>·</span>
+                    <span>{r.calories} cal</span>
+                    <span>·</span>
+                    <span>{r.prepTime + r.cookTime}m</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+        </div>
+        </div>
+        <!-- High Protein Column -->
+        <div>
+          <h4 class="text-lg font-black tracking-tight mb-6 uppercase" style="color: var(--text-primary);">High Protein</h4>
+          <div class="space-y-4">
+            {featuredProtein.map(r => (
+              <a href={`/high-protein/recipes/${r.slug}/`} class="flex gap-4 items-center group p-3 rounded-xl transition-all hover:shadow-md" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+                <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                  <img
+                    src={`/images/recipes/${r.slug}.jpg`}
+                    onerror={`this.onerror=null;this.src='${fallbackImg}'`}
+                    alt={r.imageAlt || r.title}
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    width="80"
+                    height="80"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h5 class="font-black text-sm mb-1 truncate group-hover:opacity-80 transition-opacity">{r.title}</h5>
+                  <div class="flex gap-3 text-[10px] font-bold" style="color: var(--text-tertiary);">
+                    <span>{r.protein}g protein</span>
+                    <span>·</span>
+                    <span>{r.calories} cal</span>
+                    <span>·</span>
+                    <span>{r.prepTime + r.cookTime}m</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
 

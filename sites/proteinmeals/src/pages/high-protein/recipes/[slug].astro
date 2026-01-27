@@ -1,5 +1,4 @@
 ---
-import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
 import HighProteinRecipe from '@mealprepideas/shared/components/HighProteinRecipe.astro';
 import { recipes } from '@mealprepideas/shared/data/content/recipes';
 import { getRelatedRecipes } from '@mealprepideas/shared/utils/content';
@@ -16,6 +15,4 @@ export function getStaticPaths() {
 const { recipe } = Astro.props;
 const related = getRelatedRecipes(recipe, 4);
 ---
-<BaseLayout title={`${recipe.title} | ProteinMeals.co`} description={recipe.description}>
-  <HighProteinRecipe recipe={recipe} relatedRecipes={related} />
-</BaseLayout>
+<HighProteinRecipe recipe={recipe} relatedRecipes={related} />
