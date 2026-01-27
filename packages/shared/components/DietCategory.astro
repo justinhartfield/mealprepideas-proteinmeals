@@ -86,7 +86,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
 
   {faqStructuredData && <script type="application/ld+json" set:html={faqStructuredData} />}
 
-  <main class="flex-grow" x-data={`{ filter: 'all', faqOpen: null, hubPath: '${hubPath}', recipes: ${recipesJson} }`}>
+  <main class="flex-grow" x-data={`{ filter: 'all', faqOpen: null, hubPath: '${hubPath}', recipes: ${recipesJson}, showCount: 6, get visibleRecipes() { const filtered = this.filter === 'all' ? this.recipes : this.recipes.filter(r => r.tags && r.tags.includes(this.filter)); return filtered.slice(0, this.showCount); }, get totalFiltered() { return this.filter === 'all' ? this.recipes.length : this.recipes.filter(r => r.tags && r.tags.includes(this.filter)).length; }, get allShown() { return this.showCount >= this.totalFiltered; } }`}>
     <!-- BREADCRUMB + HERO -->
     <section class="relative pt-20 pb-12 px-6 border-b" style="border-color: var(--border-default);">
       <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
@@ -160,8 +160,8 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     <!-- RECIPE GRID -->
     <section class="py-12 px-6 max-w-7xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <template x-for="recipe in recipes" x-bind:key="recipe.id">
-          <div x-show="filter === 'all' || recipe.tags.includes(filter)"
+        <template x-for="recipe in visibleRecipes" x-bind:key="recipe.id">
+          <div
                x-transition:enter="transition ease-out duration-300"
                x-transition:enter-start="opacity-0 transform translate-y-4"
                x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -201,9 +201,12 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
           </div>
         </template>
       </div>
-      <div class="mt-12 flex justify-center">
-        <button class="border px-12 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.3em] transition-all hover-accent-border" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
-          Load Next 20 Entries
+      <div x-show="!allShown" class="mt-12 flex flex-col items-center gap-4">
+        <div class="w-full max-w-xs h-1 rounded-full relative overflow-hidden" style="background-color: var(--bg-secondary);">
+          <div class="absolute top-0 left-0 h-full transition-all duration-500" x-bind:style="'width: ' + Math.round(Math.min(showCount, totalFiltered) / totalFiltered * 100) + '%; background-color: var(--accent-primary);'"></div>
+        </div>
+        <button x-on:click="showCount += 6" class="border px-12 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.3em] transition-all hover-accent-border cursor-pointer" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+          Retrieve Additional Inventory <span style="color: var(--text-secondary);">(Showing <span x-text="Math.min(showCount, totalFiltered)"></span> of <span x-text="totalFiltered"></span>)</span>
         </button>
       </div>
     </section>
