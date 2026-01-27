@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aldi: Low-Calorie High-Protein Protocol | ProteinMeals.co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pantry-cream: #F9F7F2;
+            --pantry-slate: #2D3436;
+            --pantry-sage: #7E9680;
+            --pantry-accent: #E67E22; 
+            --label-tape: #EFEFEF;
+            --aldi-blue: #002677;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--pantry-cream);
+            color: var(--pantry-slate);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .pantry-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 4px 0px rgba(0,0,0,0.02), 0 15px 35px -5px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pantry-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
+        }
+
+        .label-text {
+            display: inline-block;
+            background: var(--label-tape);
+            padding: 2px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            font-size: 0.7rem;
+            border-left: 3px solid var(--pantry-sage);
+        }
+
+        .filter-chip {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .filter-chip.active {
+            background-color: var(--pantry-slate);
+            color: white;
+            border-color: var(--pantry-slate);
+        }
+
+        .macro-badge {
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #F1F5F9;
+            color: #475569;
+        }
+
+        [x-cloak] { display: none !important; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--pantry-cream); }
+        ::-webkit-scrollbar-thumb { background: var(--pantry-sage); border-radius: 10px; }
+
+        .btn-system {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body x-data="{ 
+    filter: 'all',
+    cart: [],
+    items: [
+        { id: 1, name: 'Kirkwood Breaded Chicken Fillets', cal: 280, pro: 29, price: 7.99, cat: 'frozen', note: 'The famous Red Bag Chicken. High protein, fits low-cal if air-fried.' },
+        { id: 2, name: 'Park Street Deli Hummus', cal: 70, pro: 2, price: 2.49, cat: 'snacks', note: 'Excellent volume-to-calorie ratio for snacking.' },
+        { id: 3, name: 'Egg Whites (Large Carton)', cal: 25, pro: 5, price: 4.19, cat: 'fridge', note: 'The ultimate lean protein base for any breakfast.' },
+        { id: 4, name: 'Fit & Active Turkey Bacon', cal: 35, pro: 6, price: 3.89, cat: 'fridge', note: 'Low fat, low calorie, high satisfaction.' },
+        { id: 5, name: 'Season’s Choice Steamed Broccoli', cal: 30, pro: 3, price: 0.98, cat: 'frozen', note: 'Essential high-fiber filler to keep protein meals satiating.' },
+        { id: 6, name: 'Specially Selected Ahi Tuna', cal: 110, pro: 25, price: 6.49, cat: 'frozen', note: 'Sushi grade. Incredible P:E ratio.' },
+        { id: 7, name: 'Earthly Grains Quinoa', cal: 160, pro: 6, price: 2.99, cat: 'pantry', note: 'Complex carb with a protein kick.' },
+        { id: 8, name: 'Friendly Farms Greek Yogurt (Non-Fat)', cal: 90, pro: 18, price: 3.49, cat: 'fridge', note: 'Versatile base for high-protein dressings or breakfast.' },
+        { id: 9, name: 'Cattlemen’s Ranch Grass-Fed Beef', cal: 190, pro: 21, price: 5.29, cat: 'fridge', note: 'Lean (85/15 or 90/10) options are staple macro-movers.' },
+        { id: 10, name: 'Simms Turkey Meat Sticks', cal: 60, pro: 8, price: 4.99, cat: 'pantry', note: 'Emergency protein for the car or office.' }
+    ],
+    get filteredItems() {
+        return this.filter === 'all' ? this.items : this.items.filter(i => i.cat === this.filter);
+    },
+    toggleCart(item) {
+        if (this.cart.includes(item.id)) {
+            this.cart = this.cart.filter(id => id !== item.id);
+        } else {
+            this.cart.push(item.id);
+        }
+    }
+}">
+    <div class="grain"></div>
+
+    <!-- Hierarchy 02 Navigation (ProteinMeals.co branding) -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/80 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="/" class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-lg text-white font-bold text-xl">P</div>
+                    <span class="font-extrabold tracking-tighter text-2xl uppercase">Protein<span class="text-orange-500">Meals</span></span>
+                </a>
+            </div>
+            <div class="hidden md:flex gap-8 text-xs font-black uppercase tracking-widest opacity-60">
+                <a href="/high-protein/store/" class="hover:text-orange-500 transition-colors">By Store</a>
+                <a href="/high-protein/diet/" class="hover:text-orange-500 transition-colors">By Diet</a>
+                <a href="/high-protein/chain/" class="hover:text-orange-500 transition-colors">Fast Food</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <button @click="openCart = !openCart" class="p-2 hover:bg-slate-100 rounded-full transition-colors relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        <span x-show="cart.length > 0" x-text="cart.length" class="absolute top-0 right-0 bg-orange-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        <!-- T3 Page Header -->
+        <header class="bg-white border-b border-black/5 pt-12 pb-16 px-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-wrap items-center gap-2 mb-6">
+                    <a href="/high-protein/" class="text-[10px] font-bold opacity-40 hover:opacity-100 uppercase tracking-widest transition-opacity">High Protein</a>
+                    <span class="text-[10px] opacity-20">/</span>
+                    <a href="/high-protein/store/" class="text-[10px] font-bold opacity-40 hover:opacity-100 uppercase tracking-widest transition-opacity">Store</a>
+                    <span class="text-[10px] opacity-20">/</span>
+                    <span class="text-[10px] font-bold text-orange-600 uppercase tracking-widest">Aldi + Low Calorie</span>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-12 items-end">
+                    <div>
+                        <span class="label-text mb-4 !border-orange-500">Constraint: Low-Calorie</span>
+                        <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-[0.85] text-slate-900 mb-6">
+                            Aldi Macro <br><span class="text-orange-500">Protocol.</span>
+                        </h1>
+                        <p class="text-xl opacity-60 leading-relaxed max-w-xl">
+                            Stop guessing at the aisles. This protocol identifies the top 10 SKUs at Aldi that maximize protein density while maintaining a strict low-calorie profile. Designed for weight loss without the "budget meal" sacrifice.
+                        </p>
+                    </div>
+                    <div class="flex md:justify-end">
+                        <div class="bg-slate-900 text-white p-8 rounded-3xl w-full max-w-sm shadow-2xl rotate-2">
+                            <h3 class="text-xs font-black uppercase tracking-[0.2em] opacity-50 mb-4">Quick Stats</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                                    <span class="text-sm">Avg. Protein/Serving</span>
+                                    <span class="font-black text-xl text-orange-400">22g</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                                    <span class="text-sm">Avg. Calories</span>
+                                    <span class="font-black text-xl text-orange-400">&lt;250</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm">Store Rating</span>
+                                    <span class="font-black text-xl text-emerald-400">S-Tier</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Top 10 List Section -->
+        <section class="max-w-7xl mx-auto py-20 px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-8">
+                <div>
+                    <h2 class="text-3xl font-black tracking-tight mb-2">The Canonical Top 10</h2>
+                    <p class="opacity-50 font-medium">Curated SKU-level list for Aldi shoppers.</p>
+                </div>
+                
+                <!-- Client-side Filters -->
+                <div class="flex flex-wrap gap-2 p-1 bg-white border border-black/5 rounded-2xl">
+                    <button @click="filter = 'all'" :class="filter === 'all' ? 'active' : ''" class="filter-chip px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest">All</button>
+                    <button @click="filter = 'fridge'" :class="filter === 'fridge' ? 'active' : ''" class="filter-chip px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest">Fridge</button>
+                    <button @click="filter = 'frozen'" :class="filter === 'frozen' ? 'active' : ''" class="filter-chip px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest">Frozen</button>
+                    <button @click="filter = 'pantry'" :class="filter === 'pantry' ? 'active' : ''" class="filter-chip px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest">Pantry</button>
+                </div>
+            </div>
+
+            <!-- The List Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="item in filteredItems" :key="item.id">
+                    <div class="pantry-card rounded-3xl p-6 flex flex-col group relative overflow-hidden">
+                        <!-- Rank Indicator -->
+                        <div class="absolute -top-4 -right-4 w-16 h-16 bg-slate-50 rounded-full flex items-end justify-start p-6 text-2xl font-black text-slate-200 group-hover:text-orange-100 transition-colors" x-text="`#${item.id}`"></div>
+                        
+                        <div class="mb-6 relative">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-orange-500 mb-2 block" x-text="item.cat"></span>
+                            <h3 class="text-xl font-bold leading-tight group-hover:text-orange-600 transition-colors" x-text="item.name"></h3>
+                        </div>
+
+                        <div class="flex gap-3 mb-6">
+                            <div class="flex flex-col">
+                                <span class="text-[8px] uppercase opacity-40 font-black">Protein</span>
+                                <span class="font-black text-lg" x-text="`${item.pro}g`"></span>
+                            </div>
+                            <div class="w-px h-8 bg-black/5 self-end mb-1"></div>
+                            <div class="flex flex-col">
+                                <span class="text-[8px] uppercase opacity-40 font-black">Calories</span>
+                                <span class="font-black text-lg" x-text="item.cal"></span>
+                            </div>
+                            <div class="w-px h-8 bg-black/5 self-end mb-1"></div>
+                            <div class="flex flex-col">
+                                <span class="text-[8px] uppercase opacity-40 font-black">Price</span>
+                                <span class="font-black text-lg" x-text="`$${item.price}`"></span>
+                            </div>
+                        </div>
+
+                        <p class="text-sm opacity-60 mb-8 line-clamp-3" x-text="item.note"></p>
+
+                        <div class="mt-auto flex items-center justify-between">
+                            <button @click="toggleCart(item)" 
+                                    :class="cart.includes(item.id) ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-slate-900 border-black/10'"
+                                    class="text-[10px] font-black uppercase tracking-widest border-2 px-4 py-2 rounded-full transition-all flex items-center gap-2">
+                                <span x-text="cart.includes(item.id) ? 'Added to Basket' : 'Add to Basket'"></span>
+                                <svg x-show="cart.includes(item.id)" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                            </button>
+                            <span class="text-[10px] font-bold opacity-30">P:E 1:10</span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <!-- Meal Prep Section: The Aldi Batch Logic -->
+        <section class="bg-slate-900 text-white py-24 px-6 overflow-hidden relative">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] border border-white rounded-full"></div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white rounded-full"></div>
+            </div>
+
+            <div class="max-w-7xl mx-auto relative z-10 grid md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <span class="label-text !bg-white/10 !text-white !border-orange-500 mb-6">Meal Prep Logistics</span>
+                    <h2 class="text-4xl md:text-5xl font-black mb-8 leading-tight">The Sunday <br><span class="text-orange-400">Aldi Sweep.</span></h2>
+                    <div class="space-y-6">
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-orange-500 flex-shrink-0 flex items-center justify-center font-black text-sm italic">1</div>
+                            <p class="text-slate-400"><strong class="text-white">Batch-Cook Base Proteins:</strong> Grab 2 packs of the Cattlemen’s Grass-Fed Beef. Brown it with taco seasoning on Sunday. Divide into 5 glass containers.</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-orange-500 flex-shrink-0 flex items-center justify-center font-black text-sm italic">2</div>
+                            <p class="text-slate-400"><strong class="text-white">Frozen Filler Strategy:</strong> Buy 3 bags of Season’s Choice Steamed Broccoli. Microwave and add to every meal for volume without caloric penalty.</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-orange-500 flex-shrink-0 flex items-center justify-center font-black text-sm italic">3</div>
+                            <p class="text-slate-400"><strong class="text-white">The Fridge Stabilizer:</strong> Keep the non-fat Friendly Farms Greek Yogurt on standby for sauces. Mix with ranch seasoning for a high-protein dipping sauce.</p>
+                        </div>
+                    </div>
+                    <div class="mt-12">
+                        <a href="/meal-prep/method/crockpot/" class="inline-flex items-center gap-4 text-orange-400 font-black uppercase tracking-widest text-sm hover:translate-x-2 transition-transform">
+                            Explore Aldi Crockpot Recipes <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="pantry-card !bg-white/5 !border-white/10 p-8 rounded-3xl backdrop-blur-xl">
+                    <h4 class="font-black text-xl mb-6 flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        The "Quick Prep" Timeline
+                    </h4>
+                    <div class="space-y-8 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/10">
+                        <div class="pl-10 relative">
+                            <div class="absolute left-1 top-2 w-4 h-4 rounded-full bg-slate-900 border-2 border-orange-500"></div>
+                            <span class="block text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">0 - 15 Mins</span>
+                            <p class="text-sm font-bold">Unpack Aldi haul & Preheat Air Fryer</p>
+                        </div>
+                        <div class="pl-10 relative">
+                            <div class="absolute left-1 top-2 w-4 h-4 rounded-full bg-slate-900 border-2 border-orange-500"></div>
+                            <span class="block text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">15 - 45 Mins</span>
+                            <p class="text-sm font-bold">Brown Beef + Air Fry Red Bag Chicken</p>
+                        </div>
+                        <div class="pl-10 relative">
+                            <div class="absolute left-1 top-2 w-4 h-4 rounded-full bg-slate-900 border-2 border-orange-500"></div>
+                            <span class="block text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">45 - 60 Mins</span>
+                            <p class="text-sm font-bold">Portion into containers with steamed veggies</p>
+                        </div>
+                    </div>
+                    <div class="mt-10 p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl">
+                        <p class="text-xs font-medium text-orange-200 leading-relaxed">
+                            <strong>System Note:</strong> Following this protocol results in an average cost of $2.85 per high-protein meal.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Pages: The Systemic Rail -->
+        <section class="max-w-7xl mx-auto py-24 px-6">
+            <div class="mb-12">
+                <span class="label-text mb-4">Internal Graph</span>
+                <h3 class="text-3xl font-black tracking-tight">Expand the Protocol.</h3>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-4">
+                <a href="/high-protein/store/aldi/constraint/high-fiber/" class="p-6 pantry-card rounded-2xl group">
+                    <span class="text-[8px] font-black uppercase tracking-[0.2em] opacity-30 mb-2 block">Aldi Protocol</span>
+                    <span class="font-bold text-sm block group-hover:text-orange-500 transition-colors">Switch to High-Fiber →</span>
+                </a>
+                <a href="/high-protein/store/trader-joes/constraint/low-calorie/" class="p-6 pantry-card rounded-2xl group">
+                    <span class="text-[8px] font-black uppercase tracking-[0.2em] opacity-30 mb-2 block">Store Swap</span>
+                    <span class="font-bold text-sm block group-hover:text-orange-500 transition-colors">Low-Cal Trader Joe's →</span>
+                </a>
+                <a href="/high-protein/store/costco/constraint/low-calorie/" class="p-6 pantry-card rounded-2xl group">
+                    <span class="text-[8px] font-black uppercase tracking-[0.2em] opacity-30 mb-2 block">Store Swap</span>
+                    <span class="font-bold text-sm block group-hover:text-orange-500 transition-colors">Low-Cal Costco →</span>
+                </a>
+                <a href="/high-protein/diet/vegan/constraint/low-calorie/" class="p-6 pantry-card rounded-2xl group">
+                    <span class="text-[8px] font-black uppercase tracking-[0.2em] opacity-30 mb-2 block">Diet Swap</span>
+                    <span class="font-bold text-sm block group-hover:text-orange-500 transition-colors">Low-Cal Vegan Guide →</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- FAQ Section (Schema Targeted) -->
+        <section class="bg-white py-24 px-6 border-t border-black/5">
+            <div class="max-w-3xl mx-auto">
+                <h3 class="text-3xl font-black mb-12 text-center">Protocol FAQ</h3>
+                <div class="space-y-8">
+                    <div class="pantry-card p-6 rounded-2xl">
+                        <h4 class="font-bold mb-2 text-lg">What makes a food "Low Calorie" in this system?</h4>
+                        <p class="text-sm opacity-60">We define low calorie as any whole food or prepared item that stays under 150 calories per standard serving, allowing for a 3-component meal to stay under 500 calories total.</p>
+                    </div>
+                    <div class="pantry-card p-6 rounded-2xl">
+                        <h4 class="font-bold mb-2 text-lg">Is Aldi protein actually higher quality than competitors?</h4>
+                        <p class="text-sm opacity-60">Aldi's core protein (beef, salmon, tuna) meets the same USDA standards as major retailers. The value lies in their lean SKU availability like Grass-Fed 90/10 beef at a lower price point.</p>
+                    </div>
+                    <div class="pantry-card p-6 rounded-2xl">
+                        <h4 class="font-bold mb-2 text-lg">Are these prices accurate?</h4>
+                        <p class="text-sm opacity-60">Prices are based on mid-2024 regional averages and will fluctuate by location. We update these SKUs monthly based on stock availability.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-16 px-6">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12 text-center md:text-left">
+            <div class="col-span-2">
+                <div class="flex items-center justify-center md:justify-start gap-3 mb-6">
+                    <div class="w-8 h-8 bg-white text-slate-900 flex items-center justify-center rounded-md font-black">P</div>
+                    <span class="font-black text-xl tracking-tighter uppercase">ProteinMeals.co</span>
+                </div>
+                <p class="text-slate-400 max-w-sm mb-8 mx-auto md:mx-0 text-sm">Designing the world's most organized macro taxonomy. Data-backed retail audits for high-protein living.</p>
+            </div>
+            
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Systems</h6>
+                <ul class="space-y-4 text-xs font-bold uppercase tracking-widest">
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">By Store</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">By Constraint</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">By Goal</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Company</h6>
+                <ul class="space-y-4 text-xs font-bold uppercase tracking-widest">
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Taxonomy Map</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Privacy Protocol</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Contact System</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-white/5 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">© 2024 ProteinMeals.co / Systemic Meals Network.</p>
+            <div class="flex gap-4">
+                <!-- Social SVGs from reference -->
+            </div>
+        </div>
+    </footer>
+
+    <!-- Build a Basket Sticky Drawer (Alpine) -->
+    <div x-show="cart.length > 0" 
+         x-transition:enter="transition ease-out duration-300 transform"
+         x-transition:enter-start="translate-y-full"
+         x-transition:enter-end="translate-y-0"
+         class="fixed bottom-0 left-0 w-full z-50 bg-white border-t-4 border-orange-500 p-6 shadow-2xl" x-cloak>
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-6">
+                <div class="flex -space-x-3">
+                    <template x-for="id in cart.slice(0, 5)">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center font-black text-[10px]" x-text="id"></div>
+                    </template>
+                </div>
+                <div>
+                    <h5 class="font-black text-sm uppercase tracking-tight">Your High-Protein Basket</h5>
+                    <p class="text-xs opacity-50" x-text="`${cart.length} items selected for your Aldi sweep.`"></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button @click="cart = []" class="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100">Clear</button>
+                <button class="bg-slate-900 text-white px-8 py-3 rounded-full font-black text-xs uppercase tracking-[0.2em] hover:scale-105 transition-transform">Get Shopping List</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Kirkwood Breaded Chicken Fillets",
+          "url": "https://proteinmeals.co/high-protein/store/aldi/constraint/low-calorie/"
+        }
+      ]
+    }
+    </script>
+</body>
+</html>

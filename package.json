@@ -1,0 +1,21 @@
+{
+  "name": "mealprepideas-proteinmeals",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "sites/*"
+  ],
+  "scripts": {
+    "dev:mealprepideas": "pnpm --filter mealprepideas dev",
+    "dev:proteinmeals": "pnpm --filter proteinmeals dev",
+    "build:mealprepideas": "pnpm --filter mealprepideas build",
+    "build:proteinmeals": "pnpm --filter proteinmeals build",
+    "build:all": "pnpm --filter './sites/*' build",
+    "preview:mealprepideas": "pnpm --filter mealprepideas preview",
+    "preview:proteinmeals": "pnpm --filter proteinmeals preview"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.0",
+    "prettier-plugin-astro": "^0.14.0"
+  }
+}

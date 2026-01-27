@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High-Protein Lemon Herb Chicken Prep | Systemic Meals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pantry-cream: #F9F7F2;
+            --pantry-slate: #2D3436;
+            --pantry-sage: #7E9680;
+            --pantry-accent: #E67E22;
+            --label-tape: #EFEFEF;
+            --p-ratio-color: #E67E22;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--pantry-cream);
+            color: var(--pantry-slate);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 99;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .pantry-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: 0 4px 0px rgba(0,0,0,0.01), 0 10px 30px -5px rgba(0,0,0,0.04);
+        }
+
+        .label-text {
+            display: inline-block;
+            background: var(--label-tape);
+            padding: 2px 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            font-size: 0.65rem;
+            border-left: 3px solid var(--pantry-sage);
+        }
+
+        .macro-pill {
+            background: white;
+            border: 1.5px solid var(--pantry-slate);
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 3px 3px 0px var(--pantry-slate);
+        }
+
+        .pe-ratio-meter {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .pe-ratio-fill {
+            height: 100%;
+            background: var(--pantry-accent);
+            transition: width 1s ease-out;
+        }
+
+        /* Recipe specific interactions */
+        .step-checkbox:checked + label {
+            opacity: 0.4;
+            text-decoration: line-through;
+        }
+
+        .custom-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--pantry-sage);
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .custom-checkbox:checked {
+            background-color: var(--pantry-sage);
+        }
+
+        .custom-checkbox:checked::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .sticky-nav-recipe {
+            transition: transform 0.3s ease;
+        }
+
+        [x-cloak] { display: none !important; }
+
+        .image-aspect {
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+        }
+    </style>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Recipe",
+      "name": "Systemic High-Protein Lemon Herb Chicken",
+      "image": ["https://images.unsplash.com/photo-1532550907401-a500c9a57435"],
+      "author": { "@type": "Organization", "name": "Systemic Meals" },
+      "prepTime": "PT15M",
+      "cookTime": "PT20M",
+      "totalTime": "PT35M",
+      "recipeYield": "5 servings",
+      "nutrition": {
+        "@type": "NutritionInformation",
+        "calories": "340 calories",
+        "proteinContent": "42g"
+      }
+    }
+    </script>
+</head>
+<body x-data="{ 
+    servings: 5, 
+    baseCalories: 340, 
+    baseProtein: 42,
+    baseFat: 12,
+    baseCarbs: 8,
+    activeTab: 'ingredients'
+}">
+    <div class="grain"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/80 backdrop-blur-md px-6 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="/" class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-slate-900 flex items-center justify-center rounded text-white font-bold text-lg">M</div>
+                    <span class="font-black tracking-tighter text-xl uppercase hidden sm:block">Systemic Meals</span>
+                </a>
+                <div class="h-6 w-[1px] bg-black/10 mx-2"></div>
+                <div class="flex gap-2">
+                    <span class="label-text !border-emerald-500">Meal-Prep</span>
+                    <span class="label-text !border-orange-500 hidden sm:inline-block">High-Protein</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="text-[10px] font-black tracking-widest bg-slate-100 px-3 py-1.5 rounded hover:bg-slate-200 transition-colors">SAVE TO SYSTEM</button>
+                <div class="w-8 h-8 rounded-full bg-slate-200 border-2 border-white overflow-hidden shadow-sm">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        <!-- Recipe Header Hero -->
+        <section class="max-w-7xl mx-auto px-6 pt-12 pb-16 grid lg:grid-cols-12 gap-12 items-start">
+            
+            <!-- Column 1: Core Info -->
+            <div class="lg:col-span-7 space-y-8">
+                <nav class="flex items-center gap-2 text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+                    <a href="/high-protein/" class="hover:text-slate-900">High-Protein</a>
+                    <span>/</span>
+                    <a href="/high-protein/method/sheet-pan/" class="hover:text-slate-900">Sheet-Pan</a>
+                    <span>/</span>
+                    <span class="text-slate-900">Lemon Herb Chicken</span>
+                </nav>
+
+                <div class="space-y-4">
+                    <h1 class="text-5xl md:text-6xl font-black leading-[0.9] tracking-tighter">
+                        Lemon Herb <br><span class="text-emerald-600">Sheet-Pan Chicken</span>
+                    </h1>
+                    <p class="text-xl opacity-60 font-medium max-w-2xl">
+                        A foundational high-protein protocol. Engineered for 5-day freshness, zero-soggy-textures, and a high P:E ratio of 2.8.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap gap-4">
+                    <div class="macro-pill flex flex-col items-center min-w-[100px]">
+                        <span class="text-[10px] font-black text-slate-400 uppercase">Calories</span>
+                        <span class="text-2xl font-black" x-text="Math.round(baseCalories * (servings/5))"></span>
+                    </div>
+                    <div class="macro-pill flex flex-col items-center min-w-[100px] !bg-orange-50 !border-orange-500">
+                        <span class="text-[10px] font-black text-orange-400 uppercase">Protein</span>
+                        <span class="text-2xl font-black text-orange-600" x-text="Math.round(baseProtein * (servings/5)) + 'g'"></span>
+                    </div>
+                    <div class="macro-pill flex flex-col items-center min-w-[100px]">
+                        <span class="text-[10px] font-black text-slate-400 uppercase">Carbs</span>
+                        <span class="text-2xl font-black" x-text="Math.round(baseCarbs * (servings/5)) + 'g'"></span>
+                    </div>
+                    <div class="macro-pill flex flex-col items-center min-w-[100px]">
+                        <span class="text-[10px] font-black text-slate-400 uppercase">P:E Ratio</span>
+                        <span class="text-2xl font-black">2.8</span>
+                    </div>
+                </div>
+
+                <div class="pantry-card rounded-2xl overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1532550907401-a500c9a57435?q=80&w=2000&auto=format&fit=crop" alt="Lemon Chicken" class="image-aspect w-full group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute bottom-4 right-4 flex gap-2">
+                        <span class="px-3 py-1 bg-white/90 backdrop-blur text-[10px] font-black rounded shadow-sm uppercase">Batch-Cook Ready</span>
+                        <span class="px-3 py-1 bg-white/90 backdrop-blur text-[10px] font-black rounded shadow-sm uppercase">Reheat Stable</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2: System Specs (Sticky Sidebar) -->
+            <div class="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
+                <div class="pantry-card rounded-3xl p-8 bg-slate-900 text-white">
+                    <div class="flex justify-between items-center mb-8">
+                        <span class="label-text !bg-slate-800 !text-white !border-emerald-400">System Parameters</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-black opacity-40">SERVINGS</span>
+                            <div class="flex items-center bg-white/10 rounded-lg p-1">
+                                <button @click="servings = Math.max(1, servings - 1)" class="w-6 h-6 hover:bg-white/20 rounded">-</button>
+                                <span class="px-3 font-bold text-sm" x-text="servings"></span>
+                                <button @click="servings++" class="w-6 h-6 hover:bg-white/20 rounded">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between text-[10px] font-black mb-2 tracking-widest uppercase">
+                                <span>Protein Efficiency Meter</span>
+                                <span class="text-orange-400">Elite Rank</span>
+                            </div>
+                            <div class="pe-ratio-meter">
+                                <div class="pe-ratio-fill" style="width: 85%"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                                <span class="block text-[10px] font-black opacity-40 mb-1">PREP TIME</span>
+                                <span class="font-bold">15 Mins</span>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                                <span class="block text-[10px] font-black opacity-40 mb-1">COOK TIME</span>
+                                <span class="font-bold">20 Mins</span>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                                <span class="block text-[10px] font-black opacity-40 mb-1">SHELF LIFE</span>
+                                <span class="font-bold">5 Days</span>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                                <span class="block text-[10px] font-black opacity-40 mb-1">FREEZABLE?</span>
+                                <span class="font-bold text-emerald-400">YES</span>
+                            </div>
+                        </div>
+
+                        <a href="/plans/5-day-high-protein-meal-prep/" class="block w-full text-center py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-black rounded-xl transition-all shadow-[0_5px_0_#065f46]">
+                            ADD TO WEEKLY PLAN
+                        </a>
+                    </div>
+                </div>
+
+                <div class="pantry-card rounded-3xl p-6 border-dashed border-2">
+                    <h4 class="font-black text-sm mb-4 uppercase tracking-tighter">Canonical Connections</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <template x-for="link in ['/method/sheet-pan/', '/diet/low-carb/', '/goal/muscle-gain/', '/persona/work-lunch/']">
+                            <a :href="link" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-slate-500 hover:border-slate-900 hover:text-slate-900 transition-all uppercase" x-text="link.split('/')[2].replace('-', ' ')"></a>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recipe Content Tabs -->
+        <section class="max-w-4xl mx-auto px-6 pb-24">
+            <div class="flex border-b border-black/10 mb-12 overflow-x-auto no-scrollbar">
+                <button @click="activeTab = 'ingredients'" :class="activeTab === 'ingredients' ? 'border-b-4 border-slate-900' : 'opacity-40'" class="px-8 py-4 font-black uppercase text-sm tracking-widest transition-all">Ingredients</button>
+                <button @click="activeTab = 'steps'" :class="activeTab === 'steps' ? 'border-b-4 border-slate-900' : 'opacity-40'" class="px-8 py-4 font-black uppercase text-sm tracking-widest transition-all">Preparation</button>
+                <button @click="activeTab = 'storage'" :class="activeTab === 'storage' ? 'border-b-4 border-slate-900' : 'opacity-40'" class="px-8 py-4 font-black uppercase text-sm tracking-widest transition-all">System Logic</button>
+            </div>
+
+            <!-- Tab: Ingredients -->
+            <div x-show="activeTab === 'ingredients'" x-transition:enter="fade-enter-active">
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div class="space-y-6">
+                        <h3 class="text-2xl font-black">The Proteins</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" id="ing1" class="custom-checkbox">
+                                <label for="ing1" class="text-lg font-medium">Chicken Breast, cubed</label>
+                                <span class="ml-auto font-black text-slate-400" x-text="(200 * (servings/5)) + 'g'"></span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" id="ing2" class="custom-checkbox">
+                                <label for="ing2" class="text-lg font-medium">Hemp Hearts (topping)</label>
+                                <span class="ml-auto font-black text-slate-400" x-text="(2 * (servings/5)) + ' tbsp'"></span>
+                            </div>
+                        </div>
+
+                        <h3 class="text-2xl font-black pt-6">The Aromatics</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" id="ing3" class="custom-checkbox">
+                                <label for="ing3" class="text-lg font-medium">Lemons, sliced</label>
+                                <span class="ml-auto font-black text-slate-400" x-text="Math.ceil(2 * (servings/5))"></span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" id="ing4" class="custom-checkbox">
+                                <label for="ing4" class="text-lg font-medium">Fresh Thyme & Rosemary</label>
+                                <span class="ml-auto font-black text-slate-400">4 sprigs</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" id="ing5" class="custom-checkbox">
+                                <label for="ing5" class="text-lg font-medium">Garlic, minced</label>
+                                <span class="ml-auto font-black text-slate-400">4 cloves</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pantry-card bg-emerald-50/50 rounded-3xl p-8 border-emerald-100">
+                        <h4 class="font-black text-emerald-800 mb-4 uppercase tracking-tighter text-sm">System Swap for Vegans</h4>
+                        <p class="text-sm text-emerald-700 leading-relaxed mb-6">Replace chicken with <strong>Extra Firm Tofu</strong> or <strong>Seitan Strips</strong>. To maintain protein ratio, increase hemp hearts by 1 tbsp per serving.</p>
+                        <div class="flex flex-col gap-2">
+                            <div class="h-[1px] bg-emerald-200 w-full mb-2"></div>
+                            <span class="text-[10px] font-bold text-emerald-600">NEW MACROS (VEGAN):</span>
+                            <span class="font-bold text-emerald-900">310 CAL / 28g PROTEIN</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Steps -->
+            <div x-show="activeTab === 'steps'" x-cloak x-transition:enter="fade-enter-active" class="space-y-12">
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-sm">1</div>
+                    <h4 class="text-xl font-black mb-2 uppercase tracking-tighter">Thermal Calibration</h4>
+                    <p class="opacity-60 text-lg">Preheat oven to 400°F (205°C). Line a heavy-duty sheet pan with parchment paper. Efficiency note: Do not use foil if planning to reheat in microwave later to avoid stripping into the food.</p>
+                </div>
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-sm">2</div>
+                    <h4 class="text-xl font-black mb-2 uppercase tracking-tighter">Aromatic Infusion</h4>
+                    <p class="opacity-60 text-lg">In a large bowl, toss the cubed chicken with olive oil, minced garlic, lemon juice, and herbs. Let sit for 10 minutes while the oven reaches temperature.</p>
+                </div>
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-sm">3</div>
+                    <h4 class="text-xl font-black mb-2 uppercase tracking-tighter">Systemic Layout</h4>
+                    <p class="opacity-60 text-lg">Spread chicken in a single layer. Ensure pieces are not touching to allow for proper airflow and browning rather than steaming. Place lemon slices on top to keep chicken moist during high-heat blast.</p>
+                </div>
+                <div class="relative pl-12">
+                    <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-sm">4</div>
+                    <h4 class="text-xl font-black mb-2 uppercase tracking-tighter">The Batch Bake</h4>
+                    <p class="opacity-60 text-lg">Roast for 18-22 minutes until internal temperature reaches 165°F. Remove and let rest for 5 minutes before portioning into glass containers.</p>
+                </div>
+            </div>
+
+            <!-- Tab: Storage -->
+            <div x-show="activeTab === 'storage'" x-cloak x-transition:enter="fade-enter-active">
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="pantry-card p-6 rounded-2xl border-b-4 border-blue-400">
+                        <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-lg flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h5 class="font-black text-sm uppercase mb-2">Cooling Protocol</h5>
+                        <p class="text-xs opacity-60 leading-relaxed">Do not seal lids until food is cool to the touch. Trapped steam creates a "soggy chicken" texture upon reheating.</p>
+                    </div>
+                    <div class="pantry-card p-6 rounded-2xl border-b-4 border-orange-400">
+                        <div class="w-10 h-10 bg-orange-50 text-orange-500 rounded-lg flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        </div>
+                        <h5 class="font-black text-sm uppercase mb-2">The Reheat Fix</h5>
+                        <p class="text-xs opacity-60 leading-relaxed">Microwave for 90 seconds at 70% power. This preserves the moisture in the lean breast meat better than 100% power.</p>
+                    </div>
+                    <div class="pantry-card p-6 rounded-2xl border-b-4 border-purple-400">
+                        <div class="w-10 h-10 bg-purple-50 text-purple-500 rounded-lg flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                        </div>
+                        <h5 class="font-black text-sm uppercase mb-2">Storage Limit</h5>
+                        <p class="text-xs opacity-60 leading-relaxed">System-stable for 5 days in airtight glass. For 7+ days, freeze immediately after cooling in freezer-safe bags.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recommended Plans Section -->
+        <section class="bg-slate-900 py-24 px-6 text-white overflow-hidden relative">
+            <div class="absolute -right-24 -bottom-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
+                    <div>
+                        <span class="label-text !bg-slate-800 !text-white !border-emerald-500 mb-4">System Integration</span>
+                        <h3 class="text-4xl font-black tracking-tight">Deployment Plans.</h3>
+                    </div>
+                    <p class="max-w-md text-slate-400 text-sm">This recipe is a core module in the following structured meal plans. View the full 5-day logistics.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <a href="/plans/work-lunch-protocol/" class="group pantry-card !bg-white/5 !border-white/10 p-8 rounded-3xl hover:!bg-white/10 transition-all flex justify-between items-center">
+                        <div class="space-y-2">
+                            <span class="text-emerald-400 font-black text-xs uppercase tracking-widest">Protocol 01</span>
+                            <h4 class="text-2xl font-black">The Office Cold-Pack Protocol</h4>
+                            <p class="text-slate-400 text-sm">Featuring this chicken paired with Quinoa and Kale.</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-slate-900 transition-all">
+                            →
+                        </div>
+                    </a>
+                    <a href="/plans/postpartum-freezer-week/" class="group pantry-card !bg-white/5 !border-white/10 p-8 rounded-3xl hover:!bg-white/10 transition-all flex justify-between items-center">
+                        <div class="space-y-2">
+                            <span class="text-orange-400 font-black text-xs uppercase tracking-widest">Protocol 04</span>
+                            <h4 class="text-2xl font-black">Postpartum Freezer Stash</h4>
+                            <p class="text-slate-400 text-sm">Bulk batching guide for new parent nutrition.</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-slate-900 transition-all">
+                            →
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-black/5 py-12 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 bg-slate-900 flex items-center justify-center rounded text-white font-bold">M</div>
+                <span class="font-black tracking-tighter uppercase">The Systemic Network</span>
+            </div>
+            <div class="flex gap-8 text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                <a href="/meal-prep/" class="hover:text-slate-900 transition-colors">MealPrepIdeas.co</a>
+                <a href="/high-protein/" class="hover:text-slate-900 transition-colors">ProteinMeals.co</a>
+                <a href="#" class="hover:text-slate-900 transition-colors">The Taxonomy</a>
+            </div>
+            <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">© 2024 SYSTEMIC MEALS LLC</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth reveal logic
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-xl');
+            } else {
+                nav.classList.remove('shadow-xl');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Meal Authority | Meal Prep & High Protein Systems</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pantry-cream: #F9F7F2;
+            --pantry-slate: #2D3436;
+            --pantry-sage: #7E9680;
+            --pantry-accent: #E67E22; /* Burnt Orange for focus */
+            --label-tape: #EFEFEF;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--pantry-cream);
+            color: var(--pantry-slate);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* SVG Grain Overlay */
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Tactical Depth Styling */
+        .pantry-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 
+                0 4px 0px rgba(0,0,0,0.02),
+                0 15px 35px -5px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pantry-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);
+        }
+
+        .label-text {
+            display: inline-block;
+            background: var(--label-tape);
+            padding: 2px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            font-size: 0.7rem;
+            border-left: 3px solid var(--pantry-sage);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--pantry-cream); }
+        ::-webkit-scrollbar-thumb { background: var(--pantry-sage); border-radius: 10px; }
+
+        /* Perspective Layout */
+        .perspective-container {
+            perspective: 1200px;
+        }
+
+        .hero-split {
+            transition: transform 0.6s ease;
+        }
+
+        /* Button Glow */
+        .btn-system {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .btn-system::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .btn-system:hover::after {
+            left: 100%;
+        }
+
+        /* Decision Widget Animations */
+        [x-cloak] { display: none !important; }
+
+        .fade-enter { opacity: 0; transform: translateY(10px); }
+        .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.4s ease; }
+    </style>
+</head>
+<body x-data="{ currentStep: 0, goal: '', constraint: '', resultUrl: '' }">
+    <div class="grain"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/80 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-lg text-white font-bold text-xl">M</div>
+                <span class="font-extrabold tracking-tighter text-2xl uppercase">Systemic Meals</span>
+            </div>
+            <div class="hidden md:flex gap-8 text-sm font-medium opacity-60">
+                <a href="#" class="hover:opacity-100 transition-opacity">Methodology</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">The Pillars</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">Satellite Packs</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="text-xs font-bold border-2 border-slate-900 px-4 py-2 rounded hover:bg-slate-900 hover:text-white transition-all">SIGN IN</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        <!-- Hero Section: The Dual Pillars -->
+        <section class="relative min-h-[85vh] flex flex-col items-center justify-center px-6 py-12 perspective-container">
+            <div class="max-w-7xl w-full grid md:grid-cols-2 gap-8 items-stretch h-full">
+                
+                <!-- Pillar 1: Meal Prep (Logistics) -->
+                <a href="/meal-prep/" class="group relative pantry-card rounded-3xl p-10 flex flex-col justify-between overflow-hidden bg-white border-b-4 border-sage-500">
+                    <div class="absolute -right-12 -top-12 w-48 h-48 bg-emerald-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div>
+                        <span class="label-text mb-6">Hierarchy 01: Logistics</span>
+                        <h2 class="text-5xl font-black mb-4 leading-[0.9] text-slate-900">Meal Prep <br><span class="text-emerald-700">Ideas.co</span></h2>
+                        <p class="text-lg opacity-60 max-w-sm mb-8">Master the Sunday batch. Optimized storage, efficient reheating, and 5-day logistics for a friction-free week.</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-sm font-semibold text-slate-500">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Batch-cooking logic
+                        </div>
+                        <div class="flex items-center gap-3 text-sm font-semibold text-slate-500">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Freezer-friendly systems
+                        </div>
+                        <div class="pt-6">
+                            <span class="group-hover:translate-x-2 transition-transform inline-flex items-center gap-2 font-bold text-emerald-700">
+                                EXPLORE LOGISTICS <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Pillar 2: High Protein (Macros) -->
+                <a href="/high-protein/" class="group relative pantry-card rounded-3xl p-10 flex flex-col justify-between overflow-hidden bg-slate-900 text-white border-b-4 border-orange-500">
+                    <div class="absolute -right-12 -top-12 w-48 h-48 bg-orange-500/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div>
+                        <span class="label-text mb-6 !bg-slate-800 !text-white !border-orange-500">Hierarchy 02: Macros</span>
+                        <h2 class="text-5xl font-black mb-4 leading-[0.9]">Protein <br><span class="text-orange-400">Meals.co</span></h2>
+                        <p class="text-lg opacity-60 max-w-sm mb-8">Fuel the machine. High P:E ratios, calorie bands, and nutrient-dense fuel for muscle and weight management.</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-sm font-semibold text-slate-300">
+                            <span class="w-2 h-2 rounded-full bg-orange-400"></span>
+                            30g+ Protein targets
+                        </div>
+                        <div class="flex items-center gap-3 text-sm font-semibold text-slate-300">
+                            <span class="w-2 h-2 rounded-full bg-orange-400"></span>
+                            Chain & Retail audits
+                        </div>
+                        <div class="pt-6">
+                            <span class="group-hover:translate-x-2 transition-transform inline-flex items-center gap-2 font-bold text-orange-400">
+                                OPTIMIZE MACROS <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- The "Start Here" System Widget -->
+        <section id="system-finder" class="bg-white border-y border-black/5 py-24 px-6 overflow-hidden">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16">
+                    <span class="label-text mb-4">The Decision Engine</span>
+                    <h3 class="text-4xl md:text-5xl font-black tracking-tight mb-4">Find your exact protocol.</h3>
+                    <p class="opacity-60 text-lg">Don't browse endlessly. Tell the system what you need, and we'll route you to the correct canonical hub.</p>
+                </div>
+
+                <div class="bg-pantry-cream rounded-3xl p-8 md:p-12 relative overflow-hidden min-h-[400px]">
+                    <!-- Progress Bar -->
+                    <div class="absolute top-0 left-0 h-1.5 bg-slate-900/10 w-full">
+                        <div class="h-full bg-slate-900 transition-all duration-500" :style="`width: ${((currentStep + 1) / 3) * 100}%`"></div>
+                    </div>
+
+                    <!-- Step 0: The Big Goal -->
+                    <div x-show="currentStep === 0" x-transition:enter="fade-enter-active" class="space-y-8">
+                        <h4 class="text-2xl font-bold">Step 1: What is the primary intent?</h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <button @click="goal = 'logistics'; currentStep = 1" class="group flex flex-col p-6 rounded-2xl border-2 border-black/5 bg-white hover:border-slate-900 transition-all text-left">
+                                <span class="font-black text-xl mb-2">Time & Logistics</span>
+                                <span class="opacity-60 text-sm">I want to cook once and eat for the week. Show me "Meal Prep" systems.</span>
+                            </button>
+                            <button @click="goal = 'macros'; currentStep = 1" class="group flex flex-col p-6 rounded-2xl border-2 border-black/5 bg-white hover:border-slate-900 transition-all text-left">
+                                <span class="font-black text-xl mb-2">Nutrition & Macros</span>
+                                <span class="opacity-60 text-sm">I need high protein and specific macro-bands. Show me "High Protein" systems.</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Constraint -->
+                    <div x-show="currentStep === 1" x-cloak x-transition:enter="fade-enter-active" class="space-y-8">
+                        <h4 class="text-2xl font-bold">Step 2: Choose your primary constraint.</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <template x-for="c in ['Budget-Friendly', 'Postpartum', 'No Microwave', 'Vegetarian', 'Quick/Simple', 'Work Lunch']">
+                                <button @click="constraint = c; currentStep = 2" class="p-4 rounded-xl border border-black/10 bg-white hover:bg-slate-900 hover:text-white transition-all text-sm font-bold" x-text="c"></button>
+                            </template>
+                        </div>
+                        <button @click="currentStep = 0" class="text-sm font-bold opacity-40 hover:opacity-100 uppercase tracking-widest flex items-center gap-2">
+                            ← Back to Start
+                        </button>
+                    </div>
+
+                    <!-- Step 2: Final Routing -->
+                    <div x-show="currentStep === 2" x-cloak x-transition:enter="fade-enter-active" class="text-center space-y-8 py-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                        </div>
+                        <h4 class="text-3xl font-black">System Match Confirmed</h4>
+                        <p class="text-lg opacity-60">We've generated a <span class="text-slate-900 font-bold" x-text="goal"></span> roadmap focused on <span class="text-slate-900 font-bold" x-text="constraint"></span>.</p>
+                        
+                        <div class="flex flex-col items-center gap-4">
+                            <a :href="goal === 'logistics' ? '/meal-prep/persona/' + constraint.toLowerCase().replace(' ', '-') : '/high-protein/diet/' + constraint.toLowerCase().replace(' ', '-')" 
+                               class="btn-system bg-slate-900 text-white px-10 py-4 rounded-full font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all">
+                                VIEW MY PLAN
+                            </a>
+                            <button @click="currentStep = 0" class="text-xs font-bold uppercase tracking-widest opacity-40">Start Over</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Satellite Pack Previews: Bento Grid -->
+        <section class="max-w-7xl mx-auto py-24 px-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                <div>
+                    <span class="label-text mb-4">Specialized Archives</span>
+                    <h3 class="text-4xl font-black tracking-tight">The Satellite Packs.</h3>
+                </div>
+                <p class="max-w-md opacity-60 text-sm">Deep-dive clusters into specific life stages and constraints. Programmatically generated, human-curated.</p>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-6">
+                <!-- Pack 1: Postpartum -->
+                <div class="md:col-span-2 pantry-card rounded-3xl p-8 flex flex-col justify-between group cursor-pointer hover:bg-emerald-50/30">
+                    <div class="flex justify-between items-start mb-12">
+                        <span class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        </span>
+                        <div class="text-right">
+                            <span class="block text-xs font-black opacity-20 group-hover:opacity-100 transition-opacity uppercase">High Sticky</span>
+                            <span class="block text-2xl font-black">Postpartum</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="font-bold text-xl mb-2">Freezer Stash Protocol</h5>
+                        <p class="text-sm opacity-60 mb-6">2-week prep guides for new parents. Gentle, calorie-dense, and zero-effort reheating.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-white border border-black/5 rounded-full text-[10px] font-bold">FREEZER-ONLY</span>
+                            <span class="px-3 py-1 bg-white border border-black/5 rounded-full text-[10px] font-bold">GENTLE-DIET</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pack 2: Trader Joes -->
+                <div class="pantry-card rounded-3xl p-8 flex flex-col justify-between hover:bg-red-50/30 cursor-pointer">
+                    <span class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                    </span>
+                    <div>
+                        <h5 class="font-bold text-xl mb-2">Retail Audit: Trader Joe's</h5>
+                        <p class="text-sm opacity-60 mb-4">High-protein SKUs and 5-minute microwave assembly meals.</p>
+                        <span class="text-xs font-black uppercase tracking-widest text-red-600">Explore Store →</span>
+                    </div>
+                </div>
+
+                <!-- Pack 3: No Microwave -->
+                <div class="pantry-card rounded-3xl p-8 flex flex-col justify-between hover:bg-blue-50/30 cursor-pointer">
+                    <span class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </span>
+                    <div>
+                        <h5 class="font-bold text-xl mb-2">The Office Cold-Pack</h5>
+                        <p class="text-sm opacity-60 mb-4">No microwave? No problem. High-protein lunches that stay delicious cold.</p>
+                        <span class="text-xs font-black uppercase tracking-widest text-blue-600">View Cold Meals →</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer: Site Tree Navigation -->
+    <footer class="bg-slate-900 text-white py-16 px-6">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 bg-white text-slate-900 flex items-center justify-center rounded-md font-black">M</div>
+                    <span class="font-black text-xl tracking-tighter uppercase">The System Network</span>
+                </div>
+                <p class="text-slate-400 max-w-sm mb-8">Designing the world's most organized meal planning taxonomy. High-protein, high-efficiency, zero-fluff.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg></a>
+                    <a href="#" class="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+                </div>
+            </div>
+            
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Meal Prep Ideas</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">By Method (Crockpot/Air Fryer)</a></li>
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">By Persona (Student/Bariatric)</a></li>
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">No Microwave Protocol</a></li>
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">5-Day Meal Plans</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Protein Meals</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">High Protein Retail Finds</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Fast Food Macro Audits</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Low Calorie / High Protein</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">High Fiber Constraints</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-white/5 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">© 2024 Systemic Meals Network. All protocols strictly data-backed.</p>
+            <div class="flex gap-6 text-[10px] font-bold text-slate-500 tracking-widest uppercase">
+                <a href="#">Privacy</a>
+                <a href="#">Taxonomy Map</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Magnetic Button Effect (Simple version)
+        document.querySelectorAll('.btn-system').forEach(button => {
+            button.addEventListener('mousemove', (e) => {
+                const rect = button.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                button.style.transform = `translate(${(x - rect.width/2) / 10}px, ${(y - rect.height/2) / 10}px) scale(1.05)`;
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>

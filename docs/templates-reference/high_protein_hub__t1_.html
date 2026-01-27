@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Protein Hub | ProteinMeals.co - The Macro Authority</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pantry-cream: #F9F7F2;
+            --pantry-slate: #2D3436;
+            --pantry-sage: #7E9680;
+            --pantry-accent: #E67E22; 
+            --label-tape: #EFEFEF;
+            --protein-glow: rgba(230, 126, 34, 0.15);
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--pantry-cream);
+            color: var(--pantry-slate);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .pantry-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 4px 0px rgba(0,0,0,0.02), 0 15px 35px -5px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pantry-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);
+        }
+
+        .label-text {
+            display: inline-block;
+            background: var(--label-tape);
+            padding: 2px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            font-size: 0.7rem;
+            border-left: 3px solid var(--pantry-accent);
+        }
+
+        .facet-chip {
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .facet-chip:hover {
+            background-color: var(--pantry-slate);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .hyper-border {
+            position: relative;
+        }
+        .hyper-border::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            background: linear-gradient(45deg, var(--pantry-accent), transparent, var(--pantry-sage));
+            z-index: -1;
+            border-radius: inherit;
+            opacity: 0.3;
+        }
+
+        [x-cloak] { display: none !important; }
+
+        .custom-scrollbar::-webkit-scrollbar { height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--pantry-accent); border-radius: 10px; }
+
+        /* Animation for decision widget */
+        .step-fade-enter { opacity: 0; transform: translateX(20px); }
+        .step-fade-enter-active { opacity: 1; transform: translateX(0); transition: all 0.4s ease; }
+    </style>
+</head>
+<body x-data="{ 
+    activeFacet: 'diet',
+    currentStep: 0,
+    userGoal: '',
+    userConstraint: '',
+    facets: {
+        diet: ['Vegan', 'Vegetarian', 'Low-Carb', 'Keto', 'Low-Calorie', 'Gluten-Free', 'Dairy-Free'],
+        goal: ['Weight-Loss', 'Muscle-Gain', 'Healthy'],
+        store: ['Trader Joes', 'Costco', 'Walmart', 'Aldi', 'Whole Foods'],
+        chain: ['Chick-Fil-A', 'McDonalds', 'Taco Bell', 'Panera', 'Chipotle', 'Wendy\'s']
+    }
+}">
+    <div class="grain"></div>
+
+    <!-- T1 Navigation -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/95 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="/" class="w-10 h-10 bg-orange-600 flex items-center justify-center rounded-lg text-white font-bold text-xl shadow-lg shadow-orange-600/20">P</a>
+                <span class="font-extrabold tracking-tighter text-2xl uppercase">Protein<span class="text-orange-600">Meals.co</span></span>
+            </div>
+            <div class="hidden lg:flex gap-8 text-xs font-black uppercase tracking-widest opacity-40">
+                <a href="/meal-prep/" class="hover:opacity-100 transition-opacity">Meal Prep Hub</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">Macro Database</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">The P:E Ratio</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="bg-slate-900 text-white text-[10px] font-bold px-6 py-2.5 rounded-full hover:scale-105 transition-transform uppercase tracking-widest">Macro Calculator</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        <!-- Authority Hero: Hub Landing -->
+        <header class="relative pt-20 pb-12 px-6 overflow-hidden">
+            <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7">
+                    <span class="label-text mb-6">Pillar 02: Authority Hub</span>
+                    <h1 class="text-6xl md:text-8xl font-black leading-[0.85] tracking-tighter mb-8">
+                        HIGH <br><span class="text-orange-600 italic">PROTEIN</span> <br>SYSTEMS.
+                    </h1>
+                    <p class="text-xl opacity-70 max-w-xl mb-10 leading-relaxed">
+                        The definitive index for macro-intent. We map nutrient density across retail, fast food, and batch-cooking protocols. Fueling the machine with logic, not guesswork.
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col p-4 bg-white border border-black/5 rounded-2xl shadow-sm min-w-[140px]">
+                            <span class="text-[10px] font-bold opacity-40 uppercase mb-1">Total Protocols</span>
+                            <span class="text-2xl font-black">1,400+</span>
+                        </div>
+                        <div class="flex flex-col p-4 bg-white border border-black/5 rounded-2xl shadow-sm min-w-[140px]">
+                            <span class="text-[10px] font-bold opacity-40 uppercase mb-1">Avg. Protein</span>
+                            <span class="text-2xl font-black text-orange-600">38g</span>
+                        </div>
+                        <div class="flex flex-col p-4 bg-white border border-black/5 rounded-2xl shadow-sm min-w-[140px]">
+                            <span class="text-[10px] font-bold opacity-40 uppercase mb-1">Human Audited</span>
+                            <span class="text-2xl font-black">100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 relative">
+                    <div class="aspect-square bg-orange-100 rounded-[4rem] rotate-3 relative overflow-hidden hyper-border">
+                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80" alt="High Protein Meal" class="w-full h-full object-cover -rotate-3 scale-110 hover:scale-100 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-orange-900/40 to-transparent"></div>
+                        <div class="absolute bottom-8 left-8 right-8">
+                            <div class="bg-white/90 backdrop-blur p-4 rounded-2xl">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-black text-sm uppercase">Macro Profile</span>
+                                    <span class="bg-orange-600 text-white text-[10px] px-2 py-1 rounded">EXCELLENT P:E</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div class="text-center bg-black/5 p-2 rounded-lg">
+                                        <div class="text-xs font-bold">42g</div>
+                                        <div class="text-[8px] uppercase opacity-50">Prot</div>
+                                    </div>
+                                    <div class="text-center bg-black/5 p-2 rounded-lg">
+                                        <div class="text-xs font-bold">12g</div>
+                                        <div class="text-[8px] uppercase opacity-50">Fat</div>
+                                    </div>
+                                    <div class="text-center bg-black/5 p-2 rounded-lg">
+                                        <div class="text-xs font-bold">480</div>
+                                        <div class="text-[8px] uppercase opacity-50">Cals</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Facet Mega-Nav (Chips) -->
+        <section class="bg-white border-y border-black/5 py-8 overflow-hidden sticky top-[73px] z-30">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex items-center gap-8 overflow-x-auto custom-scrollbar pb-2">
+                    <div class="flex gap-2 shrink-0">
+                        <template x-for="tab in ['diet', 'goal', 'store', 'chain']">
+                            <button 
+                                @click="activeFacet = tab"
+                                :class="activeFacet === tab ? 'bg-orange-600 text-white' : 'bg-pantry-cream text-slate-900 opacity-60 hover:opacity-100'"
+                                class="px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all"
+                                x-text="tab"
+                            ></button>
+                        </template>
+                    </div>
+                    <div class="h-6 w-px bg-black/10 shrink-0"></div>
+                    <div class="flex gap-3 shrink-0">
+                        <template x-for="item in facets[activeFacet]">
+                            <a :href="'/high-protein/' + activeFacet + '/' + item.toLowerCase().replace(' ', '-')" class="facet-chip px-4 py-2 rounded-xl bg-white text-[11px] font-bold uppercase tracking-tight flex items-center gap-2">
+                                <span x-text="item"></span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                            </a>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Start Here Decision Widget -->
+        <section class="py-24 px-6">
+            <div class="max-w-5xl mx-auto">
+                <div class="bg-slate-900 rounded-[3rem] p-12 md:p-20 text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-96 h-96 bg-orange-600/20 rounded-full blur-[100px] -mr-48 -mt-48"></div>
+                    
+                    <div class="relative z-10 grid md:grid-cols-2 gap-16 items-center">
+                        <div>
+                            <span class="label-text !bg-white/10 !text-white !border-orange-500 mb-6">System Finder</span>
+                            <h3 class="text-4xl font-black mb-6">Don't browse. <br><span class="text-orange-500 italic">Filter for intent.</span></h3>
+                            <p class="text-slate-400 leading-relaxed mb-8">Tell us your metabolic target and lifestyle constraints. We'll deploy the correct protocol immediately.</p>
+                            
+                            <div class="flex gap-4">
+                                <div class="w-12 h-1 bg-orange-500 rounded-full" :class="currentStep >= 0 ? 'opacity-100' : 'opacity-20'"></div>
+                                <div class="w-12 h-1 bg-orange-500 rounded-full" :class="currentStep >= 1 ? 'opacity-100' : 'opacity-20'"></div>
+                                <div class="w-12 h-1 bg-orange-500 rounded-full" :class="currentStep >= 2 ? 'opacity-100' : 'opacity-20'"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 min-h-[340px] flex flex-col justify-center">
+                            <!-- Step 0 -->
+                            <div x-show="currentStep === 0" x-transition:enter="step-fade-enter-active">
+                                <h4 class="font-bold text-xl mb-6">Target metabolic goal?</h4>
+                                <div class="space-y-3">
+                                    <button @click="userGoal = 'Weight-Loss'; currentStep = 1" class="w-full text-left p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors flex justify-between items-center group">
+                                        <span>Lean & Mean (Weight Loss)</span>
+                                        <span class="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                                    </button>
+                                    <button @click="userGoal = 'Muscle-Gain'; currentStep = 1" class="w-full text-left p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors flex justify-between items-center group">
+                                        <span>The Bulk (Muscle Gain)</span>
+                                        <span class="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 1 -->
+                            <div x-show="currentStep === 1" x-cloak x-transition:enter="step-fade-enter-active">
+                                <h4 class="font-bold text-xl mb-6">Primary constraint?</h4>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <template x-for="c in ['Vegan', 'Low-Carb', 'Budget', 'Work-Lunch', 'Quick', 'No-Microwave']">
+                                        <button @click="userConstraint = c; currentStep = 2" class="text-xs font-black uppercase p-3 rounded-lg border border-white/10 hover:border-orange-500 transition-colors" x-text="c"></button>
+                                    </template>
+                                </div>
+                                <button @click="currentStep = 0" class="mt-8 text-[10px] font-black uppercase opacity-40 hover:opacity-100 tracking-widest">Back</button>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div x-show="currentStep === 2" x-cloak x-transition:enter="step-fade-enter-active" class="text-center">
+                                <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-orange-500/40">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+                                </div>
+                                <h4 class="font-black text-2xl mb-2">System Mapped</h4>
+                                <p class="text-slate-400 text-sm mb-8" x-text="userGoal + ' + ' + userConstraint"></p>
+                                <a :href="'/high-protein/goal/' + userGoal.toLowerCase() + '/constraint/' + userConstraint.toLowerCase()" class="inline-block bg-white text-slate-900 px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform">Deploy Protocol</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Clusters (Cards) -->
+        <section class="max-w-7xl mx-auto px-6 py-24">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <span class="label-text mb-4">Authority Clusters</span>
+                    <h3 class="text-4xl font-black tracking-tighter">High-Yield Categories</h3>
+                </div>
+                <a href="#" class="text-xs font-black uppercase tracking-widest border-b-2 border-orange-500 pb-1">View All Sets →</a>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Cluster 1: Retail -->
+                <div class="pantry-card rounded-[2.5rem] p-8 group cursor-pointer border-t-4 border-orange-500">
+                    <div class="flex justify-between items-start mb-12">
+                        <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        </div>
+                        <span class="text-[10px] font-black text-orange-600 bg-orange-50 px-2 py-1 rounded">240 ITEMS</span>
+                    </div>
+                    <h4 class="text-2xl font-black mb-3">Retail Macro Audits</h4>
+                    <p class="text-sm opacity-60 mb-6 leading-relaxed">SKU-level protein analysis for Costco, Trader Joe's, and Aldi. Find the density in the aisles.</p>
+                    <div class="flex flex-wrap gap-2 mb-8">
+                        <span class="text-[9px] font-bold px-2 py-1 bg-pantry-cream rounded uppercase tracking-wider">Costco Bulk</span>
+                        <span class="text-[9px] font-bold px-2 py-1 bg-pantry-cream rounded uppercase tracking-wider">TJ Frozen</span>
+                    </div>
+                    <div class="h-1 w-0 bg-orange-500 group-hover:w-full transition-all duration-500"></div>
+                </div>
+
+                <!-- Cluster 2: Fast Food -->
+                <div class="pantry-card rounded-[2.5rem] p-8 group cursor-pointer border-t-4 border-slate-900">
+                    <div class="flex justify-between items-start mb-12">
+                        <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-900">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        </div>
+                        <span class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded">12 CHAINS</span>
+                    </div>
+                    <h4 class="text-2xl font-black mb-3">Chain Modifications</h4>
+                    <p class="text-sm opacity-60 mb-6 leading-relaxed">How to order 50g+ protein at Taco Bell, Chick-Fil-A, and McDonald's without the sugar crash.</p>
+                    <div class="flex flex-wrap gap-2 mb-8">
+                        <span class="text-[9px] font-bold px-2 py-1 bg-pantry-cream rounded uppercase tracking-wider">No-Bun Hacks</span>
+                        <span class="text-[9px] font-bold px-2 py-1 bg-pantry-cream rounded uppercase tracking-wider">Sauce Audits</span>
+                    </div>
+                    <div class="h-1 w-0 bg-slate-900 group-hover:w-full transition-all duration-500"></div>
+                </div>
+
+                <!-- Cluster 3: Calorie Bands -->
+                <div class="pantry-card rounded-[2.5rem] p-8 group cursor-pointer border-t-4 border-emerald-500">
+                    <div class="flex justify-between items-start mb-12">
+                        <div class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                        </div>
+                        <span class="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded">CALORIE TIERS</span>
+                    </div>
+                    <h4 class="text-2xl font-black mb-3">Density Mapping</h4>
+                    <p class="text-sm opacity-60 mb-6 leading-relaxed">Meals under 500 calories with at least 30% protein-by-energy ratio. Math-backed satiety.</p>
+                    <div class="flex flex-wrap gap-2 mb-8">
+                        <span class="text-[9px] font-bold px-2 py-1 bg-pantry-cream rounded uppercase tracking-wider">Under 400</span>
+                        <span class="text-[9px] font-bold px-2 py-1 bg-pantry-cream rounded uppercase tracking-wider">High Fiber</span>
+                    </div>
+                    <div class="h-1 w-0 bg-emerald-500 group-hover:w-full transition-all duration-500"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Plans: ItemList -->
+        <section class="bg-pantry-cream py-24 px-6 border-t border-black/5">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <span class="label-text mb-4">Structured Protocols</span>
+                    <h3 class="text-5xl font-black tracking-tighter">The 5-Day Sprints</h3>
+                </div>
+
+                <div class="flex gap-8 overflow-x-auto pb-12 custom-scrollbar">
+                    <!-- Plan 1 -->
+                    <div class="min-w-[320px] bg-white p-8 rounded-[2rem] shadow-xl border border-black/5 flex flex-col justify-between">
+                        <div>
+                            <span class="text-orange-600 text-[10px] font-black uppercase tracking-widest mb-4 block">Muscle-Gain | Standard</span>
+                            <h5 class="text-2xl font-black mb-4 leading-tight">180g Protein / Day <br>Foundation Week</h5>
+                            <ul class="space-y-3 mb-8">
+                                <li class="text-xs font-bold opacity-50 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> 5 Breakfast Shakes
+                                </li>
+                                <li class="text-xs font-bold opacity-50 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> Bulk-Prep Steak Bowls
+                                </li>
+                                <li class="text-xs font-bold opacity-50 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> Retail Snack Audit
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="#" class="w-full text-center py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-orange-600 transition-colors">Get Shopping List</a>
+                    </div>
+                    <!-- Plan 2 -->
+                    <div class="min-w-[320px] bg-white p-8 rounded-[2rem] shadow-xl border border-black/5 flex flex-col justify-between">
+                        <div>
+                            <span class="text-emerald-600 text-[10px] font-black uppercase tracking-widest mb-4 block">Weight-Loss | Vegan</span>
+                            <h5 class="text-2xl font-black mb-4 leading-tight">The Plant Protein <br>Volume Week</h5>
+                            <ul class="space-y-3 mb-8">
+                                <li class="text-xs font-bold opacity-50 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Tempeh Batch Logic
+                                </li>
+                                <li class="text-xs font-bold opacity-50 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Lentil High-Fiber Base
+                                </li>
+                                <li class="text-xs font-bold opacity-50 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Pea Protein Hacks
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="#" class="w-full text-center py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-colors">Get Shopping List</a>
+                    </div>
+                    <!-- Plan 3 -->
+                    <div class="min-w-[320px] bg-white p-8 rounded-[2rem] shadow-xl border border-black/5 flex flex-col justify-between">
+                        <div>
+                            <span class="text-orange-600 text-[10px] font-black uppercase tracking-widest mb-4 block">Efficiency | Work-Lunch</span>
+                            <h5 class="text-2xl font-black mb-4 leading-tight">The 10-Min Trader <br>Joe's Protein Week</h5>
+                            <ul class="space-y-3 mb-8">
+                                <li class="text-xs font-bold opacity-50 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> Frozen SKU Pairings
+                                </li>
+                                <li class="text-xs font-bold opacity-50 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> Microwave-only Logic
+                                </li>
+                                <li class="text-xs font-bold opacity-50 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> Cold-Pack Assembly
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="#" class="w-full text-center py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-orange-600 transition-colors">Get Shopping List</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Internal Link Graph: The System Tree -->
+        <section class="max-w-7xl mx-auto px-6 py-24 border-t border-black/5">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12">
+                <div class="col-span-full mb-8">
+                    <span class="label-text mb-4">Internal Graph</span>
+                    <h4 class="text-3xl font-black tracking-tighter">Canonical Protocols</h4>
+                </div>
+                
+                <!-- Diet links -->
+                <div>
+                    <h6 class="text-[10px] font-black uppercase tracking-widest opacity-30 mb-6">By Diet</h6>
+                    <ul class="space-y-3 text-sm font-bold">
+                        <li><a href="/high-protein/diet/vegan/" class="hover:text-orange-600 transition-colors">Vegan</a></li>
+                        <li><a href="/high-protein/diet/vegetarian/" class="hover:text-orange-600 transition-colors">Vegetarian</a></li>
+                        <li><a href="/high-protein/diet/low-carb/" class="hover:text-orange-600 transition-colors">Low-Carb</a></li>
+                        <li><a href="/high-protein/diet/keto/" class="hover:text-orange-600 transition-colors">Keto</a></li>
+                        <li><a href="/high-protein/diet/low-calorie/" class="hover:text-orange-600 transition-colors">Low-Calorie</a></li>
+                        <li><a href="/high-protein/diet/gluten-free/" class="hover:text-orange-600 transition-colors">Gluten-Free</a></li>
+                    </ul>
+                </div>
+
+                <!-- Goal links -->
+                <div>
+                    <h6 class="text-[10px] font-black uppercase tracking-widest opacity-30 mb-6">By Goal</h6>
+                    <ul class="space-y-3 text-sm font-bold">
+                        <li><a href="/high-protein/goal/weight-loss/" class="hover:text-orange-600 transition-colors">Weight Loss</a></li>
+                        <li><a href="/high-protein/goal/muscle-gain/" class="hover:text-orange-600 transition-colors">Muscle Gain</a></li>
+                        <li><a href="/high-protein/goal/healthy/" class="hover:text-orange-600 transition-colors">Optimal Health</a></li>
+                        <li><a href="/high-protein/goal/metabolic-reset/" class="hover:text-orange-600 transition-colors">Metabolic Reset</a></li>
+                    </ul>
+                </div>
+
+                <!-- Store links -->
+                <div>
+                    <h6 class="text-[10px] font-black uppercase tracking-widest opacity-30 mb-6">By Retailer</h6>
+                    <ul class="space-y-3 text-sm font-bold">
+                        <li><a href="/high-protein/store/trader-joes/" class="hover:text-orange-600 transition-colors">Trader Joe's</a></li>
+                        <li><a href="/high-protein/store/costco/" class="hover:text-orange-600 transition-colors">Costco</a></li>
+                        <li><a href="/high-protein/store/walmart/" class="hover:text-orange-600 transition-colors">Walmart</a></li>
+                        <li><a href="/high-protein/store/aldi/" class="hover:text-orange-600 transition-colors">Aldi</a></li>
+                        <li><a href="/high-protein/store/whole-foods/" class="hover:text-orange-600 transition-colors">Whole Foods</a></li>
+                    </ul>
+                </div>
+
+                <!-- Constraint links -->
+                <div>
+                    <h6 class="text-[10px] font-black uppercase tracking-widest opacity-30 mb-6">Constraints</h6>
+                    <ul class="space-y-3 text-sm font-bold">
+                        <li><a href="/high-protein/constraint/high-fiber/" class="hover:text-orange-600 transition-colors">High Fiber</a></li>
+                        <li><a href="/high-protein/constraint/low-sodium/" class="hover:text-orange-600 transition-colors">Low Sodium</a></li>
+                        <li><a href="/high-protein/constraint/low-fat/" class="hover:text-orange-600 transition-colors">Low Fat</a></li>
+                        <li><a href="/high-protein/constraint/budget/" class="hover:text-orange-600 transition-colors">Budget Friendly</a></li>
+                        <li><a href="/high-protein/constraint/quick/" class="hover:text-orange-600 transition-colors">Quick & Simple</a></li>
+                    </ul>
+                </div>
+
+                <!-- Chain links -->
+                <div>
+                    <h6 class="text-[10px] font-black uppercase tracking-widest opacity-30 mb-6">Chains</h6>
+                    <ul class="space-y-3 text-sm font-bold">
+                        <li><a href="/high-protein/chain/chick-fil-a/" class="hover:text-orange-600 transition-colors">Chick-Fil-A</a></li>
+                        <li><a href="/high-protein/chain/chipotle/" class="hover:text-orange-600 transition-colors">Chipotle</a></li>
+                        <li><a href="/high-protein/chain/panera/" class="hover:text-orange-600 transition-colors">Panera</a></li>
+                        <li><a href="/high-protein/chain/taco-bell/" class="hover:text-orange-600 transition-colors">Taco Bell</a></li>
+                        <li><a href="/high-protein/chain/wendys/" class="hover:text-orange-600 transition-colors">Wendy's</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- T1 Footer -->
+    <footer class="bg-slate-900 text-white py-16 px-6">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 bg-orange-600 text-white flex items-center justify-center rounded-md font-black">P</div>
+                    <span class="font-black text-xl tracking-tighter uppercase">ProteinMeals.co</span>
+                </div>
+                <p class="text-slate-400 max-w-sm mb-8">Part of the Systemic Meals Network. We provide the logic for high-protein living, across all constraints.</p>
+                <div class="flex gap-4">
+                    <span class="text-[10px] font-black uppercase tracking-widest opacity-40">Systemic Network Hubs:</span>
+                    <a href="#" class="text-[10px] font-black uppercase tracking-widest hover:text-orange-500 transition-colors">MealPrepIdeas.co</a>
+                </div>
+            </div>
+            
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Pillar Categories</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Diet Clusters</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Retail Audits</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Chain Mods</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Metabolic Goals</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Resources</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Macro Calculator</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">P:E Ratio Guide</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Protein Glossary</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">The Satellite Packs</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-white/5 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">© 2024 ProteinMeals.co - A High Protein Authority.</p>
+            <div class="flex gap-6 text-[10px] font-bold text-slate-500 tracking-widest uppercase">
+                <a href="#">Taxonomy Map</a>
+                <a href="#">Privacy Protocol</a>
+                <a href="#">Terms of Use</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "High Protein Meal Plans & Hubs",
+      "description": "The central authority for high protein meal prepping, retail audits, and fast food modifications.",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "High Protein Diet Hub",
+          "url": "https://proteinmeals.co/high-protein/diet/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Fast Food Macro Audits",
+          "url": "https://proteinmeals.co/high-protein/chain/"
+        }
+      ]
+    }
+    </script>
+
+    <script>
+        // Smooth reveal for cards
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.pantry-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

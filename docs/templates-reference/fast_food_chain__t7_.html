@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High-Protein Panera Bread | Macro Audit & Ordering Guide | ProteinMeals.co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pantry-cream: #F9F7F2;
+            --pantry-slate: #2D3436;
+            --pantry-sage: #7E9680;
+            --pantry-accent: #E67E22;
+            --label-tape: #EFEFEF;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--pantry-cream);
+            color: var(--pantry-slate);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .pantry-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 4px 0px rgba(0,0,0,0.02), 0 15px 35px -5px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .label-text {
+            display: inline-block;
+            background: var(--label-tape);
+            padding: 2px 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            font-size: 0.65rem;
+            border-left: 3px solid var(--pantry-sage);
+        }
+
+        .macro-badge {
+            background: var(--pantry-slate);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        .system-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .btn-system {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Perspective for layout */
+        .perspective-container { perspective: 1200px; }
+
+        [x-cloak] { display: none !important; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--pantry-cream); }
+        ::-webkit-scrollbar-thumb { background: var(--pantry-slate); border-radius: 0; }
+
+        .tag-active {
+            background: var(--pantry-slate) !important;
+            color: white !important;
+        }
+    </style>
+    
+    <!-- Programmatic Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Toasted Steak & White Cheddar Sandwich",
+          "description": "48g Protein. Modification: Double meat, no horseradish sauce."
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Mediterranean Bowl with Chicken",
+          "description": "31g Protein. High fiber option."
+        }
+      ]
+    }
+    </script>
+</head>
+<body x-data="{ 
+    filter: 'all', 
+    items: [
+        { id: 1, name: 'Toasted Steak & White Cheddar', protein: 48, cals: 840, fiber: 4, type: 'sandwich', best: true },
+        { id: 2, name: 'Mediterranean Bowl with Chicken', protein: 31, cals: 580, fiber: 12, type: 'bowl', best: true },
+        { id: 3, name: 'Green Goddess Chicken Salad', protein: 37, cals: 500, fiber: 7, type: 'salad', best: false },
+        { id: 4, name: 'Fuji Apple Salad with Chicken', protein: 29, cals: 560, fiber: 6, type: 'salad', best: false },
+        { id: 5, name: 'Teriyaki Chicken & Broccoli Bowl', protein: 34, cals: 650, fiber: 6, type: 'bowl', best: false },
+        { id: 6, name: 'Roasted Turkey & Avocado BLT', protein: 36, cals: 710, fiber: 7, type: 'sandwich', best: false }
+    ]
+}">
+    <div class="grain"></div>
+
+    <!-- Global Navigation -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/80 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="/" class="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-lg text-white font-bold text-xl">M</a>
+                <div class="flex flex-col leading-none">
+                    <span class="font-extrabold tracking-tighter text-xl uppercase">Systemic Meals</span>
+                    <span class="text-[9px] font-bold tracking-[0.2em] opacity-40 uppercase">High Protein Hierarchy</span>
+                </div>
+            </div>
+            <div class="hidden md:flex gap-8 text-[10px] font-black uppercase tracking-widest opacity-60">
+                <a href="#" class="hover:text-orange-500 transition-colors">Meal Prep</a>
+                <a href="#" class="hover:text-orange-500 transition-colors">Macro Hub</a>
+                <a href="#" class="hover:text-orange-500 transition-colors">Store Audits</a>
+                <a href="#" class="hover:text-orange-500 transition-colors">Chain Guides</a>
+            </div>
+            <button class="text-[10px] font-bold border-2 border-slate-900 px-6 py-2 rounded-full hover:bg-slate-900 hover:text-white transition-all uppercase tracking-widest">
+                Account
+            </button>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        <!-- T7 Hero Header -->
+        <header class="bg-white border-b border-black/5 pt-16 pb-24 px-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                    <div class="max-w-2xl">
+                        <nav class="flex items-center gap-2 mb-8">
+                            <span class="label-text">Hierarchy</span>
+                            <span class="text-[10px] font-bold opacity-30">/</span>
+                            <span class="text-[10px] font-black opacity-40 uppercase tracking-widest">High Protein</span>
+                            <span class="text-[10px] font-bold opacity-30">/</span>
+                            <span class="text-[10px] font-black opacity-40 uppercase tracking-widest">Chain</span>
+                        </nav>
+                        <h1 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] text-slate-900 mb-6">
+                            Panera <br><span class="text-orange-500 underline decoration-4 underline-offset-8">Bread.</span>
+                        </h1>
+                        <p class="text-xl opacity-60 font-medium max-w-lg">
+                            An objective macro-audit of the Panera menu. We've filtered for high P:E ratios, protein density, and smart modifications for your goals.
+                        </p>
+                    </div>
+                    
+                    <!-- Macro Range Summary Widget -->
+                    <div class="pantry-card rounded-3xl p-8 bg-slate-900 text-white min-w-[320px]">
+                        <span class="label-text !bg-slate-800 !text-white !border-orange-500 mb-4">Chain Macro Ranges</span>
+                        <div class="space-y-4 mt-6">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold opacity-60">Protein Range</span>
+                                <span class="text-xl font-black">25g - 52g</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold opacity-60">Calorie Band</span>
+                                <span class="text-xl font-black">420 - 950</span>
+                            </div>
+                            <div class="pt-4 border-t border-white/10 flex gap-2">
+                                <div class="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[9px] font-bold rounded">HIGH FIBER</div>
+                                <div class="px-3 py-1 bg-blue-500/20 text-blue-400 text-[9px] font-bold rounded">SODIUM ALERT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Programmatic Menu Filters & Grid -->
+        <section class="max-w-7xl mx-auto py-20 px-6">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
+                <div class="flex flex-wrap gap-2">
+                    <button @click="filter = 'all'" :class="filter === 'all' ? 'tag-active' : ''" class="px-6 py-2 rounded-full border border-black/10 bg-white text-[10px] font-black uppercase tracking-widest transition-all">All Items</button>
+                    <button @click="filter = 'salad'" :class="filter === 'salad' ? 'tag-active' : ''" class="px-6 py-2 rounded-full border border-black/10 bg-white text-[10px] font-black uppercase tracking-widest transition-all">Salads</button>
+                    <button @click="filter = 'sandwich'" :class="filter === 'sandwich' ? 'tag-active' : ''" class="px-6 py-2 rounded-full border border-black/10 bg-white text-[10px] font-black uppercase tracking-widest transition-all">Sandwiches</button>
+                    <button @click="filter = 'bowl'" :class="filter === 'bowl' ? 'tag-active' : ''" class="px-6 py-2 rounded-full border border-black/10 bg-white text-[10px] font-black uppercase tracking-widest transition-all">Warm Bowls</button>
+                </div>
+                <div class="text-[10px] font-black opacity-30 uppercase tracking-[0.3em]">
+                    Showing <span x-text="items.filter(i => filter === 'all' || i.type === filter).length"></span> Results
+                </div>
+            </div>
+
+            <!-- Item Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <template x-for="item in items" :key="item.id">
+                    <div x-show="filter === 'all' || item.type === filter" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform translate-y-4"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         class="pantry-card rounded-3xl p-8 flex flex-col justify-between group">
+                        
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <span class="label-text" x-text="item.type"></span>
+                                <template x-if="item.best">
+                                    <span class="text-[9px] font-bold text-orange-500 border border-orange-500/20 px-2 py-0.5 rounded">SYSTEM PICK</span>
+                                </template>
+                            </div>
+                            <h3 class="text-2xl font-black leading-tight mb-4 group-hover:text-orange-600 transition-colors" x-text="item.name"></h3>
+                            
+                            <!-- Macro Visualizer -->
+                            <div class="flex gap-4 mb-8">
+                                <div class="flex flex-col">
+                                    <span class="text-[9px] font-bold opacity-40 uppercase">Protein</span>
+                                    <span class="text-xl font-black" x-text="item.protein + 'g'"></span>
+                                </div>
+                                <div class="w-px h-10 bg-black/5"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[9px] font-bold opacity-40 uppercase">Cals</span>
+                                    <span class="text-xl font-black" x-text="item.cals"></span>
+                                </div>
+                                <div class="w-px h-10 bg-black/5"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[9px] font-bold opacity-40 uppercase">Fiber</span>
+                                    <span class="text-xl font-black" x-text="item.fiber + 'g'"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-black/5 flex flex-col gap-3">
+                            <span class="text-[10px] font-bold opacity-40 uppercase tracking-widest">Optimized Order:</span>
+                            <div class="text-xs font-semibold text-slate-600 italic">
+                                "Double the chicken, swap the dressing for balsamic glaze to save 120 calories."
+                            </div>
+                            <button class="mt-4 btn-system bg-slate-900 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-widest group-hover:bg-orange-600">
+                                Detailed Audit
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <!-- "System Overrides" - Modification Suggestions -->
+        <section class="bg-slate-900 text-white py-24 px-6 relative overflow-hidden">
+            <div class="absolute right-0 top-0 w-1/3 h-full bg-orange-500/5 blur-3xl rounded-full"></div>
+            <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <span class="label-text !bg-white/10 !text-white !border-orange-500 mb-6">System Overrides</span>
+                    <h2 class="text-5xl font-black tracking-tighter mb-8 leading-none">How to Hack <br>the Menu.</h2>
+                    <div class="space-y-6">
+                        <div class="flex gap-6">
+                            <div class="w-12 h-12 shrink-0 rounded-full border border-white/20 flex items-center justify-center font-black">01</div>
+                            <div>
+                                <h4 class="font-bold text-xl mb-1">The "Green Sub"</h4>
+                                <p class="opacity-60 text-sm">Swap any bread-based side (chips/baguette) for a tomato cucumber salad or an apple. Saves 150 cals, adds fiber.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6">
+                            <div class="w-12 h-12 shrink-0 rounded-full border border-white/20 flex items-center justify-center font-black">02</div>
+                            <div>
+                                <h4 class="font-bold text-xl mb-1">Double-Down Protein</h4>
+                                <p class="opacity-60 text-sm">Panera allows "Extra Meat" on almost all digital orders. It’s the highest ROI way to hit a 50g+ protein target.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6">
+                            <div class="w-12 h-12 shrink-0 rounded-full border border-white/20 flex items-center justify-center font-black">03</div>
+                            <div>
+                                <h4 class="font-bold text-xl mb-1">Dressing Decoupling</h4>
+                                <p class="opacity-60 text-sm">Always order dressing "On the Side". Most salad dressings at Panera contain 15g-22g of fat per serving.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pantry-card !bg-white/5 border-white/10 rounded-3xl p-10">
+                    <h3 class="text-2xl font-black mb-6">Target: P:E Ratio</h3>
+                    <p class="text-sm opacity-60 mb-8">The Protein-to-Energy (P:E) ratio is our gold standard. At Panera, aim for a ratio of 1.0 or higher (grams of protein vs fat+carbs).</p>
+                    <div class="space-y-4">
+                        <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+                            <div class="h-full bg-orange-500 w-[75%]"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] font-black tracking-widest uppercase">
+                            <span>Poor P:E (Bakery)</span>
+                            <span class="text-orange-500">Elite P:E (Salads/Steak)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alternatives/Related Pages -->
+        <section class="max-w-7xl mx-auto py-24 px-6">
+            <span class="label-text mb-6">Nearby Alternatives</span>
+            <h3 class="text-3xl font-black mb-12">More High-Protein Audits.</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <a href="/high-protein/chain/chipotle/" class="pantry-card rounded-2xl p-6 hover:border-orange-500 transition-all group">
+                    <span class="text-xs font-black opacity-30 block mb-2 uppercase">Competitor</span>
+                    <span class="text-xl font-black group-hover:text-orange-600">Chipotle →</span>
+                </a>
+                <a href="/high-protein/chain/chick-fil-a/" class="pantry-card rounded-2xl p-6 hover:border-orange-500 transition-all group">
+                    <span class="text-xs font-black opacity-30 block mb-2 uppercase">Competitor</span>
+                    <span class="text-xl font-black group-hover:text-orange-600">Chick-fil-A →</span>
+                </a>
+                <a href="/high-protein/chain/panda-express/" class="pantry-card rounded-2xl p-6 hover:border-orange-500 transition-all group">
+                    <span class="text-xs font-black opacity-30 block mb-2 uppercase">Competitor</span>
+                    <span class="text-xl font-black group-hover:text-orange-600">Panda Express →</span>
+                </a>
+                <a href="/high-protein/goal/low-calorie/" class="pantry-card rounded-2xl p-6 hover:border-orange-500 transition-all group">
+                    <span class="text-xs font-black opacity-30 block mb-2 uppercase">Filter</span>
+                    <span class="text-xl font-black group-hover:text-orange-600">Under 500 Cals →</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- FAQ Block -->
+        <section class="bg-white border-t border-black/5 py-24 px-6">
+            <div class="max-w-3xl mx-auto">
+                <h3 class="text-4xl font-black mb-12 text-center">Protocol FAQ</h3>
+                <div class="space-y-8">
+                    <div>
+                        <h4 class="font-bold text-lg mb-2">What is the highest protein item at Panera?</h4>
+                        <p class="opacity-60">The Toasted Steak & White Cheddar (whole) leads with 48g of protein, but it also carries 840 calories. For better density, the Green Goddess Chicken Salad (double chicken) is the winner.</p>
+                    </div>
+                    <div class="pt-8 border-t border-black/5">
+                        <h4 class="font-bold text-lg mb-2">Are Panera's warm bowls healthy?</h4>
+                        <p class="opacity-60">They are nutrient-dense but can be high in sodium and carbohydrates. The Mediterranean Bowl is the most "system-friendly" due to its high fiber count (12g).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer -->
+    <footer class="bg-slate-900 text-white py-16 px-6">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 bg-white text-slate-900 flex items-center justify-center rounded-md font-black">M</div>
+                    <span class="font-black text-xl tracking-tighter uppercase">The System Network</span>
+                </div>
+                <p class="text-slate-400 max-w-sm mb-8">Designing the world's most organized meal planning taxonomy. High-protein, high-efficiency, zero-fluff.</p>
+            </div>
+            
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Meal Prep Ideas</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">By Method</a></li>
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">By Persona</a></li>
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">5-Day Plans</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Protein Meals</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Retail Finds</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Chain Audits</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Macro Filters</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-white/5 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">© 2024 Systemic Meals Network. Data verified weekly.</p>
+            <div class="flex gap-6 text-[10px] font-bold text-slate-500 tracking-widest uppercase">
+                <a href="#">Privacy</a>
+                <a href="#">Taxonomy Map</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Magnetic Button Effect
+        document.querySelectorAll('.btn-system').forEach(button => {
+            button.addEventListener('mousemove', (e) => {
+                const rect = button.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                button.style.transform = `translate(${(x - rect.width/2) / 10}px, ${(y - rect.height/2) / 10}px) scale(1.02)`;
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>

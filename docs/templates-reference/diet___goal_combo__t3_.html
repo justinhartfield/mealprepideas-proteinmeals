@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vegan Muscle-Gain Protocols | High Protein Meals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pantry-cream: #F9F7F2;
+            --pantry-slate: #2D3436;
+            --pantry-sage: #7E9680;
+            --pantry-accent: #E67E22;
+            --label-tape: #EFEFEF;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--pantry-cream);
+            color: var(--pantry-slate);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* SVG Grain Overlay */
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Tactical Depth Styling */
+        .pantry-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 
+                0 4px 0px rgba(0,0,0,0.02),
+                0 15px 35px -5px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .label-text {
+            display: inline-block;
+            background: var(--label-tape);
+            padding: 2px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            font-size: 0.7rem;
+            border-left: 3px solid var(--pantry-sage);
+        }
+
+        .system-pill {
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--pantry-cream); }
+        ::-webkit-scrollbar-thumb { background: var(--pantry-sage); border-radius: 10px; }
+
+        /* Perspective Layout */
+        .perspective-container { perspective: 1200px; }
+
+        /* Alpine Cloak */
+        [x-cloak] { display: none !important; }
+
+        .btn-system {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body x-data="{ 
+    filter: 'all',
+    recipes: [
+        { id: 1, title: 'Seitan ' + '&' + ' Broccoli Stir Fry', protein: '42g', cal: '520', method: 'one-pan', ingredient: 'seitan', tag: 'High Fiber' },
+        { id: 2, title: 'Tempeh Power Bowls', protein: '35g', cal: '480', method: 'no-cook', ingredient: 'tempeh', tag: 'Gut Health' },
+        { id: 3, title: 'Red Lentil Pasta Bake', protein: '31g', cal: '550', method: 'oven', ingredient: 'lentils', tag: 'Budget' },
+        { id: 4, title: 'Tofu Scramble Burritos', protein: '38g', cal: '610', method: 'skillet', ingredient: 'tofu', tag: 'Freezer-Friendly' },
+        { id: 5, title: 'Chickpea Mediterranean Salad', protein: '28g', cal: '440', method: 'no-cook', ingredient: 'chickpea', tag: 'Low Fat' },
+        { id: 6, title: 'Peanut Satay Tempeh', protein: '40g', cal: '590', method: 'air-fryer', ingredient: 'tempeh', tag: 'Spicy' },
+        { id: 7, title: 'Quinoa ' + '&' + ' Black Bean Chili', protein: '33g', cal: '490', method: 'crockpot', ingredient: 'beans', tag: 'Slow Cook' },
+        { id: 8, title: 'High-Protein Tofu Curry', protein: '36g', cal: '510', method: 'instant-pot', ingredient: 'tofu', tag: 'Fast' },
+        { id: 9, title: 'BBQ Pulled Jackfruit/Soy', protein: '32g', cal: '470', method: 'slow-cooker', ingredient: 'soy', tag: 'Comfort' },
+        { id: 10, title: 'Roasted Edamame Grain Bowl', protein: '34g', cal: '530', method: 'sheet-pan', ingredient: 'edamame', tag: 'Crunchy' }
+    ],
+    get filteredRecipes() {
+        if (this.filter === 'all') return this.recipes;
+        return this.recipes.filter(r => r.method === this.filter);
+    }
+}">
+    <div class="grain"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/80 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="/" class="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-lg text-white font-bold text-xl">M</a>
+                <span class="font-extrabold tracking-tighter text-2xl uppercase">Systemic Meals</span>
+            </div>
+            <div class="hidden md:flex gap-8 text-sm font-medium opacity-60">
+                <a href="/high-protein/" class="hover:opacity-100 transition-opacity">High Protein Hub</a>
+                <a href="/meal-prep/" class="hover:opacity-100 transition-opacity">Meal Prep Hub</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">Protocol Maps</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="text-xs font-bold border-2 border-slate-900 px-4 py-2 rounded hover:bg-slate-900 hover:text-white transition-all">SIGN IN</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        <!-- Hero Header -->
+        <header class="bg-white border-b border-black/5 pt-12 pb-20 px-6">
+            <div class="max-w-7xl mx-auto">
+                <nav class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest opacity-40 mb-8">
+                    <a href="/">Home</a>
+                    <span>/</span>
+                    <a href="/high-protein/">High Protein</a>
+                    <span>/</span>
+                    <a href="/high-protein/diet/vegan/">Vegan</a>
+                </nav>
+
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                    <div class="max-w-2xl">
+                        <span class="label-text mb-4">T3: Two-Facet Intersection</span>
+                        <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-6">
+                            Vegan <span class="text-orange-500">Muscle-Gain</span> Protocols.
+                        </h1>
+                        <p class="text-xl opacity-60 leading-relaxed">
+                            A systematic approach to hyper-trophy without animal products. We solve the P:E ratio problem for plant-based athletes through precision batch-cooking and high-density protein isolates.
+                        </p>
+                    </div>
+                    <div class="bg-slate-900 text-white p-6 rounded-3xl w-full md:w-64">
+                        <div class="text-[10px] font-black uppercase tracking-widest opacity-50 mb-4">Macro Intent</div>
+                        <div class="flex justify-between items-end mb-2">
+                            <span class="text-sm font-bold">Protein Min.</span>
+                            <span class="text-2xl font-black">30g</span>
+                        </div>
+                        <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden">
+                            <div class="bg-orange-500 h-full w-[85%]"></div>
+                        </div>
+                        <div class="mt-4 text-[10px] opacity-40 italic">Optimized for positive nitrogen balance.</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- What this page solves section -->
+        <section class="max-w-7xl mx-auto py-16 px-6 grid md:grid-cols-3 gap-12">
+            <div class="md:col-span-2">
+                <h3 class="text-2xl font-black mb-6 flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm">?</span>
+                    The Solution Framework
+                </h3>
+                <div class="space-y-6 text-lg opacity-80">
+                    <p>Standard vegan diets often lack the caloric density and protein-to-energy ratio required for efficient muscle synthesis. This protocol focuses on <strong>Seitan</strong>, <strong>Tempeh</strong>, and <strong>Lupini-based</strong> proteins to ensure you hit your 1.6g/kg target without excessive carbohydrate bloat.</p>
+                    <ul class="grid md:grid-cols-2 gap-4">
+                        <li class="flex items-start gap-3 p-4 bg-white border border-black/5 rounded-2xl">
+                            <svg class="w-6 h-6 text-emerald-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span class="text-sm font-semibold">Leucine-enriched plant pairings for MPS triggers.</span>
+                        </li>
+                        <li class="flex items-start gap-3 p-4 bg-white border border-black/5 rounded-2xl">
+                            <svg class="w-6 h-6 text-emerald-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span class="text-sm font-semibold">Calorie-controlled fats (Omega-3 focus).</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="bg-white pantry-card rounded-3xl p-8">
+                <h4 class="text-xs font-black uppercase tracking-widest opacity-40 mb-6">Quick Filters</h4>
+                <div class="flex flex-col gap-2">
+                    <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'" class="w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all">All Protocols</button>
+                    <button @click="filter = 'no-cook'" :class="filter === 'no-cook' ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'" class="w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all">No-Cook / Cold</button>
+                    <button @click="filter = 'one-pan'" :class="filter === 'one-pan' ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'" class="w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all">One-Pan Efficiency</button>
+                    <button @click="filter = 'air-fryer'" :class="filter === 'air-fryer' ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'" class="w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all">Air Fryer Speed</button>
+                    <button @click="filter = 'crockpot'" :class="filter === 'crockpot' ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'" class="w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all">Set 'n Forget</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top 10 List Grid -->
+        <section class="bg-slate-900 py-24 px-6 text-white overflow-hidden relative">
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+                    <div>
+                        <span class="label-text !bg-white/10 !text-white !border-orange-500 mb-4">The Ranking Machine</span>
+                        <h2 class="text-4xl md:text-5xl font-black tracking-tight">Top 10 High-Protein <br>Vegan Muscle Builders</h2>
+                    </div>
+                    <div class="text-sm opacity-50 max-w-xs text-right hidden md:block">
+                        Updated weekly based on user feedback and macro-compliance auditing.
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <template x-for="(recipe, index) in filteredRecipes" :key="recipe.id">
+                        <div class="pantry-card !bg-white/5 border-white/10 rounded-3xl p-6 group hover:!bg-white/10 transition-all cursor-pointer">
+                            <div class="flex justify-between items-start mb-6">
+                                <span class="text-4xl font-black text-white/10 group-hover:text-orange-500/50 transition-colors" x-text="index + 1"></span>
+                                <span class="system-pill bg-white/10 text-white" x-text="recipe.tag"></span>
+                            </div>
+                            <h4 class="text-2xl font-bold mb-4" x-text="recipe.title"></h4>
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div class="bg-white/5 rounded-xl p-3">
+                                    <div class="text-[10px] font-black uppercase opacity-40">Protein</div>
+                                    <div class="text-lg font-black text-orange-400" x-text="recipe.protein"></div>
+                                </div>
+                                <div class="bg-white/5 rounded-xl p-3">
+                                    <div class="text-[10px] font-black uppercase opacity-40">Calories</div>
+                                    <div class="text-lg font-black" x-text="recipe.cal"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-bold opacity-40 uppercase tracking-widest" x-text="'Method: ' + recipe.method"></span>
+                                <div class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-orange-500 group-hover:border-orange-500 transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <!-- Background Decorative Element -->
+            <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-orange-500/10 rounded-full blur-[120px]"></div>
+        </section>
+
+        <!-- Meal Prep / Storage Logic -->
+        <section class="py-24 px-6 max-w-7xl mx-auto">
+            <div class="pantry-card rounded-[3rem] p-10 md:p-20 flex flex-col md:flex-row gap-16 items-center">
+                <div class="md:w-1/2">
+                    <span class="label-text mb-6">Logistics Module</span>
+                    <h3 class="text-4xl font-black tracking-tighter mb-8 leading-tight">Batch-Cooking the <br>Vegan Muscle Stack.</h3>
+                    <div class="space-y-8">
+                        <div class="flex gap-6">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-bold">01</div>
+                            <div>
+                                <h5 class="font-bold mb-2">Texture Integrity Control</h5>
+                                <p class="text-sm opacity-60 italic">Store seitan/tofu separately from sauces to prevent "protein softening" over 72 hours.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-bold">02</div>
+                            <div>
+                                <h5 class="font-bold mb-2">Microwave Optimization</h5>
+                                <p class="text-sm opacity-60 italic">Use the "Damp Paper Towel" method for plant proteins to maintain moisture during re-heating.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-bold">03</div>
+                            <div>
+                                <h5 class="font-bold mb-2">Freezer Longevity</h5>
+                                <p class="text-sm opacity-60 italic">Legume-based meals (Lentil Pasta, Chili) are 100% freezer-stable for up to 90 days.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2 bg-pantry-cream rounded-3xl p-8 border border-black/5 relative">
+                    <div class="text-[10px] font-black uppercase tracking-widest opacity-30 mb-8">Storage Specification</div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-4 bg-white rounded-xl">
+                            <span class="text-sm font-bold">Fridge Life</span>
+                            <span class="system-pill bg-emerald-100 text-emerald-700">5-6 Days</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-white rounded-xl">
+                            <span class="text-sm font-bold">Freezer Safe</span>
+                            <span class="system-pill bg-blue-100 text-blue-700">Recommended</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-white rounded-xl">
+                            <span class="text-sm font-bold">Reheat Method</span>
+                            <span class="system-pill bg-orange-100 text-orange-700">Microwave / Pan</span>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <img src="https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=800" class="rounded-2xl grayscale hover:grayscale-0 transition-all duration-700 shadow-xl" alt="Meal prep containers">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Internal Link Block: Related Pages -->
+        <section class="bg-white border-t border-black/5 py-24 px-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="mb-12">
+                    <span class="label-text mb-4">Related Systems</span>
+                    <h3 class="text-3xl font-black tracking-tight">Explore Sibling Nodes.</h3>
+                </div>
+                <div class="grid md:grid-cols-4 gap-4">
+                    <a href="/high-protein/diet/vegan/constraint/high-fiber/" class="p-6 bg-pantry-cream border border-black/5 rounded-2xl hover:border-slate-900 transition-all group">
+                        <div class="text-[10px] font-black opacity-30 group-hover:opacity-100 mb-2">NEXT FACET</div>
+                        <div class="font-bold text-sm">Vegan + High Fiber</div>
+                    </a>
+                    <a href="/high-protein/diet/vegan/constraint/budget/" class="p-6 bg-pantry-cream border border-black/5 rounded-2xl hover:border-slate-900 transition-all group">
+                        <div class="text-[10px] font-black opacity-30 group-hover:opacity-100 mb-2">NEXT FACET</div>
+                        <div class="font-bold text-sm">Vegan + Cheap/Budget</div>
+                    </a>
+                    <a href="/high-protein/diet/vegetarian/goal/muscle-gain/" class="p-6 bg-pantry-cream border border-black/5 rounded-2xl hover:border-slate-900 transition-all group">
+                        <div class="text-[10px] font-black opacity-30 group-hover:opacity-100 mb-2">SIBLING DIET</div>
+                        <div class="font-bold text-sm">Vegetarian Muscle Gain</div>
+                    </a>
+                    <a href="/high-protein/diet/vegan/goal/weight-loss/" class="p-6 bg-pantry-cream border border-black/5 rounded-2xl hover:border-slate-900 transition-all group">
+                        <div class="text-[10px] font-black opacity-30 group-hover:opacity-100 mb-2">SIBLING GOAL</div>
+                        <div class="font-bold text-sm">Vegan Weight Loss</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-16 px-6">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 bg-white text-slate-900 flex items-center justify-center rounded-md font-black">M</div>
+                    <span class="font-black text-xl tracking-tighter uppercase">The System Network</span>
+                </div>
+                <p class="text-slate-400 max-w-sm mb-8">The most organized high-protein and meal-prep taxonomy on the internet. Canonical, data-backed, efficiency-focused.</p>
+                <div class="flex gap-4">
+                    <div class="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors cursor-pointer"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg></div>
+                    <div class="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors cursor-pointer"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div>
+                </div>
+            </div>
+            
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Taxonomy Root</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">By Method</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">By Persona</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Retail Audits</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Fast Food Hacks</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Authority Hubs</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">Meal Prep Ideas.co</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Protein Meals.co</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Satellite Packs</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Site Tree Map</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-white/5 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold text-slate-500 tracking-widest uppercase text-center md:text-left">
+            <p>© 2024 Systemic Meals Network. Optimized for Protein:Energy Ratios.</p>
+            <div class="flex gap-6">
+                <a href="#">Privacy</a>
+                <a href="#">API</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

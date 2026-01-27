@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postpartum Recovery Protocol | Systemic Meals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pantry-cream: #F9F7F2;
+            --pantry-slate: #2D3436;
+            --pantry-sage: #7E9680;
+            --pantry-accent: #E67E22;
+            --label-tape: #EFEFEF;
+            --clinical-blue: #D1E1E4;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--pantry-cream);
+            color: var(--pantry-slate);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .pantry-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 4px 0px rgba(0,0,0,0.02), 0 15px 35px -5px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .label-text {
+            display: inline-block;
+            background: var(--label-tape);
+            padding: 2px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            font-size: 0.7rem;
+            border-left: 3px solid var(--pantry-sage);
+        }
+
+        .clinical-advisory {
+            background: linear-gradient(135deg, #ffffff 0%, var(--clinical-blue) 100%);
+            border-left: 4px solid #5A8A92;
+        }
+
+        .safe-list-item {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        .safe-list-item::before {
+            content: '●';
+            position: absolute;
+            left: 0;
+            color: var(--pantry-sage);
+        }
+
+        .avoid-list-item {
+            position: relative;
+            padding-left: 1.5rem;
+            opacity: 0.7;
+        }
+        .avoid-list-item::before {
+            content: '✕';
+            position: absolute;
+            left: 0;
+            color: #E74C3C;
+            font-size: 0.8rem;
+            top: 2px;
+        }
+
+        [x-cloak] { display: none !important; }
+
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body x-data="{ activeTab: 'safe', faqOpen: null }">
+    <div class="grain"></div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/80 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="/" class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-lg text-white font-bold text-xl">M</div>
+                    <span class="font-extrabold tracking-tighter text-2xl uppercase">Systemic Meals</span>
+                </a>
+            </div>
+            <div class="hidden md:flex gap-8 text-sm font-medium opacity-60">
+                <a href="/meal-prep/" class="hover:opacity-100 transition-opacity">Meal Prep</a>
+                <a href="/high-protein/" class="hover:opacity-100 transition-opacity">High Protein</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">Archives</a>
+            </div>
+            <div>
+                <button class="text-xs font-bold border-2 border-slate-900 px-4 py-2 rounded hover:bg-slate-900 hover:text-white transition-all uppercase tracking-widest">Client Portal</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        <!-- Hero: Life Stage / Condition Header -->
+        <header class="pt-20 pb-12 px-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row gap-12 items-start">
+                    <div class="flex-1">
+                        <span class="label-text mb-6">Hierarchy 03: Life-Stage Protocol</span>
+                        <h1 class="text-6xl md:text-7xl font-black text-slate-900 leading-[0.85] mb-6">Postpartum <br><span class="text-pantry-sage">Recovery Stash.</span></h1>
+                        <p class="text-xl opacity-70 max-w-xl leading-relaxed">Systematic nutrition for the fourth trimester. Focusing on tissue repair, lactation support, and zero-friction "one-handed" meals for new parents.</p>
+                        
+                        <div class="mt-10 flex flex-wrap gap-4">
+                            <div class="bg-white px-5 py-3 rounded-2xl pantry-card border-none flex items-center gap-3">
+                                <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                                <span class="text-sm font-bold uppercase tracking-tight">Lactation Support</span>
+                            </div>
+                            <div class="bg-white px-5 py-3 rounded-2xl pantry-card border-none flex items-center gap-3">
+                                <span class="w-3 h-3 rounded-full bg-orange-400"></span>
+                                <span class="text-sm font-bold uppercase tracking-tight">Tissue Repair (Collagen+)</span>
+                            </div>
+                            <div class="bg-white px-5 py-3 rounded-2xl pantry-card border-none flex items-center gap-3">
+                                <span class="w-3 h-3 rounded-full bg-blue-400"></span>
+                                <span class="text-sm font-bold uppercase tracking-tight">Micronutrient Dense</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <aside class="w-full md:w-80 pantry-card rounded-3xl p-8 clinical-advisory">
+                        <div class="flex items-center gap-2 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-700" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 4.946-3.078 9.17-7.397 10.856a.75.75 0 01-.506 0C5.744 16.17 2.666 11.946 2.666 7c0-.68.056-1.35.166-2.001zm6.541 3.03a.75.75 0 011.06 0l2.5 2.5a.75.75 0 11-1.06 1.06L10 10.31l-1.22 1.22a.75.75 0 11-1.06-1.06l2.5-2.5z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-700">Clinical Advisory</span>
+                        </div>
+                        <p class="text-xs font-medium text-slate-800 leading-relaxed mb-4">This protocol optimizes for recovery. Always consult your obstetrician or midwife before introducing new supplements or radical calorie changes during breastfeeding.</p>
+                        <hr class="border-slate-300 mb-4">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Focus: Anti-Inflammatory</span>
+                    </aside>
+                </div>
+            </div>
+        </header>
+
+        <!-- Module: Safe Defaults vs. Avoid -->
+        <section class="max-w-7xl mx-auto px-6 py-12">
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Safe Defaults -->
+                <div class="pantry-card rounded-3xl p-10 border-t-4 border-pantry-sage">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-2xl font-black tracking-tight">Safe Defaults</h3>
+                        <span class="bg-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1 rounded-full uppercase">Optimize These</span>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="safe-list-item font-medium">Bone-broth based soups (Mineral rich)</li>
+                        <li class="safe-list-item font-medium">Slow-cooked meats (Easy digestion)</li>
+                        <li class="safe-list-item font-medium">Overnight oats with brewers yeast</li>
+                        <li class="safe-list-item font-medium">Roasted root vegetables (Complex carbs)</li>
+                        <li class="safe-list-item font-medium">Salmon & Omega-3 rich fats</li>
+                    </ul>
+                    <div class="mt-8 pt-6 border-t border-slate-100">
+                        <p class="text-sm opacity-50 italic">"Warm, soft, and easy to digest" is the golden rule for the first 2 weeks.</p>
+                    </div>
+                </div>
+
+                <!-- Avoid / Minimize -->
+                <div class="pantry-card rounded-3xl p-10 border-t-4 border-slate-300 bg-slate-50/50">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-2xl font-black tracking-tight opacity-60">Limit / Avoid</h3>
+                        <span class="bg-slate-200 text-slate-600 text-[10px] font-black px-3 py-1 rounded-full uppercase">Reduce Load</span>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="avoid-list-item font-medium">Iced drinks & raw salads (First 10 days)</li>
+                        <li class="avoid-list-item font-medium">Excessive caffeine (Lactation interference)</li>
+                        <li class="avoid-list-item font-medium">Highly processed seed oils</li>
+                        <li class="avoid-list-item font-medium">Gas-heavy cruciferous (If baby is sensitive)</li>
+                        <li class="avoid-list-item font-medium">Empty sugar calories (Energy crashes)</li>
+                    </ul>
+                    <div class="mt-8 pt-6 border-t border-slate-200">
+                        <p class="text-sm opacity-50 italic">Focus on "nourishing from the inside out" to minimize cortisol spikes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module: Featured Plans -->
+        <section class="bg-white border-y border-black/5 py-24 px-6 overflow-hidden">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                    <div>
+                        <span class="label-text mb-4">Systemic Implementation</span>
+                        <h2 class="text-4xl md:text-5xl font-black tracking-tighter">The Recovery Plans.</h2>
+                    </div>
+                    <a href="#" class="text-sm font-black uppercase tracking-widest pb-2 border-b-2 border-slate-900">View All Protocols →</a>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Plan 1 -->
+                    <div class="group pantry-card rounded-3xl overflow-hidden flex flex-col hover-lift">
+                        <div class="h-48 bg-emerald-900 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-cover bg-center opacity-60" style="background-image: url('https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=800')"></div>
+                            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-[10px] font-black uppercase">2-Week Protocol</div>
+                        </div>
+                        <div class="p-8 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h4 class="text-xl font-black mb-3 group-hover:text-pantry-sage transition-colors">Postpartum Freezer Stash</h4>
+                                <p class="text-sm opacity-60 leading-relaxed mb-6">24 meals designed to be prepped in one afternoon. One-handed eating, freezer-to-microwave ready.</p>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                    <span>Protein focus</span>
+                                    <span class="text-slate-900">35g / Meal</span>
+                                </div>
+                                <div class="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-pantry-sage w-[75%]"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plan 2 -->
+                    <div class="group pantry-card rounded-3xl overflow-hidden flex flex-col hover-lift">
+                        <div class="h-48 bg-orange-900 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-cover bg-center opacity-60" style="background-image: url('https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?auto=format&fit=crop&q=80&w=800')"></div>
+                            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-[10px] font-black uppercase">7-Day Cycle</div>
+                        </div>
+                        <div class="p-8 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h4 class="text-xl font-black mb-3 group-hover:text-pantry-accent transition-colors">Lactation & Energy Flow</h4>
+                                <p class="text-sm opacity-60 leading-relaxed mb-6">Optimized for milk supply and preventing the "3 PM crash." Rich in oats, flax, and iron.</p>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                    <span>Hydration score</span>
+                                    <span class="text-slate-900">Optimal</span>
+                                </div>
+                                <div class="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-pantry-accent w-[90%]"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plan 3 -->
+                    <div class="group pantry-card rounded-3xl overflow-hidden flex flex-col hover-lift">
+                        <div class="h-48 bg-slate-900 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-cover bg-center opacity-60" style="background-image: url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800')"></div>
+                            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-[10px] font-black uppercase">Ongoing</div>
+                        </div>
+                        <div class="p-8 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h4 class="text-xl font-black mb-3 group-hover:text-slate-600 transition-colors">Anti-Inflammatory Reset</h4>
+                                <p class="text-sm opacity-60 leading-relaxed mb-6">Focusing on joint health and core recovery. Gluten-free and dairy-free options integrated.</p>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                    <span>Inflammation drop</span>
+                                    <span class="text-slate-900">Targeted</span>
+                                </div>
+                                <div class="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-slate-900 w-[60%]"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module: FAQ targeted to condition -->
+        <section class="max-w-4xl mx-auto py-24 px-6">
+            <div class="text-center mb-16">
+                <span class="label-text mb-4">Questions & Logic</span>
+                <h3 class="text-3xl font-black tracking-tight">Recovery FAQ.</h3>
+            </div>
+            
+            <div class="space-y-4">
+                <template x-for="(faq, index) in [
+                    {q: 'How many calories do I actually need postpartum?', a: 'If breastfeeding, the general system recommends an additional 300-500 calories of nutrient-dense fuel. Focus on the quality of macros over pure calorie counting.'},
+                    {q: 'Can I start meal prepping while pregnant?', a: 'Absolutely. We recommend the Third Trimester Stash Pack—designed for the 37-week mark so your freezer is ready before the due date.'},
+                    {q: 'Is this protocol okay for C-section recovery?', a: 'Yes. In fact, our high-protein and collagen-focused defaults are specifically designed to assist with surgical tissue repair.'},
+                    {q: 'What if my baby has reflux or sensitivities?', a: 'We include a Gassy-Food variant for every plan that removes common triggers like onions, garlic, and heavy dairy.'}
+                ]">
+                    <div class="pantry-card rounded-2xl overflow-hidden">
+                        <button 
+                            @click="faqOpen = (faqOpen === index) ? null : index"
+                            class="w-full flex items-center justify-between p-6 text-left font-bold text-slate-900"
+                        >
+                            <span x-text="faq.q"></span>
+                            <svg class="w-5 h-5 transition-transform" :class="faqOpen === index ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div x-show="faqOpen === index" x-collapse x-cloak class="px-6 pb-6 text-sm opacity-60 leading-relaxed" x-text="faq.a"></div>
+                    </div>
+                </template>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-16 px-6">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 bg-white text-slate-900 flex items-center justify-center rounded-md font-black">M</div>
+                    <span class="font-black text-xl tracking-tighter uppercase">The System Network</span>
+                </div>
+                <p class="text-slate-400 max-w-sm mb-8">Designing the world's most organized meal planning taxonomy. High-protein, high-efficiency, zero-fluff protocols.</p>
+            </div>
+            
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Recovery Facets</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-pantry-sage transition-colors">Pregnancy Hub</a></li>
+                    <li><a href="#" class="hover:text-pantry-sage transition-colors">Bariatric Support</a></li>
+                    <li><a href="#" class="hover:text-pantry-sage transition-colors">PCOS Management</a></li>
+                    <li><a href="#" class="hover:text-pantry-sage transition-colors">Cholesterol Control</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Quick Links</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-pantry-accent transition-colors">Freezer Stash Guide</a></li>
+                    <li><a href="#" class="hover:text-pantry-accent transition-colors">Retail Stock List</a></li>
+                    <li><a href="#" class="hover:text-pantry-accent transition-colors">Taxonomy Map</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-white/5 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">© 2024 Systemic Meals Network. Data-backed recovery protocols.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Interactivity enhancements
+        document.querySelectorAll('.hover-lift').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.98)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>

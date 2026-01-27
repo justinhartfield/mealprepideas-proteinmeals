@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postpartum Meal Prep System | MealPrepIdeas.co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pantry-cream: #F9F7F2;
+            --pantry-slate: #2D3436;
+            --pantry-sage: #7E9680;
+            --pantry-accent: #E67E22; 
+            --label-tape: #EFEFEF;
+            --postpartum-soft: #F4E7E4;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--pantry-cream);
+            color: var(--pantry-slate);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .pantry-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 4px 0px rgba(0,0,0,0.02), 0 15px 35px -5px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pantry-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
+        }
+
+        .label-text {
+            display: inline-block;
+            background: var(--label-tape);
+            padding: 2px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            font-size: 0.7rem;
+            border-left: 3px solid var(--pantry-sage);
+        }
+
+        .system-pill {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .system-pill:hover {
+            background: var(--pantry-slate);
+            color: white;
+        }
+
+        .system-pill.active {
+            background: var(--pantry-slate);
+            color: white;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--pantry-cream); }
+        ::-webkit-scrollbar-thumb { background: var(--pantry-sage); border-radius: 10px; }
+
+        [x-cloak] { display: none !important; }
+
+        .recipe-grid-enter { opacity: 0; transform: scale(0.95); }
+        .recipe-grid-enter-active { opacity: 1; transform: scale(1); transition: all 0.4s ease; }
+    </style>
+</head>
+<body x-data="{ 
+    filter: 'all', 
+    faqOpen: null,
+    recipes: [
+        { id: 1, category: 'breakfast', title: 'Freezer Protein Burritos', tags: ['High Protein', 'Freezer'], time: '15m Prep' },
+        { id: 2, category: 'lunch', title: 'Lentil & Bone Broth Stew', tags: ['Iron-Rich', 'Slow Cooker'], time: '10m Prep' },
+        { id: 3, category: 'dinner', title: 'Sheet Pan Salmon & Asparagus', tags: ['Omega-3', 'No Cleanup'], time: '20m Cook' },
+        { id: 4, category: 'snacks', title: 'Oat & Flax Energy Bites', tags: ['Lactation', 'No Bake'], time: '5m Prep' },
+        { id: 5, category: 'breakfast', title: 'Spinach & Feta Egg Bites', tags: ['One-Handed', 'Microwave'], time: '10m Cook' },
+        { id: 6, category: 'dinner', title: 'Turkey Meatballs in Red Sauce', tags: ['Freezer Stash', 'High Protein'], time: '40m Batch' },
+        { id: 7, category: 'lunch', title: 'Quinoa Power Bowls', tags: ['Gluten-Free', 'Cold'], time: 'Prep Only' },
+        { id: 8, category: 'snacks', title: 'Greek Yogurt Bark', tags: ['High Protein', 'Frozen'], time: '5m Prep' }
+    ]
+}">
+    <div class="grain"></div>
+
+    <!-- Navigation Bar (Shared UI DNA) -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/80 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="/" class="flex items-center gap-4 group">
+                    <div class="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-lg text-white font-bold text-xl group-hover:bg-emerald-600 transition-colors">M</div>
+                    <span class="font-extrabold tracking-tighter text-2xl uppercase">Systemic Meals</span>
+                </a>
+            </div>
+            <div class="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest opacity-60">
+                <a href="#" class="hover:opacity-100 transition-opacity">Meal Prep Hub</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">High Protein Hub</a>
+                <a href="#" class="hover:opacity-100 transition-opacity text-emerald-600">Persona Packs</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="text-[10px] font-black tracking-widest border-2 border-slate-900 px-4 py-2 rounded hover:bg-slate-900 hover:text-white transition-all uppercase">Account</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        <!-- T2 Above Fold: Contextual Hero -->
+        <header class="relative pt-20 pb-12 px-6 overflow-hidden">
+            <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="label-text">Persona Protocol: 04</span>
+                        <span class="h-[1px] w-12 bg-slate-900/10"></span>
+                        <span class="text-[10px] font-bold opacity-40 uppercase tracking-widest">Postpartum System</span>
+                    </div>
+                    <h1 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-8">
+                        The Postpartum <br>
+                        <span class="text-emerald-700">Recovery Stash.</span>
+                    </h1>
+                    <p class="text-xl opacity-70 max-w-xl mb-10 leading-relaxed">
+                        Nutrition for the "Fourth Trimester." This protocol prioritizes iron-dense proteins, anti-inflammatory fats, and <strong>one-handed consumption</strong> for parents in the thick of it.
+                    </p>
+
+                    <!-- Best Use Cases Bullets -->
+                    <div class="grid sm:grid-cols-3 gap-6">
+                        <div class="p-4 bg-white border border-black/5 rounded-xl">
+                            <span class="block text-emerald-600 font-black mb-1">01. Healing</span>
+                            <span class="text-xs font-medium opacity-60">High collagen and protein for tissue repair.</span>
+                        </div>
+                        <div class="p-4 bg-white border border-black/5 rounded-xl">
+                            <span class="block text-emerald-600 font-black mb-1">02. Efficiency</span>
+                            <span class="text-xs font-medium opacity-60">Zero-prep reheating and freezer-friendly.</span>
+                        </div>
+                        <div class="p-4 bg-white border border-black/5 rounded-xl">
+                            <span class="block text-emerald-600 font-black mb-1">03. Nutrient Density</span>
+                            <span class="text-xs font-medium opacity-60">Calorie-dense to support lactation demands.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 relative">
+                    <div class="aspect-square bg-slate-900 rounded-[3rem] overflow-hidden rotate-3 shadow-2xl relative">
+                        <img src="https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=800&auto=format&fit=crop" alt="Organized meal prep containers" class="w-full h-full object-cover opacity-80">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="bg-white/90 backdrop-blur p-6 rounded-2xl border border-white shadow-xl -rotate-6">
+                                <p class="text-xs font-black uppercase tracking-widest mb-2">Protocol Requirement</p>
+                                <p class="text-2xl font-black text-slate-900">14-Day Stash</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Decorative Element -->
+                    <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-emerald-100 rounded-full -z-10 blur-2xl opacity-50"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Filter System -->
+        <section class="border-y border-black/5 bg-white/50 sticky top-[73px] z-30 backdrop-blur-sm">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 md:pb-0">
+                    <button @click="filter = 'all'" :class="filter === 'all' ? 'active' : ''" class="system-pill px-4 py-2 rounded-full border border-black/10 text-[10px] font-black uppercase tracking-widest">All Recipes</button>
+                    <button @click="filter = 'breakfast'" :class="filter === 'breakfast' ? 'active' : ''" class="system-pill px-4 py-2 rounded-full border border-black/10 text-[10px] font-black uppercase tracking-widest">Breakfast</button>
+                    <button @click="filter = 'lunch'" :class="filter === 'lunch' ? 'active' : ''" class="system-pill px-4 py-2 rounded-full border border-black/10 text-[10px] font-black uppercase tracking-widest">Lunch</button>
+                    <button @click="filter = 'dinner'" :class="filter === 'dinner' ? 'active' : ''" class="system-pill px-4 py-2 rounded-full border border-black/10 text-[10px] font-black uppercase tracking-widest">Dinner</button>
+                    <button @click="filter = 'snacks'" :class="filter === 'snacks' ? 'active' : ''" class="system-pill px-4 py-2 rounded-full border border-black/10 text-[10px] font-black uppercase tracking-widest">Snacks</button>
+                </div>
+                <div class="text-[10px] font-bold opacity-40 uppercase tracking-widest">
+                    Showing <span x-text="recipes.filter(r => filter === 'all' || r.category === filter).length"></span> Optimized Meals
+                </div>
+            </div>
+        </section>
+
+        <!-- Recipe Grid (The Ranking Machine) -->
+        <section class="max-w-7xl mx-auto px-6 py-20">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <template x-for="recipe in recipes" :key="recipe.id">
+                    <div x-show="filter === 'all' || recipe.category === recipe.category" 
+                         x-transition:enter="recipe-grid-enter-active"
+                         class="pantry-card group rounded-3xl p-6 flex flex-col justify-between aspect-[4/5] relative overflow-hidden"
+                         x-show="filter === 'all' || recipe.category === filter">
+                        
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="label-text" x-text="recipe.category"></span>
+                                <span class="text-[10px] font-bold opacity-30 group-hover:opacity-100 transition-opacity" x-text="recipe.time"></span>
+                            </div>
+                            <h3 class="text-2xl font-black leading-tight mb-4 group-hover:text-emerald-700 transition-colors" x-text="recipe.title"></h3>
+                            <div class="flex flex-wrap gap-2">
+                                <template x-for="tag in recipe.tags">
+                                    <span class="px-2 py-1 bg-slate-50 border border-black/5 rounded text-[9px] font-bold uppercase tracking-tight" x-text="tag"></span>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div class="relative z-10 flex justify-between items-end">
+                            <button class="w-10 h-10 rounded-full border-2 border-slate-900 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                            </button>
+                            <span class="text-[10px] font-black underline underline-offset-4 cursor-pointer hover:text-emerald-700">VIEW PROTOCOL</span>
+                        </div>
+
+                        <!-- Card Aesthetic Detail -->
+                        <div class="absolute bottom-0 right-0 w-32 h-32 bg-slate-50 -mr-16 -mb-16 rounded-full group-hover:scale-150 transition-transform duration-700 -z-0"></div>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <!-- "Best For..." Internal Link Block -->
+        <section class="bg-slate-900 text-white py-24 px-6 overflow-hidden relative">
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="mb-16 max-w-2xl">
+                    <span class="label-text !bg-white/10 !text-white !border-emerald-400 mb-6">Cross-System Navigation</span>
+                    <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-6">Expand your logistics.</h2>
+                    <p class="text-slate-400">The postpartum period overlaps with other specific needs. Explore our sister hubs to refine your meal prep system.</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Link Category 1 -->
+                    <div class="space-y-6">
+                        <h4 class="text-xs font-black uppercase tracking-widest text-emerald-400">By Goal</h4>
+                        <ul class="space-y-4">
+                            <li><a href="/high-protein/goal/muscle-gain/" class="text-xl font-bold hover:translate-x-2 transition-transform inline-block">Muscle Gain →</a></li>
+                            <li><a href="/high-protein/goal/weight-loss/" class="text-xl font-bold hover:translate-x-2 transition-transform inline-block">Slow Recovery Weight Loss →</a></li>
+                            <li><a href="/high-protein/goal/healthy/" class="text-xl font-bold hover:translate-x-2 transition-transform inline-block">Hormone Balance →</a></li>
+                        </ul>
+                    </div>
+                    <!-- Link Category 2 -->
+                    <div class="space-y-6">
+                        <h4 class="text-xs font-black uppercase tracking-widest text-emerald-400">By Constraint</h4>
+                        <ul class="space-y-4">
+                            <li><a href="/meal-prep/constraint/no-microwave/" class="text-xl font-bold hover:translate-x-2 transition-transform inline-block">No Microwave Protocol →</a></li>
+                            <li><a href="/high-protein/constraint/high-fiber/" class="text-xl font-bold hover:translate-x-2 transition-transform inline-block">High Fiber Stash →</a></li>
+                            <li><a href="/meal-prep/constraint/cheap/" class="text-xl font-bold hover:translate-x-2 transition-transform inline-block">Budget Stash ($5/meal) →</a></li>
+                        </ul>
+                    </div>
+                    <!-- Link Category 3 -->
+                    <div class="space-y-6">
+                        <h4 class="text-xs font-black uppercase tracking-widest text-emerald-400">By Method</h4>
+                        <ul class="space-y-4">
+                            <li><a href="/meal-prep/method/freezer/" class="text-xl font-bold hover:translate-x-2 transition-transform inline-block">The Freezer Hub →</a></li>
+                            <li><a href="/meal-prep/method/crockpot/" class="text-xl font-bold hover:translate-x-2 transition-transform inline-block">Set & Forget Crockpot →</a></li>
+                            <li><a href="/meal-prep/method/no-cook/" class="text-xl font-bold hover:translate-x-2 transition-transform inline-block">No-Cook Assembly →</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- Decorative Grain/Shape -->
+            <div class="absolute right-0 top-0 w-1/2 h-full bg-emerald-500/5 -skew-x-12 transform origin-top-right"></div>
+        </section>
+
+        <!-- FAQ Block -->
+        <section class="max-w-4xl mx-auto py-24 px-6">
+            <div class="text-center mb-16">
+                <span class="label-text mb-4">Common Protocols</span>
+                <h3 class="text-4xl font-black">Frequently Asked.</h3>
+            </div>
+
+            <div class="space-y-4">
+                <template x-for="(q, i) in [
+                    {q: 'How many meals should I prep before the baby arrives?', a: 'We recommend a 14-day supply of dinners and a 7-day supply of easy breakfasts. Focus on high-protein freezer meals that require zero prep work upon reheating.'},
+                    {q: 'What are the best ingredients for postpartum recovery?', a: 'Focus on iron-rich foods like grass-fed beef or lentils, collagen-rich bone broths, and healthy fats like salmon and avocado to support brain health and hormone regulation.'},
+                    {q: 'Are these recipes safe for breastfeeding/lactation?', a: 'Yes. We prioritize galactagogues like oats, flaxseed, and brewers yeast in our snack and breakfast categories while keeping sodium low and protein high.'},
+                    {q: 'How long do these freezer meals last?', a: 'Most of our postpartum protocol meals are optimized for a 3-month freezer life. We provide specific storage instructions for each recipe card.'}
+                ]" :key="i">
+                    <div class="bg-white border border-black/5 rounded-2xl overflow-hidden">
+                        <button @click="faqOpen = (faqOpen === i ? null : i)" class="w-full px-8 py-6 text-left flex justify-between items-center group">
+                            <span class="font-bold text-lg group-hover:text-emerald-700 transition-colors" x-text="q.q"></span>
+                            <span class="text-2xl transition-transform duration-300" :class="faqOpen === i ? 'rotate-45' : ''">+</span>
+                        </button>
+                        <div x-show="faqOpen === i" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" class="px-8 pb-6 text-slate-500 text-sm leading-relaxed" x-text="q.a"></div>
+                    </div>
+                </template>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer: Site Tree Navigation (Shared UI DNA) -->
+    <footer class="bg-slate-900 text-white py-16 px-6">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 bg-white text-slate-900 flex items-center justify-center rounded-md font-black">M</div>
+                    <span class="font-black text-xl tracking-tighter uppercase">The System Network</span>
+                </div>
+                <p class="text-slate-400 max-w-sm mb-8">Designing the world's most organized meal planning taxonomy. High-protein, high-efficiency, zero-fluff.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg></a>
+                    <a href="#" class="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+                </div>
+            </div>
+            
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Persona Hubs</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">Postpartum Stash</a></li>
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">Picky Eaters / Toddler</a></li>
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">College / Student</a></li>
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">Work Lunch (No Micro)</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">System Guides</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Freezer Logic</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">High P:E Methodology</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Retail Macro Audits</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">The Sunday Batch Logic</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-white/5 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">© 2024 Systemic Meals Network. /meal-prep/persona/postpartum/</p>
+            <div class="flex gap-6 text-[10px] font-bold text-slate-500 tracking-widest uppercase">
+                <a href="#">Schema Map</a>
+                <a href="#">Privacy</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JSON-LD Schema (Template for T2) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "How many meals should I prep before the baby arrives?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We recommend a 14-day supply of dinners and a 7-day supply of easy breakfasts."
+        }
+      }]
+    }
+    </script>
+</body>
+</html>

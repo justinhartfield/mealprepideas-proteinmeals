@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Prep Logistics Hub | mealprepideas.co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pantry-cream: #F9F7F2;
+            --pantry-slate: #2D3436;
+            --pantry-sage: #7E9680;
+            --pantry-accent: #E67E22;
+            --label-tape: #EFEFEF;
+            --emerald-glow: rgba(16, 185, 129, 0.1);
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--pantry-cream);
+            color: var(--pantry-slate);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .pantry-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 4px 0px rgba(0,0,0,0.02), 0 15px 35px -5px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pantry-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
+        }
+
+        .label-text {
+            display: inline-block;
+            background: var(--label-tape);
+            padding: 2px 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            font-size: 0.65rem;
+            border-left: 3px solid var(--pantry-sage);
+            border-radius: 2px;
+        }
+
+        .mega-chip {
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .mega-chip:hover {
+            background: var(--pantry-slate);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .facet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.75rem;
+        }
+
+        [x-cloak] { display: none !important; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--pantry-cream); }
+        ::-webkit-scrollbar-thumb { background: var(--pantry-sage); border-radius: 10px; }
+
+        .sidebar-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .sidebar-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0; width: 0; height: 2px;
+            background: var(--pantry-accent);
+            transition: width 0.3s ease;
+        }
+        .sidebar-link:hover::after { width: 100%; }
+        
+        .bg-mesh {
+            background-color: #f9f7f2;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(161,15%,88%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(180,20%,94%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(28,24%,90%,1) 0, transparent 50%);
+        }
+    </style>
+</head>
+<body x-data="{ 
+    step: 0, 
+    filterGoal: '', 
+    filterMethod: '', 
+    activeTab: 'method' 
+}" class="bg-mesh">
+    <div class="grain"></div>
+
+    <!-- T1 HUB HEADER -->
+    <nav class="sticky top-0 z-50 w-full border-b border-black/5 bg-white/70 backdrop-blur-xl px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 bg-emerald-700 flex items-center justify-center rounded-xl text-white font-bold text-xl transition-transform group-hover:rotate-12">M</div>
+                <div>
+                    <span class="font-black tracking-tighter text-xl block leading-none">MealPrepIdeas<span class="text-emerald-600">.co</span></span>
+                    <span class="text-[10px] font-bold opacity-40 uppercase tracking-widest">The Logistics Hub</span>
+                </div>
+            </a>
+            
+            <div class="hidden lg:flex gap-10 items-center">
+                <div class="flex gap-6 text-[11px] font-black uppercase tracking-widest opacity-60">
+                    <a href="#facets" class="hover:text-emerald-700 transition-colors">By Method</a>
+                    <a href="#facets" class="hover:text-emerald-700 transition-colors">By Persona</a>
+                    <a href="#plans" class="hover:text-emerald-700 transition-colors">Weekly Plans</a>
+                </div>
+                <button class="bg-slate-900 text-white text-[10px] font-bold px-6 py-2.5 rounded-full hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-900/10">
+                    ACCESS SYSTEMS
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        <!-- HERO: Authority Context -->
+        <section class="relative pt-20 pb-12 px-6 overflow-hidden">
+            <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7">
+                    <span class="label-text mb-6">Canonical Pillar: Logistics</span>
+                    <h1 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-8 text-slate-900">
+                        Master the <br><span class="text-emerald-700 italic">Sunday Batch.</span>
+                    </h1>
+                    <p class="text-xl text-slate-600 max-w-xl leading-relaxed mb-10">
+                        Stop "deciding" what to eat. Build a friction-free week with data-backed storage protocols, efficient batching workflows, and logistics designed for the modern schedule.
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#system-finder" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-3 hover:bg-emerald-800 transition-all group">
+                            START PLANNING 
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                        </a>
+                        <div class="flex items-center gap-4 px-6 py-4 rounded-2xl bg-white border border-black/5">
+                            <div class="flex -space-x-3">
+                                <div class="w-8 h-8 rounded-full border-2 border-white bg-slate-200"></div>
+                                <div class="w-8 h-8 rounded-full border-2 border-white bg-slate-300"></div>
+                                <div class="w-8 h-8 rounded-full border-2 border-white bg-slate-400"></div>
+                            </div>
+                            <span class="text-xs font-bold opacity-60">Joined by 12k+ Planners</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-5 relative">
+                    <div class="aspect-square bg-white rounded-[40px] shadow-2xl border border-black/5 p-8 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-emerald-50/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10 h-full flex flex-col justify-between">
+                            <div class="space-y-4">
+                                <div class="h-2 w-24 bg-emerald-200 rounded-full"></div>
+                                <div class="h-2 w-48 bg-slate-100 rounded-full"></div>
+                                <div class="grid grid-cols-2 gap-4 pt-8">
+                                    <div class="h-32 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center text-[10px] font-black opacity-20 uppercase tracking-widest">Container Slot A</div>
+                                    <div class="h-32 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center text-[10px] font-black opacity-20 uppercase tracking-widest">Container Slot B</div>
+                                </div>
+                            </div>
+                            <div class="bg-emerald-700 text-white p-6 rounded-3xl">
+                                <span class="block text-[10px] font-black opacity-60 mb-1 uppercase">Recommended Flow</span>
+                                <p class="font-bold text-lg">Sunday: 90-Min Batching</p>
+                                <div class="flex justify-between items-center mt-4 text-[10px] font-bold border-t border-white/10 pt-4">
+                                    <span>5 LUNCHES</span>
+                                    <span>3 DINNERS</span>
+                                    <span class="bg-emerald-500 px-2 py-0.5 rounded">SAVE 8HRS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE: Facet Mega-Nav (Chips) -->
+        <section id="facets" class="max-w-7xl mx-auto px-6 py-12">
+            <div class="bg-white rounded-[32px] border border-black/5 p-8 md:p-12 shadow-sm">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+                    <div>
+                        <h3 class="text-3xl font-black tracking-tight mb-2">Explore the Taxonomy</h3>
+                        <p class="opacity-50 text-sm font-medium">Filter our 500+ logic-first meal prep guides by your specific constraints.</p>
+                    </div>
+                    <div class="flex bg-slate-100 p-1.5 rounded-2xl gap-2">
+                        <button @click="activeTab = 'method'" :class="activeTab === 'method' ? 'bg-white shadow-md' : 'opacity-40'" class="px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all">Method</button>
+                        <button @click="activeTab = 'persona'" :class="activeTab === 'persona' ? 'bg-white shadow-md' : 'opacity-40'" class="px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all">Persona</button>
+                        <button @click="activeTab = 'ingredient'" :class="activeTab === 'ingredient' ? 'bg-white shadow-md' : 'opacity-40'" class="px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all">Ingredient</button>
+                    </div>
+                </div>
+
+                <!-- Method Chips -->
+                <div x-show="activeTab === 'method'" x-transition class="facet-grid">
+                    <template x-for="m in ['Crockpot', 'Slow Cooker', 'Instant Pot', 'Air Fryer', 'Microwave', 'Sheet Pan', 'One Pan', 'No Cook', 'Freezer', 'Grill', 'Oven']">
+                        <a :href="'/meal-prep/method/' + m.toLowerCase().replace(' ', '-')" class="mega-chip bg-slate-50 p-4 rounded-2xl text-center">
+                            <span class="block text-xs font-black" x-text="m"></span>
+                        </a>
+                    </template>
+                </div>
+
+                <!-- Persona Chips -->
+                <div x-show="activeTab === 'persona'" x-cloak x-transition class="facet-grid">
+                    <template x-for="p in ['Work Lunch', 'College', 'Picky Eaters', 'Toddler', 'Pregnancy', 'Postpartum', 'Bariatric', 'PCOS', 'Cholesterol']">
+                        <a :href="'/meal-prep/persona/' + p.toLowerCase().replace(' ', '-')" class="mega-chip bg-slate-50 p-4 rounded-2xl text-center">
+                            <span class="block text-xs font-black" x-text="p"></span>
+                        </a>
+                    </template>
+                </div>
+
+                <!-- Ingredient Chips -->
+                <div x-show="activeTab === 'ingredient'" x-cloak x-transition class="facet-grid">
+                    <template x-for="i in ['Chicken', 'Ground Beef', 'Ground Turkey', 'Salmon', 'Shrimp', 'Steak', 'Salad', 'Tofu', 'Lentils']">
+                        <a :href="'/meal-prep/ingredient/' + i.toLowerCase().replace(' ', '-')" class="mega-chip bg-slate-50 p-4 rounded-2xl text-center">
+                            <span class="block text-xs font-black" x-text="i"></span>
+                        </a>
+                    </template>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE: Decision Widget -->
+        <section id="system-finder" class="py-24 px-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-12">
+                    <span class="label-text mb-4">The Logic Engine</span>
+                    <h2 class="text-4xl font-black mb-4">Route Your Week.</h2>
+                </div>
+
+                <div class="pantry-card rounded-[40px] p-8 md:p-16 relative overflow-hidden min-h-[450px]">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-slate-100">
+                        <div class="h-full bg-emerald-600 transition-all duration-700" :style="`width: ${((step + 1) / 3) * 100}%`"></div>
+                    </div>
+
+                    <!-- Step 0 -->
+                    <div x-show="step === 0" x-transition class="space-y-10">
+                        <div class="flex items-center gap-6">
+                            <div class="w-16 h-16 rounded-3xl bg-emerald-100 flex items-center justify-center text-emerald-700 font-black text-2xl">01</div>
+                            <h4 class="text-3xl font-black">What is your primary constraint?</h4>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <button @click="filterGoal = 'Time-Saving'; step = 1" class="group p-8 rounded-3xl border-2 border-slate-100 hover:border-emerald-600 hover:bg-emerald-50/30 transition-all text-left">
+                                <span class="block font-black text-xl mb-2">Max Efficiency</span>
+                                <span class="block text-sm opacity-50">I want the absolute minimum time in the kitchen.</span>
+                            </button>
+                            <button @click="filterGoal = 'Budget'; step = 1" class="group p-8 rounded-3xl border-2 border-slate-100 hover:border-emerald-600 hover:bg-emerald-50/30 transition-all text-left">
+                                <span class="block font-black text-xl mb-2">Cost-First</span>
+                                <span class="block text-sm opacity-50">High-volume prep on a strict weekly budget.</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 1 -->
+                    <div x-show="step === 1" x-cloak x-transition class="space-y-10">
+                        <div class="flex items-center gap-6">
+                            <button @click="step = 0" class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                            </button>
+                            <h4 class="text-3xl font-black">Preferred Prep Method?</h4>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <template x-for="m in ['Microwave', 'No-Cook', 'Crockpot', 'Air-Fryer', 'One-Pan']">
+                                <button @click="filterMethod = m; step = 2" class="p-6 rounded-2xl bg-slate-50 border border-slate-100 font-black text-xs uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all" x-text="m"></button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div x-show="step === 2" x-cloak x-transition class="text-center py-10">
+                        <div class="w-20 h-20 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-8">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h4 class="text-4xl font-black mb-4">System Initialized.</h4>
+                        <p class="text-lg opacity-60 mb-10">We've curated a <span class="font-bold text-slate-900" x-text="filterGoal"></span> roadmap using <span class="font-bold text-slate-900" x-text="filterMethod"></span> logic.</p>
+                        <a :href="'/meal-prep/method/' + filterMethod.toLowerCase()" class="inline-block bg-slate-900 text-white px-12 py-5 rounded-2xl font-black text-lg shadow-2xl shadow-slate-900/20 hover:scale-105 transition-transform">VIEW PROTOCOLS</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE: Top Clusters (Cards) -->
+        <section class="max-w-7xl mx-auto px-6 py-12">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <span class="label-text mb-4">Authority Pillar</span>
+                    <h3 class="text-4xl font-black tracking-tighter">Essential Hubs</h3>
+                </div>
+                <a href="#" class="text-xs font-black uppercase tracking-widest border-b-2 border-emerald-600 pb-1">View Full Directory</a>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Cluster 1 -->
+                <div class="pantry-card rounded-[32px] overflow-hidden group">
+                    <div class="h-48 bg-emerald-900 relative p-8 flex flex-col justify-end">
+                        <div class="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        </div>
+                        <span class="text-white/60 text-[10px] font-black uppercase tracking-widest mb-2">High Volume</span>
+                        <h4 class="text-2xl font-black text-white">No-Microwave Office Lunches</h4>
+                    </div>
+                    <div class="p-8 space-y-4">
+                        <p class="text-sm text-slate-500 leading-relaxed">The ultimate cold-prep system for office dwellers. 30+ recipes that don't need a reheat.</p>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-black">52 PAGES</span>
+                            <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-black">TOP RANKED</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cluster 2 -->
+                <div class="pantry-card rounded-[32px] overflow-hidden group">
+                    <div class="h-48 bg-slate-900 relative p-8 flex flex-col justify-end">
+                        <div class="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <span class="text-white/60 text-[10px] font-black uppercase tracking-widest mb-2">Logistic Master</span>
+                        <h4 class="text-2xl font-black text-white">The Freezer Stash Protocol</h4>
+                    </div>
+                    <div class="p-8 space-y-4">
+                        <p class="text-sm text-slate-500 leading-relaxed">Batch-cook once, eat for a month. Optimized for storage stability and rapid defrosting.</p>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-black">120+ RECIPES</span>
+                            <span class="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-[10px] font-black">ESSENTIAL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cluster 3 -->
+                <div class="pantry-card rounded-[32px] overflow-hidden group">
+                    <div class="h-48 bg-emerald-700 relative p-8 flex flex-col justify-end">
+                        <div class="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                        </div>
+                        <span class="text-white/60 text-[10px] font-black uppercase tracking-widest mb-2">High Trust</span>
+                        <h4 class="text-2xl font-black text-white">Postpartum Prep Systems</h4>
+                    </div>
+                    <div class="p-8 space-y-4">
+                        <p class="text-sm text-slate-500 leading-relaxed">Nutrient-dense, low-effort systems designed for new parents. Focus on recovery and ease.</p>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-black">45 PAGES</span>
+                            <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-black">NEW PARENT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE: Internal Link Grid (SEO Machine) -->
+        <section class="bg-slate-900 text-white py-24 px-6 mt-12">
+            <div class="max-w-7xl mx-auto">
+                <div class="mb-16">
+                    <h3 class="text-4xl font-black mb-4">Complete Directory</h3>
+                    <p class="text-slate-400 max-w-2xl">A systematic map of our canonical prep logic. Explore every facet of the meal prep universe.</p>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12">
+                    <div>
+                        <h6 class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 mb-6">By Method</h6>
+                        <ul class="space-y-3 text-sm opacity-60">
+                            <li><a href="#" class="sidebar-link">Crockpot Prep</a></li>
+                            <li><a href="#" class="sidebar-link">Slow Cooker Logistics</a></li>
+                            <li><a href="#" class="sidebar-link">Instant Pot Weekly</a></li>
+                            <li><a href="#" class="sidebar-link">Air Fryer Speed</a></li>
+                            <li><a href="#" class="sidebar-link">Microwave Assembly</a></li>
+                            <li><a href="#" class="sidebar-link">No-Cook Cold Meals</a></li>
+                            <li><a href="#" class="sidebar-link">Freezer-Friendly</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h6 class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 mb-6">By Persona</h6>
+                        <ul class="space-y-3 text-sm opacity-60">
+                            <li><a href="#" class="sidebar-link">Office & Work Lunch</a></li>
+                            <li><a href="#" class="sidebar-link">College/Student Budget</a></li>
+                            <li><a href="#" class="sidebar-link">Picky Eaters & Kids</a></li>
+                            <li><a href="#" class="sidebar-link">Pregnancy Nutrition</a></li>
+                            <li><a href="#" class="sidebar-link">Postpartum Recovery</a></li>
+                            <li><a href="#" class="sidebar-link">Bariatric Post-Op</a></li>
+                            <li><a href="#" class="sidebar-link">PCOS Management</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h6 class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 mb-6">By Meal Type</h6>
+                        <ul class="space-y-3 text-sm opacity-60">
+                            <li><a href="#" class="sidebar-link">Breakfast Batches</a></li>
+                            <li><a href="#" class="sidebar-link">Logistics for Lunch</a></li>
+                            <li><a href="#" class="sidebar-link">Family Dinners</a></li>
+                            <li><a href="#" class="sidebar-link">Macro Snacks</a></li>
+                            <li><a href="#" class="sidebar-link">Smoothie Packs</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h6 class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 mb-6">By Constraint</h6>
+                        <ul class="space-y-3 text-sm opacity-60">
+                            <li><a href="#" class="sidebar-link">Under $30/Week</a></li>
+                            <li><a href="#" class="sidebar-link">High Fiber Focus</a></li>
+                            <li><a href="#" class="sidebar-link">Low Sodium Prep</a></li>
+                            <li><a href="#" class="sidebar-link">Quick & Simple</a></li>
+                            <li><a href="#" class="sidebar-link">For The Week</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h6 class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 mb-6">Retail Logic</h6>
+                        <ul class="space-y-3 text-sm opacity-60">
+                            <li><a href="#" class="sidebar-link">Trader Joe's Prep</a></li>
+                            <li><a href="#" class="sidebar-link">Costco Bulk Buy</a></li>
+                            <li><a href="#" class="sidebar-link">Aldi Budget Plans</a></li>
+                            <li><a href="#" class="sidebar-link">Walmart Efficient</a></li>
+                            <li><a href="#" class="sidebar-link">Whole Foods Quality</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-black/5 py-16 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-slate-900 text-white flex items-center justify-center rounded-lg font-black text-sm">M</div>
+                <span class="font-black text-lg tracking-tighter uppercase">MealPrepIdeas.co</span>
+            </div>
+            
+            <div class="flex gap-8 text-[10px] font-black uppercase tracking-widest opacity-40">
+                <a href="#" class="hover:opacity-100 transition-opacity">Taxonomy Map</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">Privacy Policy</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">The System</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">Contact</a>
+            </div>
+            
+            <p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.2em]">© 2024 SYSTEMIC MEALS NETWORK</p>
+        </div>
+    </footer>
+
+    <!-- BreadcrumbList Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mealprepideas.co"
+      },{
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Meal Prep Logistics",
+        "item": "https://mealprepideas.co/meal-prep/"
+      }]
+    }
+    </script>
+
+    <script>
+        // Magnetic Interaction Logic
+        document.querySelectorAll('.pantry-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>

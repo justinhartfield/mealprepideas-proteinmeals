@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trader Joe's High-Protein Protocol | ProteinMeals.co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pantry-cream: #F9F7F2;
+            --pantry-slate: #2D3436;
+            --pantry-sage: #7E9680;
+            --pantry-accent: #E67E22; 
+            --label-tape: #EFEFEF;
+            --retail-tj: #D62323; /* Specific accent for Trader Joe's */
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--pantry-cream);
+            color: var(--pantry-slate);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .pantry-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 4px 0px rgba(0,0,0,0.02), 0 15px 35px -5px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .label-text {
+            display: inline-block;
+            background: var(--label-tape);
+            padding: 2px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            font-size: 0.7rem;
+            border-left: 3px solid var(--pantry-sage);
+        }
+
+        .retail-badge {
+            border-left-color: var(--retail-tj);
+        }
+
+        .btn-system {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-system:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1);
+        }
+
+        /* SKU Checkbox Customization */
+        .sku-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--pantry-slate);
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .sku-checkbox:checked {
+            background: var(--pantry-slate);
+        }
+        .sku-checkbox:checked::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        [x-cloak] { display: none !important; }
+
+        /* Scanning Line Effect for "Audit" feel */
+        .scan-line {
+            height: 2px;
+            background: var(--retail-tj);
+            opacity: 0.2;
+            width: 100%;
+            position: absolute;
+            z-index: 10;
+            animation: scan 4s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+    </style>
+</head>
+<body x-data="{ 
+    cart: [], 
+    activeCategory: 'All',
+    searchQuery: '',
+    products: [
+        { id: 1, name: 'Just Chicken (Grilled)', category: 'Fridge', protein: '25g', price: '$6.99', ppe: 'High', tag: 'Ready-to-eat' },
+        { id: 2, name: 'Steamed Lentils', category: 'Fridge', protein: '18g', price: '$3.49', ppe: 'Ultra', tag: 'Vegan' },
+        { id: 3, name: 'Grass-Fed Beef Sirloin', category: 'Fridge', protein: '24g', price: '$10.99', ppe: 'Medium', tag: 'Raw' },
+        { id: 4, name: 'Greek Yogurt (Whole Milk)', category: 'Fridge', protein: '16g', price: '$5.49', ppe: 'High', tag: 'Standard' },
+        { id: 5, name: 'Egg White Salad', category: 'Fridge', protein: '12g', price: '$4.99', ppe: 'Low', tag: 'Quick Lunch' },
+        { id: 6, name: 'Frozen Cod Fillets', category: 'Freezer', protein: '20g', price: '$8.99', ppe: 'Medium', tag: 'Wild Caught' },
+        { id: 7, name: 'Canned Smoked Trout', category: 'Pantry', protein: '21g', price: '$3.99', ppe: 'High', tag: 'Shelf-stable' },
+        { id: 8, name: 'High Protein Tofu', category: 'Fridge', protein: '30g', price: '$2.99', ppe: 'Ultra', tag: 'Best Value' }
+    ],
+    toggleProduct(id) {
+        if (this.cart.includes(id)) {
+            this.cart = this.cart.filter(i => i !== id);
+        } else {
+            this.cart.push(id);
+        }
+    }
+}">
+    <div class="grain"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/80 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="/" class="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-lg text-white font-bold text-xl hover:scale-105 transition-transform">M</a>
+                <span class="font-extrabold tracking-tighter text-2xl uppercase">Systemic Meals</span>
+            </div>
+            <div class="hidden md:flex gap-8 text-sm font-medium opacity-60">
+                <a href="#" class="hover:opacity-100 transition-opacity">Meal Prep Hub</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">High Protein Hub</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">Retail Audits</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <button class="flex items-center gap-2 text-xs font-bold bg-slate-900 text-white px-4 py-2 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        LIST (<span x-text="cart.length">0</span>)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        <!-- Store Hero -->
+        <header class="relative bg-white border-b border-black/5 pt-20 pb-12 px-6 overflow-hidden">
+            <div class="absolute right-0 top-0 w-1/3 h-full opacity-[0.03] pointer-events-none">
+                <svg viewBox="0 0 100 100" class="w-full h-full fill-current text-red-600"><path d="M50 0 L100 50 L50 100 L0 50 Z" /></svg>
+            </div>
+            
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-12 items-end">
+                <div class="flex-grow">
+                    <nav class="flex gap-2 mb-6">
+                        <span class="label-text">Retail Audit</span>
+                        <span class="label-text retail-badge">Trader Joe's</span>
+                    </nav>
+                    <h1 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-6">
+                        The Protein <br><span class="text-red-600">Manifesto.</span>
+                    </h1>
+                    <p class="max-w-2xl text-xl opacity-60 font-medium">
+                        The definitive, SKU-level audit of every high-protein essential at Trader Joe's. Systematic buying for muscle maintenance and fat loss.
+                    </p>
+                </div>
+                
+                <div class="w-full md:w-80 space-y-4">
+                    <div class="pantry-card rounded-2xl p-6 bg-slate-900 text-white border-none">
+                        <div class="text-[10px] font-black uppercase tracking-widest opacity-50 mb-2">Metric Priority</div>
+                        <div class="text-2xl font-black mb-1">Price-per-Protein</div>
+                        <p class="text-xs opacity-60">We rank items based on the "Protein Multiplier"—grams of protein per dollar spent.</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Filter Bar -->
+        <section class="sticky top-[73px] z-30 bg-pantry-cream/90 backdrop-blur-md border-b border-black/5 py-4 px-6">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+                    <template x-for="cat in ['All', 'Fridge', 'Freezer', 'Pantry']">
+                        <button 
+                            @click="activeCategory = cat"
+                            :class="activeCategory === cat ? 'bg-slate-900 text-white' : 'bg-white text-slate-900 hover:bg-slate-100'"
+                            class="px-5 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border border-black/5"
+                            x-text="cat">
+                        </button>
+                    </template>
+                </div>
+                <div class="relative w-full md:w-64">
+                    <input type="text" x-model="searchQuery" placeholder="Search SKU database..." class="w-full bg-white border border-black/10 rounded-full px-10 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-600/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-4 top-2.5 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Product Grid / "Manifest" -->
+        <section class="max-w-7xl mx-auto py-12 px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                
+                <!-- SKU List (The Core) -->
+                <div class="lg:col-span-2 space-y-8">
+                    <div class="flex justify-between items-end border-b-2 border-slate-900 pb-4">
+                        <h3 class="text-2xl font-black">Audit Results</h3>
+                        <span class="text-[10px] font-bold opacity-40 uppercase tracking-widest" x-text="`${products.filter(p => (activeCategory === 'All' || p.category === activeCategory) && p.name.toLowerCase().includes(searchQuery.toLowerCase())).length} SKUs Identified`"></span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <template x-for="product in products.filter(p => (activeCategory === 'All' || p.category === activeCategory) && p.name.toLowerCase().includes(searchQuery.toLowerCase()))" :key="product.id">
+                            <div class="group flex items-center justify-between pantry-card p-4 hover:border-red-600/30">
+                                <div class="flex items-center gap-6">
+                                    <input type="checkbox" :checked="cart.includes(product.id)" @change="toggleProduct(product.id)" class="sku-checkbox">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="font-bold text-lg" x-text="product.name"></span>
+                                            <span class="text-[10px] font-black px-2 py-0.5 bg-slate-100 rounded text-slate-500 uppercase" x-text="product.tag"></span>
+                                        </div>
+                                        <div class="flex gap-4 text-[10px] font-bold opacity-40 uppercase tracking-widest">
+                                            <span x-text="product.category"></span>
+                                            <span class="text-red-600" x-text="`${product.protein} Protein`"></span>
+                                            <span x-text="product.price"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] font-black uppercase opacity-30 mb-1">P:E Ratio</div>
+                                    <div :class="{
+                                        'text-emerald-600': product.ppe === 'Ultra',
+                                        'text-blue-600': product.ppe === 'High',
+                                        'text-slate-400': product.ppe === 'Medium' || product.ppe === 'Low'
+                                    }" class="font-black text-xs" x-text="product.ppe"></div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Build a Basket (Bundles) -->
+                    <div class="pt-12">
+                        <h3 class="text-2xl font-black mb-8">Starter Baskets</h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="pantry-card rounded-3xl p-8 bg-red-50/50 border-red-100 relative overflow-hidden group">
+                                <div class="scan-line"></div>
+                                <h4 class="font-black text-xl mb-2 text-red-700">$50 Muscle Builder</h4>
+                                <p class="text-sm opacity-60 mb-6">Optimized for high-volume chicken and lentils. Feeds 1 adult for 5 days.</p>
+                                <button class="w-full py-3 bg-red-600 text-white font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-red-700 transition-colors">Add Bundle to List</button>
+                            </div>
+                            <div class="pantry-card rounded-3xl p-8 bg-blue-50/50 border-blue-100 group">
+                                <h4 class="font-black text-xl mb-2 text-blue-700">The "No-Cook" Desk Pack</h4>
+                                <p class="text-sm opacity-60 mb-6">Smoked trout, steamed lentils, and salads. Zero heat required.</p>
+                                <button class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-blue-700 transition-colors">Add Bundle to List</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Content -->
+                <div class="space-y-8">
+                    <!-- Pairings Widget -->
+                    <div class="pantry-card rounded-3xl p-8 bg-slate-900 text-white sticky top-[160px]">
+                        <span class="label-text !bg-white/10 !text-white !border-red-500 mb-6">System Pairings</span>
+                        <h4 class="text-2xl font-black mb-4">"Buy These, <br>Cook These"</h4>
+                        
+                        <div class="space-y-6">
+                            <div class="border-l-2 border-white/10 pl-4 py-1">
+                                <div class="text-[10px] font-black text-red-500 uppercase tracking-tighter mb-1">Scenario A</div>
+                                <p class="text-sm font-bold mb-2">High Protein Bowl</p>
+                                <p class="text-xs opacity-50">Grilled Chicken + Steamed Lentils + Chimichurri Sauce.</p>
+                            </div>
+                            <div class="border-l-2 border-white/10 pl-4 py-1">
+                                <div class="text-[10px] font-black text-red-500 uppercase tracking-tighter mb-1">Scenario B</div>
+                                <p class="text-sm font-bold mb-2">Quick Freezer Prep</p>
+                                <p class="text-xs opacity-50">Frozen Cod + Cauli-Rice + Thai Green Curry Simmer Sauce.</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 pt-8 border-t border-white/10">
+                            <a href="#" class="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest hover:gap-4 transition-all">
+                                All TJ's Recipes <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Related Facets -->
+                    <div class="pantry-card rounded-3xl p-8">
+                        <h5 class="font-black text-sm uppercase tracking-widest mb-6 opacity-30">Related Filters</h5>
+                        <div class="flex flex-wrap gap-2">
+                            <a href="#" class="px-4 py-2 bg-slate-50 border border-black/5 rounded-lg text-xs font-bold hover:bg-slate-100 transition-all">Aldi Audit</a>
+                            <a href="#" class="px-4 py-2 bg-slate-50 border border-black/5 rounded-lg text-xs font-bold hover:bg-slate-100 transition-all">Costco High-Protein</a>
+                            <a href="#" class="px-4 py-2 bg-slate-50 border border-black/5 rounded-lg text-xs font-bold hover:bg-slate-100 transition-all">Low Calorie TJ's</a>
+                            <a href="#" class="px-4 py-2 bg-slate-50 border border-black/5 rounded-lg text-xs font-bold hover:bg-slate-100 transition-all">High Fiber Essentials</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- FAQ: Store specific -->
+        <section class="max-w-4xl mx-auto py-24 px-6">
+            <h3 class="text-3xl font-black mb-12 text-center">Store Wisdom & Protocols</h3>
+            <div class="space-y-4">
+                <details class="group pantry-card rounded-2xl p-6 cursor-pointer bg-white open:bg-slate-50 transition-all">
+                    <summary class="flex justify-between items-center font-bold text-lg list-none">
+                        How often does the TJ's inventory audit update?
+                        <span class="group-open:rotate-180 transition-transform">↓</span>
+                    </summary>
+                    <div class="pt-4 text-sm opacity-60 leading-relaxed">
+                        Our regional scouts update the "Protein Multiplier" scores every 14 days. Seasonal items are flagged with a temporary badge to ensure your meal prep systems don't rely on discontinued SKUs.
+                    </div>
+                </details>
+                <details class="group pantry-card rounded-2xl p-6 cursor-pointer bg-white open:bg-slate-50 transition-all">
+                    <summary class="flex justify-between items-center font-bold text-lg list-none">
+                        What is the #1 "Best Buy" for protein?
+                        <span class="group-open:rotate-180 transition-transform">↓</span>
+                    </summary>
+                    <div class="pt-4 text-sm opacity-60 leading-relaxed">
+                        Strictly by the numbers, the <b>High Protein Tofu</b> and <b>Just Chicken</b> (frozen) consistently win on Price-per-Gram. For ready-to-eat fridge options, the <b>Steamed Lentils</b> are the undisputed king of fiber/protein synergy.
+                    </div>
+                </details>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer: Site Tree Navigation -->
+    <footer class="bg-slate-900 text-white py-16 px-6 mt-24">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 bg-white text-slate-900 flex items-center justify-center rounded-md font-black">M</div>
+                    <span class="font-black text-xl tracking-tighter uppercase">The System Network</span>
+                </div>
+                <p class="text-slate-400 max-w-sm mb-8">Designing the world's most organized meal planning taxonomy. High-protein, high-efficiency, zero-fluff.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg></a>
+                    <a href="#" class="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+                </div>
+            </div>
+            
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Meal Prep Ideas</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-red-400 transition-colors">By Method (Crockpot)</a></li>
+                    <li><a href="#" class="hover:text-red-400 transition-colors">By Persona (Postpartum)</a></li>
+                    <li><a href="#" class="hover:text-red-400 transition-colors">No Microwave Protocol</a></li>
+                    <li><a href="#" class="hover:text-red-400 transition-colors">5-Day Meal Plans</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Protein Meals</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-red-400 transition-colors">Retail Audits (Aldi/TJ's)</a></li>
+                    <li><a href="#" class="hover:text-red-400 transition-colors">Fast Food Chains</a></li>
+                    <li><a href="#" class="hover:text-red-400 transition-colors">Low Calorie Protocol</a></li>
+                    <li><a href="#" class="hover:text-red-400 transition-colors">High Fiber Constraints</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-white/5 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 font-bold text-[10px] tracking-widest uppercase">
+            <p>© 2024 Systemic Meals Network. All SKU data human-verified.</p>
+            <div class="flex gap-6">
+                <a href="#">Privacy</a>
+                <a href="#">Taxonomy Map</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

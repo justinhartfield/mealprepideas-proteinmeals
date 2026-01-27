@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5-Day High-Protein Office Protocol | Systemic Meals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pantry-cream: #F9F7F2;
+            --pantry-slate: #2D3436;
+            --pantry-sage: #7E9680;
+            --pantry-accent: #E67E22;
+            --label-tape: #EFEFEF;
+            --system-blue: #3498DB;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--pantry-cream);
+            color: var(--pantry-slate);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .pantry-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 4px 0px rgba(0,0,0,0.02), 0 15px 35px -5px rgba(0,0,0,0.05);
+        }
+
+        .label-text {
+            display: inline-block;
+            background: var(--label-tape);
+            padding: 2px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            font-size: 0.7rem;
+            border-left: 3px solid var(--pantry-sage);
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 19px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: repeating-linear-gradient(to bottom, transparent, transparent 4px, #D1D5DB 4px, #D1D5DB 8px);
+        }
+
+        .swap-active {
+            border-color: var(--pantry-accent);
+            background-color: rgba(230, 126, 34, 0.05);
+        }
+
+        [x-cloak] { display: none !important; }
+
+        input[type="checkbox"]:checked + label {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .sticky-summary {
+            position: sticky;
+            top: 100px;
+        }
+    </style>
+</head>
+<body x-data="{ 
+    proteinSource: 'chicken',
+    servings: 1,
+    isMetric: false,
+    checkedItems: [],
+    proteinMap: {
+        'chicken': { name: 'Grilled Chicken', protein: 35, cal: 420 },
+        'tofu': { name: 'Smoked Tofu', protein: 28, cal: 380 },
+        'steak': { name: 'Lean Flank Steak', protein: 40, cal: 480 }
+    }
+}">
+    <div class="grain"></div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/80 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="/" class="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-lg text-white font-bold text-xl">M</a>
+                <span class="font-extrabold tracking-tighter text-2xl uppercase">Systemic Meals</span>
+            </div>
+            <div class="hidden md:flex gap-8 text-sm font-medium opacity-60">
+                <a href="/meal-prep/" class="hover:opacity-100 transition-opacity underline decoration-sage-500 underline-offset-4">Logistics Hub</a>
+                <a href="/high-protein/" class="hover:opacity-100 transition-opacity">Macro Hub</a>
+                <a href="#" class="hover:opacity-100 transition-opacity">Plan Library</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="bg-slate-900 text-white text-[10px] font-black tracking-widest px-4 py-2 rounded-full hover:bg-orange-600 transition-all">SAVE PLAN</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        <!-- Plan Hero Header -->
+        <header class="bg-white border-b border-black/5 pt-12 pb-16 px-6">
+            <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-12 items-end">
+                <div class="md:col-span-2">
+                    <nav class="flex gap-2 mb-6">
+                        <span class="label-text">T5: System Plan</span>
+                        <span class="label-text !border-orange-500">High-Protein</span>
+                        <span class="label-text !border-blue-500">Work Lunch</span>
+                    </nav>
+                    <h1 class="text-5xl md:text-7xl font-black leading-[0.85] tracking-tight mb-6">5-Day Office <br><span class="text-pantry-sage">Prep Protocol</span></h1>
+                    <p class="text-xl opacity-60 max-w-2xl">A high-efficiency logistics system designed for Sunday execution. Minimal cleanup, 35g+ protein per serving, and 100% microwave-optional.</p>
+                </div>
+                <div class="pantry-card rounded-2xl p-6 bg-slate-900 text-white">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <span class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Total Prep</span>
+                            <span class="text-2xl font-black">90m</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Daily Protein</span>
+                            <span class="text-2xl font-black text-orange-400" x-text="proteinMap[proteinSource].protein + 'g'"></span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Difficulty</span>
+                            <span class="text-sm font-bold">Systematic</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cost/Meal</span>
+                            <span class="text-sm font-bold">~$4.20</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="max-w-7xl mx-auto py-16 px-6 grid lg:grid-cols-12 gap-12">
+            
+            <!-- Left Column: The System Components -->
+            <div class="lg:col-span-8 space-y-16">
+                
+                <!-- 1. The Sunday Timeline -->
+                <section>
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-12 rounded-full border-2 border-slate-900 flex items-center justify-center font-black text-xl">01</div>
+                        <h3 class="text-3xl font-black tracking-tight uppercase italic">The Sunday Prep Flow</h3>
+                    </div>
+                    
+                    <div class="relative pl-12 space-y-12">
+                        <div class="timeline-line"></div>
+                        
+                        <!-- Step 1 -->
+                        <div class="relative">
+                            <div class="absolute -left-12 w-6 h-6 rounded-full bg-white border-4 border-slate-900 z-10"></div>
+                            <div class="pantry-card rounded-2xl p-6 hover:border-pantry-sage transition-colors">
+                                <span class="label-text mb-2">00:00 - 00:20</span>
+                                <h4 class="font-bold text-xl mb-2">The Multi-Cook Start</h4>
+                                <p class="text-sm opacity-60 mb-4">Start grains in the instant pot. Preheat oven to 400°F. Chop sweet potatoes and bell peppers. This is your foundation stage.</p>
+                                <div class="flex gap-2">
+                                    <span class="text-[10px] font-bold px-2 py-1 bg-slate-100 rounded">OVEN: ON</span>
+                                    <span class="text-[10px] font-bold px-2 py-1 bg-slate-100 rounded">KNIFE WORK</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="relative">
+                            <div class="absolute -left-12 w-6 h-6 rounded-full bg-white border-4 border-slate-900 z-10"></div>
+                            <div class="pantry-card rounded-2xl p-6">
+                                <span class="label-text mb-2">00:20 - 00:50</span>
+                                <h4 class="font-bold text-xl mb-2">Protein Batching</h4>
+                                <p class="text-sm opacity-60 mb-4">Season 1.5lbs of <span class="font-bold" x-text="proteinMap[proteinSource].name"></span> and sear on high heat. If using steak, rest for 10 minutes before slicing into uniform logistics-friendly cubes.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="relative">
+                            <div class="absolute -left-12 w-6 h-6 rounded-full bg-white border-4 border-slate-900 z-10"></div>
+                            <div class="pantry-card rounded-2xl p-6">
+                                <span class="label-text mb-2">00:50 - 01:20</span>
+                                <h4 class="font-bold text-xl mb-2">Assembly Line</h4>
+                                <p class="text-sm opacity-60 mb-4">Line up 5 containers. Layer: Grains (Bottom), Veg (Middle), Protein (Top). This prevents soggy textures by keeping moisture away from grains.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. The 5-Day Logic Grid -->
+                <section>
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-12 rounded-full border-2 border-slate-900 flex items-center justify-center font-black text-xl">02</div>
+                        <h3 class="text-3xl font-black tracking-tight uppercase italic">The Weekly Grid</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-2">
+                        <template x-for="day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']">
+                            <div class="pantry-card rounded-xl p-4 text-center">
+                                <span class="block text-[10px] font-black text-slate-400 mb-2 uppercase" x-text="day"></span>
+                                <div class="w-10 h-10 bg-pantry-cream rounded-full mx-auto mb-2 flex items-center justify-center">
+                                    <svg class="w-5 h-5 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
+                                <span class="text-xs font-bold leading-tight block">Office Meal #1</span>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="mt-8 p-8 border-2 border-dashed border-black/10 rounded-3xl bg-white">
+                        <div class="flex flex-col md:flex-row gap-8 items-center">
+                            <div class="flex-grow">
+                                <span class="label-text !bg-orange-100 !text-orange-800 !border-orange-500 mb-4">Storage Logic</span>
+                                <h4 class="text-2xl font-black mb-2">Preventing "Meal Prep Fatigue"</h4>
+                                <p class="text-sm opacity-60">Store Monday-Wednesday in the fridge. Flash-freeze Thursday and Friday's portions immediately after cooling. Pull them to the fridge on Tuesday night to thaw naturally.</p>
+                            </div>
+                            <div class="shrink-0">
+                                <div class="w-24 h-24 rounded-2xl bg-slate-900 flex flex-col items-center justify-center text-white p-4">
+                                    <span class="text-2xl font-black">72h</span>
+                                    <span class="text-[8px] font-bold uppercase tracking-widest text-center">Peak Freshness</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. The Swap Engine -->
+                <section class="bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white">
+                    <div class="mb-10">
+                        <span class="label-text !bg-white/10 !text-white !border-orange-400 mb-4">Interactive Swap Engine</span>
+                        <h3 class="text-4xl font-black tracking-tight uppercase italic mb-4">Customize Your Macros</h3>
+                        <p class="opacity-60 text-lg">Change your primary protein source. The system automatically adjusts the shopping list and macro-count for the entire week.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button @click="proteinSource = 'chicken'" :class="proteinSource === 'chicken' ? 'swap-active border-orange-400' : 'border-white/10'" class="flex items-center gap-4 p-4 border-2 rounded-2xl transition-all text-left group">
+                            <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center font-black group-hover:bg-white group-hover:text-slate-900 transition-colors">C</div>
+                            <div>
+                                <span class="block font-black uppercase text-sm">Chicken Breast</span>
+                                <span class="text-[10px] opacity-40">Lean / Standard</span>
+                            </div>
+                        </button>
+                        <button @click="proteinSource = 'steak'" :class="proteinSource === 'steak' ? 'swap-active border-orange-400' : 'border-white/10'" class="flex items-center gap-4 p-4 border-2 rounded-2xl transition-all text-left group">
+                            <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center font-black group-hover:bg-white group-hover:text-slate-900 transition-colors">S</div>
+                            <div>
+                                <span class="block font-black uppercase text-sm">Flank Steak</span>
+                                <span class="text-[10px] opacity-40">Premium / High Iron</span>
+                            </div>
+                        </button>
+                        <button @click="proteinSource = 'tofu'" :class="proteinSource === 'tofu' ? 'swap-active border-orange-400' : 'border-white/10'" class="flex items-center gap-4 p-4 border-2 rounded-2xl transition-all text-left group">
+                            <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center font-black group-hover:bg-white group-hover:text-slate-900 transition-colors">T</div>
+                            <div>
+                                <span class="block font-black uppercase text-sm">Smoked Tofu</span>
+                                <span class="text-[10px] opacity-40">Vegan / Texture-Rich</span>
+                            </div>
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Shopping & Logistics -->
+            <div class="lg:col-span-4">
+                <div class="sticky-summary space-y-8">
+                    
+                    <!-- Scaler Widget -->
+                    <div class="pantry-card rounded-3xl p-8 bg-white overflow-hidden relative">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-pantry-sage/5 rounded-bl-full"></div>
+                        <h4 class="font-black text-xl mb-6 uppercase tracking-tighter">System Configuration</h4>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-400 block mb-2">Scale (People)</label>
+                                <div class="flex items-center gap-4">
+                                    <button @click="servings = Math.max(1, servings - 1)" class="w-10 h-10 border-2 border-slate-900 rounded-full font-black text-xl flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all">-</button>
+                                    <span class="text-3xl font-black" x-text="servings"></span>
+                                    <button @click="servings = servings + 1" class="w-10 h-10 border-2 border-slate-900 rounded-full font-black text-xl flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all">+</button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between border-t border-black/5 pt-6">
+                                <span class="text-sm font-bold uppercase">Metric Units</span>
+                                <button @click="isMetric = !isMetric" class="w-12 h-6 bg-slate-200 rounded-full relative transition-colors duration-300" :class="isMetric ? 'bg-pantry-sage' : ''">
+                                    <div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-300" :class="isMetric ? 'translate-x-6' : ''"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shopping List -->
+                    <div class="pantry-card rounded-3xl p-8 bg-[#F0EFED] border-none shadow-none">
+                        <h4 class="font-black text-xl mb-6 uppercase tracking-tighter flex justify-between items-center">
+                            Shopping List
+                            <span class="text-[10px] font-bold opacity-40">5-DAY PACK</span>
+                        </h4>
+                        
+                        <div class="space-y-8">
+                            <div>
+                                <h5 class="text-[10px] font-black uppercase text-pantry-sage mb-4 border-b border-pantry-sage/20 pb-2">The Protein Box</h5>
+                                <div class="space-y-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="item1" class="w-5 h-5 rounded border-2 border-slate-900 accent-slate-900">
+                                        <label for="item1" class="text-sm font-medium">
+                                            <span x-text="servings * 1.5"></span><span x-text="isMetric ? 'kg' : 'lbs'"></span> 
+                                            <span x-text="proteinMap[proteinSource].name"></span>
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="item2" class="w-5 h-5 rounded border-2 border-slate-900 accent-slate-900">
+                                        <label for="item2" class="text-sm font-medium">1 Bottle Liquid Aminos / Soy</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h5 class="text-[10px] font-black uppercase text-pantry-sage mb-4 border-b border-pantry-sage/20 pb-2">Produce & Base</h5>
+                                <div class="space-y-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="item3" class="w-5 h-5 rounded border-2 border-slate-900 accent-slate-900">
+                                        <label for="item3" class="text-sm font-medium"><span x-text="servings * 2"></span> Large Sweet Potatoes</label>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="item4" class="w-5 h-5 rounded border-2 border-slate-900 accent-slate-900">
+                                        <label for="item4" class="text-sm font-medium"><span x-text="servings * 3"></span> Bell Peppers (Mixed)</label>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="item5" class="w-5 h-5 rounded border-2 border-slate-900 accent-slate-900">
+                                        <label for="item5" class="text-sm font-medium">1 Bag Jasmine Rice / Quinoa</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full mt-10 bg-slate-900 text-white font-black uppercase tracking-widest py-4 rounded-xl hover:bg-pantry-sage transition-all text-xs">
+                            Export to Reminders
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Systems -->
+        <section class="max-w-7xl mx-auto py-24 px-6 border-t border-black/5">
+            <h3 class="text-3xl font-black mb-12 uppercase">Similar Protocols</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+                <a href="#" class="pantry-card rounded-3xl p-8 hover:bg-emerald-50/50 transition-colors">
+                    <span class="label-text mb-4">No Microwave</span>
+                    <h5 class="text-xl font-black mb-2">Cold-Prep Office Pack</h5>
+                    <p class="text-sm opacity-60">High-protein salads and wraps that don't need heat.</p>
+                </a>
+                <a href="#" class="pantry-card rounded-3xl p-8 hover:bg-orange-50/50 transition-colors">
+                    <span class="label-text mb-4">Slow Cooker</span>
+                    <h5 class="text-xl font-black mb-2">The Sunday Dump-and-Go</h5>
+                    <p class="text-sm opacity-60">Maximum volume prep with zero active cooking time.</p>
+                </a>
+                <a href="#" class="pantry-card rounded-3xl p-8 hover:bg-blue-50/50 transition-colors">
+                    <span class="label-text mb-4">Budget</span>
+                    <h5 class="text-xl font-black mb-2">The $20 Weekly Win</h5>
+                    <p class="text-sm opacity-60">Optimizing Costco/Aldi bulk buys for massive savings.</p>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-16 px-6 mt-12">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 bg-white text-slate-900 flex items-center justify-center rounded-md font-black">M</div>
+                    <span class="font-black text-xl tracking-tighter uppercase">The System Network</span>
+                </div>
+                <p class="text-slate-400 max-w-sm mb-8">Designing the world's most organized meal planning taxonomy. High-protein, high-efficiency, zero-fluff protocols.</p>
+            </div>
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Explore Prep</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">Crockpot Systems</a></li>
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">Postpartum Stash</a></li>
+                    <li><a href="#" class="hover:text-emerald-400 transition-colors">Bariatric Protocol</a></li>
+                </ul>
+            </div>
+            <div>
+                <h6 class="font-black uppercase text-xs tracking-widest text-slate-500 mb-6">Explore Macros</h6>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Retail SKUs</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">Fast Food Audits</a></li>
+                    <li><a href="#" class="hover:text-orange-400 transition-colors">High-Fiber Bands</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-white/5 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">© 2024 Systemic Meals Network. All protocols strictly data-backed.</p>
+            <div class="flex gap-6 text-[10px] font-bold text-slate-500 tracking-widest uppercase opacity-40">
+                <a href="#">Privacy</a>
+                <a href="#">Taxonomy</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "5-Day High-Protein Office Meal Prep",
+      "description": "A systematic 5-day prep plan for office workers focused on high-protein logistics.",
+      "totalTime": "PT90M",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "name": "Pre-heat and Prep",
+          "text": "Start grains and preheat oven to 400F."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Protein Batching",
+          "text": "Cook protein source and slice into cubes."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Assembly",
+          "text": "Layer grains, vegetables, and protein into 5 containers."
+        }
+      ],
+      "supply": [
+        {
+          "@type": "HowToSupply",
+          "name": "Chicken Breast or Tofu"
+        },
+        {
+          "@type": "HowToSupply",
+          "name": "Sweet Potatoes"
+        }
+      ]
+    }
+    </script>
+</body>
+</html>
