@@ -1,0 +1,212 @@
+/* ============================================
+   The Grocery Index — Light/Dark Theme System
+   ============================================
+   Default: Light (warm, approachable, "Sunday meal prep" energy)
+   Toggle:  Dark (neon lime, cyberpunk, "tactical" power-user)
+   
+   Usage: <html data-theme="light"> or <html data-theme="dark">
+   All components use var(--xxx) and auto-adapt.
+   ============================================ */
+
+/* ---- LIGHT MODE (DEFAULT) ---- */
+:root,
+[data-theme="light"] {
+  --bg-primary: #F9F7F2;          /* Warm cream */
+  --bg-secondary: #FFFFFF;         /* Card white */
+  --bg-tertiary: #F0EDE6;         /* Slightly darker cream for depth */
+  --bg-nav: rgba(249, 247, 242, 0.85);
+
+  --text-primary: #2D3436;         /* Charcoal slate */
+  --text-secondary: #636E72;       /* Muted gray */
+  --text-tertiary: #B2BEC3;        /* Light gray */
+  --text-inverse: #FFFFFF;
+
+  --accent-primary: #7E9680;        /* Warm sage green */
+  --accent-primary-hover: #6B8370;  /* Deeper sage */
+  --accent-secondary: #E67E22;      /* Burnt orange for CTAs */
+  --accent-secondary-hover: #D35400;
+  --accent-glow: rgba(126, 150, 128, 0.15);
+
+  --border-default: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(126, 150, 128, 0.4);
+  --border-strong: rgba(0, 0, 0, 0.15);
+
+  --shadow-card: 0 4px 0px rgba(0,0,0,0.02), 0 15px 35px -5px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 25px 50px -12px rgba(0,0,0,0.1);
+  --shadow-glow: 0 0 30px rgba(126, 150, 128, 0.12);
+
+  --pill-active-bg: #7E9680;
+  --pill-active-text: #FFFFFF;
+  --pill-inactive-bg: #F0EDE6;
+  --pill-inactive-text: #636E72;
+
+  --badge-bg: #F0EDE6;
+  --badge-text: #2D3436;
+  --badge-border: rgba(126, 150, 128, 0.3);
+
+  --grid-dot: rgba(0, 0, 0, 0.04);
+  --noise-opacity: 0.03;
+  --scanner-color: #7E9680;
+  --scanner-opacity: 0.15;
+
+  --scrollbar-track: #F9F7F2;
+  --scrollbar-thumb: #7E9680;
+}
+
+/* ---- DARK MODE ---- */
+[data-theme="dark"] {
+  --bg-primary: #0F0F0F;           /* Deep charcoal */
+  --bg-secondary: #1A1A1A;         /* Card dark */
+  --bg-tertiary: #252525;          /* Slightly lighter for depth */
+  --bg-nav: rgba(15, 15, 15, 0.8);
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --text-tertiary: #666666;
+  --text-inverse: #0F0F0F;
+
+  --accent-primary: #D9FF00;        /* Neon lime */
+  --accent-primary-hover: #C4E600;
+  --accent-secondary: #D9FF00;      /* Same lime for CTAs in dark */
+  --accent-secondary-hover: #C4E600;
+  --accent-glow: rgba(217, 255, 0, 0.1);
+
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(217, 255, 0, 0.5);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  --shadow-card: 0 4px 15px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 0 30px rgba(217, 255, 0, 0.1);
+  --shadow-glow: 0 0 30px rgba(217, 255, 0, 0.1);
+
+  --pill-active-bg: #D9FF00;
+  --pill-active-text: #000000;
+  --pill-inactive-bg: #1A1A1A;
+  --pill-inactive-text: #A0A0A0;
+
+  --badge-bg: #1A1A1A;
+  --badge-text: #FFFFFF;
+  --badge-border: rgba(255, 255, 255, 0.1);
+
+  --grid-dot: rgba(255, 255, 255, 0.05);
+  --noise-opacity: 0.03;
+  --scanner-color: #D9FF00;
+  --scanner-opacity: 0.3;
+
+  --scrollbar-track: #0F0F0F;
+  --scrollbar-thumb: #D9FF00;
+}
+
+/* ---- THEME-AWARE BASE STYLES ---- */
+body {
+  font-family: 'Lexend', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grid Background */
+.bg-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--grid-dot) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* Cards */
+.theme-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-card);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.theme-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Navigation */
+.theme-nav {
+  backdrop-filter: blur(12px);
+  background: var(--bg-nav);
+  border-bottom: 1px solid var(--border-default);
+}
+
+/* Pills / Chips */
+.theme-pill-active {
+  background-color: var(--pill-active-bg);
+  color: var(--pill-active-text);
+}
+
+.theme-pill-inactive {
+  background-color: var(--pill-inactive-bg);
+  color: var(--pill-inactive-text);
+  border: 1px solid var(--border-default);
+}
+
+/* Buttons */
+.theme-btn-primary {
+  background-color: var(--accent-primary);
+  color: var(--text-inverse);
+  transition: all 0.3s ease;
+}
+
+.theme-btn-primary:hover {
+  background-color: var(--accent-primary-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+.theme-btn-cta {
+  background-color: var(--accent-secondary);
+  color: var(--text-inverse);
+  transition: all 0.3s ease;
+}
+
+.theme-btn-cta:hover {
+  background-color: var(--accent-secondary-hover);
+}
+
+/* Scanner Line */
+.scanner-line {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--scanner-color);
+  box-shadow: 0 0 15px var(--scanner-color);
+  animation: scan 4s linear infinite;
+  opacity: var(--scanner-opacity);
+  pointer-events: none;
+}
+
+@keyframes scan {
+  0% { top: 0%; }
+  50% { top: 100%; }
+  100% { top: 0%; }
+}
+
+/* Noise Overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  opacity: var(--noise-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
+
+/* Text utilities */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-accent { color: var(--accent-primary); }
+.bg-accent { background-color: var(--accent-primary); }
+
+[x-cloak] { display: none !important; }

@@ -1,170 +1,264 @@
 ---
 /**
- * BaseLayout.astro — Shared base layout for all pages across both sites.
- * Extracts the common head/style/grain overlay from all 14 HTML templates.
+ * BaseLayout — The Grocery Index Design System
+ * Dark mode, neon lime accent, cyberpunk grid aesthetic
+ * Wraps all pages with shared head, fonts, Alpine, global CSS, noise overlay
  */
-
-export interface Props {
+interface Props {
   title: string;
   description?: string;
   canonicalUrl?: string;
-  bodyClass?: string;
-  bodyAttrs?: string;
+  structuredData?: string;
 }
 
-const {
-  title,
-  description = 'Systematic meal planning taxonomy. High-protein, high-efficiency, zero-fluff.',
-  canonicalUrl,
-  bodyClass = '',
-  bodyAttrs = '',
-} = Astro.props;
+const { title, description = '', canonicalUrl, structuredData } = Astro.props;
 ---
 
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
-    <style is:global>
-        :root {
-            --pantry-cream: #F9F7F2;
-            --pantry-slate: #2D3436;
-            --pantry-sage: #7E9680;
-            --pantry-accent: #E67E22;
-            --label-tape: #EFEFEF;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  {description && <meta name="description" content={description} />}
+  {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
 
-        body {
-            font-family: 'Lexend', sans-serif;
-            background-color: var(--pantry-cream);
-            color: var(--pantry-slate);
-            overflow-x: hidden;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
 
-        /* SVG Grain Overlay */
-        .grain {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 50;
-            opacity: 0.04;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-        /* Tactical Depth Styling */
-        .pantry-card {
-            background: white;
-            border: 1px solid rgba(0,0,0,0.08);
-            box-shadow:
-                0 4px 0px rgba(0,0,0,0.02),
-                0 15px 35px -5px rgba(0,0,0,0.05);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+  <!-- Structured Data -->
+  {structuredData && <script type="application/ld+json" set:html={structuredData} />}
 
-        .pantry-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
-        }
+  <style is:global>
+    /* =============================================
+       THE GROCERY INDEX — GLOBAL DESIGN SYSTEM
+       Dark mode, neon lime accent, cyberpunk grid
+       ============================================= */
 
-        .label-text {
-            display: inline-block;
-            background: var(--label-tape);
-            padding: 2px 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-            font-size: 0.7rem;
-            border-left: 3px solid var(--pantry-sage);
-        }
+    :root {
+      --brand-lime: #D9FF00;
+      --brand-charcoal: #0F0F0F;
+      --brand-gray: #1A1A1A;
+      --ui-border: rgba(255, 255, 255, 0.1);
+    }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--pantry-cream); }
-        ::-webkit-scrollbar-thumb { background: var(--pantry-sage); border-radius: 10px; }
+    body {
+      font-family: 'Lexend', sans-serif;
+      background-color: var(--brand-charcoal);
+      color: #FFFFFF;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-        /* Perspective Layout */
-        .perspective-container { perspective: 1200px; }
+    /* Modern Grocery Grid Pattern */
+    .bg-grid {
+      background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+      background-size: 40px 40px;
+    }
 
-        .hero-split {
-            transition: transform 0.6s ease;
-        }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--brand-charcoal); }
+    ::-webkit-scrollbar-thumb { background: var(--brand-lime); border-radius: 10px; }
 
-        /* Button Glow */
-        .btn-system {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .btn-system::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-        .btn-system:hover::after {
-            left: 100%;
-        }
+    /* Hyper Border — signature card style */
+    .hyper-border {
+      position: relative;
+      background: var(--brand-gray);
+      border: 1px solid var(--ui-border);
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
 
-        /* Alpine Cloak */
-        [x-cloak] { display: none !important; }
+    .hyper-border:hover {
+      border-color: var(--brand-lime);
+      box-shadow: 0 0 30px rgba(217, 255, 0, 0.1);
+    }
 
-        /* Facet Chip Transitions */
-        .mega-chip, .facet-chip, .filter-chip, .system-pill {
-            transition: all 0.2s ease;
-        }
+    /* Scanner Line Animation */
+    .scanner-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--brand-lime);
+      box-shadow: 0 0 15px var(--brand-lime);
+      animation: scan 4s linear infinite;
+      opacity: 0.3;
+      pointer-events: none;
+    }
 
-        /* Fade animations */
-        .fade-enter { opacity: 0; transform: translateY(10px); }
-        .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.4s ease; }
+    @keyframes scan {
+      0% { top: 0%; }
+      50% { top: 100%; }
+      100% { top: 0%; }
+    }
 
-        /* Sidebar link underline effect */
-        .sidebar-link {
-            position: relative;
-            transition: color 0.3s ease;
-        }
-        .sidebar-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px; left: 0; width: 0; height: 2px;
-            background: var(--pantry-accent);
-            transition: width 0.3s ease;
-        }
-        .sidebar-link:hover::after { width: 100%; }
+    /* Glass Navigation */
+    .glass-nav {
+      backdrop-filter: blur(12px);
+      background: rgba(15, 15, 15, 0.8);
+      border-bottom: 1px solid var(--ui-border);
+    }
 
-        /* Mesh background variant */
-        .bg-mesh {
-            background-color: #f9f7f2;
-            background-image:
-                radial-gradient(at 0% 0%, hsla(161,15%,88%,1) 0, transparent 50%),
-                radial-gradient(at 50% 0%, hsla(180,20%,94%,1) 0, transparent 50%),
-                radial-gradient(at 100% 0%, hsla(28,24%,90%,1) 0, transparent 50%);
-        }
+    /* Text Stroke Effect */
+    .text-stroke {
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+      color: transparent;
+    }
 
-        /* Custom scrollbar for horizontal scroll sections */
-        .custom-scrollbar::-webkit-scrollbar { height: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--pantry-accent); border-radius: 10px; }
+    /* Active Pill */
+    .pill-active {
+      background-color: var(--brand-lime);
+      color: black;
+    }
 
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
-    <slot name="head" />
+    /* Noise Overlay */
+    .noise-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 50;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Bento Card */
+    .bento-card {
+      background: var(--brand-gray);
+      border: 1px solid var(--ui-border);
+      border-radius: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .bento-card:hover {
+      border-color: var(--brand-lime);
+      transform: translateY(-4px);
+    }
+
+    /* Macro Card */
+    .macro-card {
+      background: linear-gradient(145deg, #1A1A1A 0%, #0F0F0F 100%);
+      border: 1px solid var(--ui-border);
+    }
+
+    /* PE Gradient */
+    .pe-gradient {
+      background: linear-gradient(90deg, #333 0%, var(--brand-lime) 100%);
+    }
+
+    /* Data Row Hover */
+    .data-row:hover {
+      background: rgba(217, 255, 0, 0.03);
+    }
+
+    /* Recipe Card Hover */
+    .recipe-card-hover:hover .recipe-img {
+      transform: scale(1.05);
+      filter: grayscale(0%);
+    }
+
+    .recipe-img {
+      transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      filter: grayscale(40%);
+    }
+
+    /* Recipe Gradient */
+    .recipe-gradient {
+      background: linear-gradient(180deg, rgba(15,15,15,0) 0%, rgba(15,15,15,1) 100%);
+    }
+
+    /* Macro Bar */
+    .macro-bar {
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .macro-fill {
+      height: 100%;
+      background: var(--brand-lime);
+    }
+
+    /* Barcode Decoration */
+    .barcode-deco {
+      background: repeating-linear-gradient(90deg, #333, #333 2px, transparent 2px, transparent 4px);
+      width: 60px;
+      height: 20px;
+      opacity: 0.5;
+    }
+
+    /* Stat Glow */
+    .stat-glow {
+      text-shadow: 0 0 20px rgba(217, 255, 0, 0.3);
+    }
+
+    /* Data Stream Mask */
+    .data-stream {
+      mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    }
+
+    /* Receipt Edge */
+    .receipt-edge {
+      mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    }
+
+    /* Marquee Animation */
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+      display: flex;
+      animation: marquee 40s linear infinite;
+    }
+
+    /* PE Ratio Gauge */
+    .pe-ratio-gauge {
+      background: conic-gradient(from 180deg at 50% 50%, #D9FF00 var(--percentage), #1A1A1A 0);
+    }
+
+    /* Alpine Cloak */
+    [x-cloak] { display: none !important; }
+
+    /* Select Arrow */
+    select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.5rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem;
+    }
+  </style>
 </head>
-<body class={bodyClass}>
-    <div class="grain"></div>
-    <slot />
+<body class="bg-grid">
+  <!-- Noise Overlay -->
+  <div class="noise-overlay"></div>
+
+  <!-- Page Content -->
+  <slot />
+
+  <!-- Magnetic Button Effect -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.hyper-border').forEach(btn => {
+        btn.addEventListener('mousemove', e => {
+          const rect = btn.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          btn.style.setProperty('--mouse-x', `${x}px`);
+          btn.style.setProperty('--mouse-y', `${y}px`);
+        });
+      });
+    });
+  </script>
 </body>
 </html>

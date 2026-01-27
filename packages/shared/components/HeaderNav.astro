@@ -1,0 +1,70 @@
+---
+/**
+ * HeaderNav — Glass-morphism sticky navigation bar
+ * Used across all pages in The Grocery Index
+ */
+interface Props {
+  brandLabel?: string;
+  brandName?: string;
+  activeLink?: string;
+  navLinks?: { href: string; label: string }[];
+  statusText?: string;
+  statusBadge?: string;
+}
+
+const {
+  brandLabel = 'Authority Network',
+  brandName = 'INDEX.01',
+  activeLink,
+  navLinks = [
+    { href: '/meal-prep/', label: 'MealPrepIdeas.co' },
+    { href: '/high-protein/', label: 'ProteinMeals.co' },
+  ],
+  statusText,
+  statusBadge,
+} = Astro.props;
+---
+
+<header class="glass-nav sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+  <div class="flex items-center space-x-8">
+    <a href="/" class="flex flex-col leading-none group">
+      <span class="text-[10px] uppercase tracking-[0.3em] text-zinc-500 mb-1 font-bold group-hover:text-[#D9FF00] transition-colors">{brandLabel}</span>
+      <div class="flex items-center gap-2">
+        <div class="w-3 h-3 bg-[#D9FF00] rounded-full"></div>
+        <span class="text-xl font-black tracking-tighter italic">{brandName}</span>
+      </div>
+    </a>
+    <nav class="hidden md:flex space-x-6 text-xs font-bold uppercase tracking-widest text-zinc-400">
+      {navLinks.map((link, i) => (
+        <>
+          {i > 0 && <span class="text-zinc-800">/</span>}
+          <a
+            href={link.href}
+            class:list={[
+              'hover:text-white transition-colors',
+              activeLink === link.href && 'text-white border-b-2 border-[#D9FF00] pb-1',
+            ]}
+          >
+            {link.label}
+          </a>
+        </>
+      ))}
+    </nav>
+  </div>
+
+  <div class="flex items-center space-x-4">
+    {statusText && (
+      <div class="hidden md:block">
+        <div class="flex items-center gap-3 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg">
+          <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{statusText}</span>
+          {statusBadge && <span class="text-[10px] font-bold animate-pulse text-[#D9FF00]">{statusBadge}</span>}
+        </div>
+      </div>
+    )}
+    <div class="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center border border-zinc-700 cursor-pointer hover:border-[#D9FF00] transition-all">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+    </div>
+  </div>
+</header>

@@ -1,49 +1,41 @@
 ---
 /**
- * BreadcrumbNav.astro — Breadcrumb navigation with schema.org markup
- * Renders breadcrumbs and outputs JSON-LD BreadcrumbList schema.
+ * BreadcrumbNav — Breadcrumb navigation with schema.org BreadcrumbList
  */
-
-export interface BreadcrumbItem {
-  name: string;
+interface BreadcrumbItem {
+  label: string;
   href?: string;
 }
 
-export interface Props {
+interface Props {
   items: BreadcrumbItem[];
-  siteUrl?: string;
 }
 
-const {
-  items,
-  siteUrl = '',
-} = Astro.props;
+const { items } = Astro.props;
 
-const schemaItems = items.map((item, i) => ({
-  "@type": "ListItem",
-  "position": i + 1,
-  "name": item.name,
-  ...(item.href ? { "item": siteUrl + item.href } : {}),
-}));
-
-const schemaJson = JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": schemaItems,
+const structuredData = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.label,
+    ...(item.href ? { item: item.href } : {}),
+  })),
 });
 ---
 
-<nav class="flex items-center gap-2 mb-8 text-[10px] font-bold uppercase tracking-widest opacity-40 flex-wrap">
-    {items.map((item, i) => (
-        <>
-            {i > 0 && <span>/</span>}
-            {item.href ? (
-                <a href={item.href} class="hover:opacity-100 transition-opacity hover:text-slate-900">{item.name}</a>
-            ) : (
-                <span class="text-slate-900">{item.name}</span>
-            )}
-        </>
-    ))}
+<nav class="px-6 py-6 max-w-7xl mx-auto flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-600">
+  {items.map((item, i) => (
+    <>
+      {i > 0 && <span class="text-zinc-800">/</span>}
+      {item.href ? (
+        <a href={item.href} class="hover:text-white transition-colors">{item.label}</a>
+      ) : (
+        <span class="text-[#D9FF00]">{item.label}</span>
+      )}
+    </>
+  ))}
 </nav>
 
-<script type="application/ld+json" set:html={schemaJson} />
+<script type="application/ld+json" set:html={structuredData} />
