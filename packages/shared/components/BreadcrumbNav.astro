@@ -1,0 +1,49 @@
+---
+/**
+ * BreadcrumbNav.astro — Breadcrumb navigation with schema.org markup
+ * Renders breadcrumbs and outputs JSON-LD BreadcrumbList schema.
+ */
+
+export interface BreadcrumbItem {
+  name: string;
+  href?: string;
+}
+
+export interface Props {
+  items: BreadcrumbItem[];
+  siteUrl?: string;
+}
+
+const {
+  items,
+  siteUrl = '',
+} = Astro.props;
+
+const schemaItems = items.map((item, i) => ({
+  "@type": "ListItem",
+  "position": i + 1,
+  "name": item.name,
+  ...(item.href ? { "item": siteUrl + item.href } : {}),
+}));
+
+const schemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": schemaItems,
+});
+---
+
+<nav class="flex items-center gap-2 mb-8 text-[10px] font-bold uppercase tracking-widest opacity-40 flex-wrap">
+    {items.map((item, i) => (
+        <>
+            {i > 0 && <span>/</span>}
+            {item.href ? (
+                <a href={item.href} class="hover:opacity-100 transition-opacity hover:text-slate-900">{item.name}</a>
+            ) : (
+                <span class="text-slate-900">{item.name}</span>
+            )}
+        </>
+    ))}
+</nav>
+
+<script type="application/ld+json" set:html={schemaJson} />

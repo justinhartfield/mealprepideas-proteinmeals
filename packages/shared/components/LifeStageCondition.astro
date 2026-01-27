@@ -1,0 +1,219 @@
+---
+/**
+ * LifeStageCondition.astro — T8 Life Stage/Condition page template
+ * Converted from: life_stage_condition__t8_.html (Postpartum example)
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export interface Badge {
+  label: string;
+  color: string;
+}
+
+export interface SafeItem {
+  text: string;
+  type: 'safe' | 'avoid';
+}
+
+export interface PlanCard {
+  title: string;
+  description: string;
+  duration: string;
+  metricLabel: string;
+  metricValue: string;
+  progressPercent: number;
+  progressColor: string;
+  imageUrl?: string;
+}
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+export interface Props {
+  title: string;
+  description?: string;
+  canonicalUrl?: string;
+  headline: string;
+  headlineAccent: string;
+  subheadline: string;
+  protocolLabel?: string;
+  badges?: Badge[];
+  clinicalAdvisory?: string;
+  safeDefaults?: SafeItem[];
+  avoidItems?: SafeItem[];
+  plans?: PlanCard[];
+  faqs?: FaqItem[];
+}
+
+const {
+  title,
+  description,
+  canonicalUrl,
+  headline,
+  headlineAccent,
+  subheadline,
+  protocolLabel = 'Hierarchy 03: Life-Stage Protocol',
+  badges = [],
+  clinicalAdvisory,
+  safeDefaults = [],
+  avoidItems = [],
+  plans = [],
+  faqs = [],
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/80 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-lg text-white font-bold text-xl">M</div>
+                <span class="font-extrabold tracking-tighter text-2xl uppercase">Systemic Meals</span>
+            </a>
+            <div class="hidden md:flex gap-8 text-sm font-medium opacity-60">
+                <a href="/meal-prep/">Meal Prep</a>
+                <a href="/high-protein/">High Protein</a>
+            </div>
+            <button class="text-xs font-bold border-2 border-slate-900 px-4 py-2 rounded hover:bg-slate-900 hover:text-white transition-all uppercase tracking-widest">Client Portal</button>
+        </div>
+    </nav>
+
+    <main class="flex-grow" x-data="{ faqOpen: null }">
+        <!-- Hero -->
+        <header class="pt-20 pb-12 px-6">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-12 items-start">
+                <div class="flex-1">
+                    <span class="label-text mb-6">{protocolLabel}</span>
+                    <h1 class="text-6xl md:text-7xl font-black text-slate-900 leading-[0.85] mb-6">
+                        {headline} <br><span class="text-[var(--pantry-sage)]">{headlineAccent}</span>
+                    </h1>
+                    <p class="text-xl opacity-70 max-w-xl leading-relaxed">{subheadline}</p>
+
+                    {badges.length > 0 && (
+                        <div class="mt-10 flex flex-wrap gap-4">
+                            {badges.map((badge) => (
+                                <div class="bg-white px-5 py-3 rounded-2xl pantry-card border-none flex items-center gap-3">
+                                    <span class={`w-3 h-3 rounded-full bg-${badge.color}-400`}></span>
+                                    <span class="text-sm font-bold uppercase tracking-tight">{badge.label}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {clinicalAdvisory && (
+                    <aside class="w-full md:w-80 pantry-card rounded-3xl p-8" style="background: linear-gradient(135deg, #ffffff 0%, #D1E1E4 100%); border-left: 4px solid #5A8A92;">
+                        <div class="flex items-center gap-2 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-700" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 4.946-3.078 9.17-7.397 10.856a.75.75 0 01-.506 0C5.744 16.17 2.666 11.946 2.666 7c0-.68.056-1.35.166-2.001z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-700">Clinical Advisory</span>
+                        </div>
+                        <p class="text-xs font-medium text-slate-800 leading-relaxed">{clinicalAdvisory}</p>
+                    </aside>
+                )}
+            </div>
+        </header>
+
+        <!-- Safe Defaults vs. Avoid -->
+        {(safeDefaults.length > 0 || avoidItems.length > 0) && (
+            <section class="max-w-7xl mx-auto px-6 py-12">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="pantry-card rounded-3xl p-10 border-t-4 border-[var(--pantry-sage)]">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-2xl font-black tracking-tight">Safe Defaults</h3>
+                            <span class="bg-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1 rounded-full uppercase">Optimize These</span>
+                        </div>
+                        <ul class="space-y-4">
+                            {safeDefaults.map((item) => (
+                                <li class="font-medium pl-6 relative before:content-['●'] before:absolute before:left-0 before:text-[var(--pantry-sage)]">{item.text}</li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div class="pantry-card rounded-3xl p-10 border-t-4 border-slate-300 bg-slate-50/50">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-2xl font-black tracking-tight opacity-60">Limit / Avoid</h3>
+                            <span class="bg-slate-200 text-slate-600 text-[10px] font-black px-3 py-1 rounded-full uppercase">Reduce Load</span>
+                        </div>
+                        <ul class="space-y-4">
+                            {avoidItems.map((item) => (
+                                <li class="font-medium pl-6 relative opacity-70 before:content-['✕'] before:absolute before:left-0 before:text-red-500 before:text-[0.8rem]">{item.text}</li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        )}
+
+        <!-- Featured Plans -->
+        {plans.length > 0 && (
+            <section class="bg-white border-y border-black/5 py-24 px-6">
+                <div class="max-w-7xl mx-auto">
+                    <span class="label-text mb-4">Systemic Implementation</span>
+                    <h2 class="text-4xl md:text-5xl font-black tracking-tighter mb-16">The Recovery Plans.</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        {plans.map((plan) => (
+                            <div class="group pantry-card rounded-3xl overflow-hidden flex flex-col">
+                                <div class="h-48 bg-slate-900 relative overflow-hidden">
+                                    {plan.imageUrl && (
+                                        <div class="absolute inset-0 bg-cover bg-center opacity-60" style={`background-image: url('${plan.imageUrl}')`}></div>
+                                    )}
+                                    <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-[10px] font-black uppercase">{plan.duration}</div>
+                                </div>
+                                <div class="p-8 flex-grow flex flex-col justify-between">
+                                    <div>
+                                        <h4 class="text-xl font-black mb-3">{plan.title}</h4>
+                                        <p class="text-sm opacity-60 leading-relaxed mb-6">{plan.description}</p>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                            <span>{plan.metricLabel}</span>
+                                            <span class="text-slate-900">{plan.metricValue}</span>
+                                        </div>
+                                        <div class="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
+                                            <div class={`h-full bg-${plan.progressColor}`} style={`width: ${plan.progressPercent}%`}></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        )}
+
+        <!-- FAQ -->
+        {faqs.length > 0 && (
+            <section class="max-w-4xl mx-auto py-24 px-6">
+                <div class="text-center mb-16">
+                    <span class="label-text mb-4">Questions & Logic</span>
+                    <h3 class="text-3xl font-black tracking-tight">Recovery FAQ.</h3>
+                </div>
+                <div class="space-y-4">
+                    {faqs.map((faq, i) => (
+                        <div class="pantry-card rounded-2xl overflow-hidden">
+                            <button @click={`faqOpen = (faqOpen === ${i}) ? null : ${i}`} class="w-full flex items-center justify-between p-6 text-left font-bold text-slate-900">
+                                <span>{faq.question}</span>
+                                <svg class="w-5 h-5 transition-transform" x-bind:class={`faqOpen === ${i} ? 'rotate-180' : ''`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show={`faqOpen === ${i}`} x-cloak class="px-6 pb-6 text-sm opacity-60 leading-relaxed">{faq.answer}</div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        )}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-16 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-white text-slate-900 flex items-center justify-center rounded-md font-black">M</div>
+                <span class="font-black text-xl tracking-tighter uppercase">The System Network</span>
+            </div>
+            <p class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">© 2024 Systemic Meals Network. Data-backed recovery protocols.</p>
+        </div>
+    </footer>
+</BaseLayout>

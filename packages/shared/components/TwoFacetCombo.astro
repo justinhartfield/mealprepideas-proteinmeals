@@ -1,0 +1,219 @@
+---
+/**
+ * TwoFacetCombo.astro — T3 Two-Facet Combo page template
+ * Converted from: persona___method_combo__t3_.html, diet___goal_combo__t3_.html,
+ *                 store___constraint_combo__t3_.html, chain___goal_combo__t3_.html
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { FacetKey, HubId } from '../data/taxonomy';
+
+export interface RecipeItem {
+  id: number;
+  title: string;
+  protein: string;
+  cal: string;
+  method?: string;
+  tag?: string;
+  tags?: string[];
+  type?: string;
+  time?: string;
+  servings?: number;
+}
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+export interface SiblingLink {
+  href: string;
+  label: string;
+  sublabel?: string;
+}
+
+export interface Props {
+  hub: HubId;
+  facetA: { type: FacetKey; value: string };
+  facetB: { type: FacetKey; value: string };
+  title: string;
+  description?: string;
+  canonicalUrl?: string;
+  headline: string;
+  headlineAccent: string;
+  subheadline: string;
+  recipes?: RecipeItem[];
+  faqs?: FaqItem[];
+  siblings?: SiblingLink[];
+  storageInfo?: { label: string; value: string; color: string }[];
+}
+
+const {
+  hub,
+  facetA,
+  facetB,
+  title,
+  description,
+  canonicalUrl,
+  headline,
+  headlineAccent,
+  subheadline,
+  recipes = [],
+  faqs = [],
+  siblings = [],
+  storageInfo = [],
+} = Astro.props;
+
+const isMealPrep = hub === 'meal-prep';
+const accentColor = isMealPrep ? 'emerald' : 'orange';
+const hubPath = isMealPrep ? '/meal-prep' : '/high-protein';
+
+const facetALabel = facetA.value.replace(/-/g, ' ');
+const facetBLabel = facetB.value.replace(/-/g, ' ');
+---
+
+<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/90 backdrop-blur-lg px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="/" class="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-lg text-white font-bold text-xl hover:scale-105 transition-transform">M</a>
+                <div class="flex flex-col">
+                    <span class="font-black tracking-tighter text-xl uppercase leading-none">Systemic Meals</span>
+                    <span class="text-[10px] font-bold opacity-40 uppercase tracking-widest">Two-Facet Protocol T3</span>
+                </div>
+            </div>
+            <div class="hidden md:flex gap-8 text-[11px] font-bold uppercase tracking-widest opacity-60">
+                <a href="/meal-prep/" class="hover:text-emerald-600 transition-colors">Meal Prep Hub</a>
+                <a href="/high-protein/" class="hover:text-orange-600 transition-colors">Protein Hub</a>
+            </div>
+            <button class="bg-slate-900 text-white text-[10px] font-bold px-5 py-2.5 rounded-full hover:bg-slate-800 transition-all">SYSTEM LOGIN</button>
+        </div>
+    </nav>
+
+    <main class="flex-grow" x-data="{ activeFilter: 'all' }">
+        <!-- T3 Hero -->
+        <header class="relative pt-20 pb-12 px-6 overflow-hidden">
+            <div class="max-w-7xl mx-auto relative z-10">
+                <nav class="flex items-center gap-2 mb-8 text-[10px] font-bold uppercase tracking-widest opacity-40">
+                    <a href="/">Home</a> <span>/</span>
+                    <a href={hubPath + '/'}>{isMealPrep ? 'Meal Prep' : 'High Protein'}</a> <span>/</span>
+                    <a href={`${hubPath}/${facetA.type}/${facetA.value}/`} class="capitalize">{facetALabel}</a> <span>/</span>
+                    <span class="text-slate-900 capitalize">{facetBLabel}</span>
+                </nav>
+
+                <div class="grid lg:grid-cols-2 gap-12 items-end">
+                    <div>
+                        <span class="label-text mb-6">Combo Matrix: {facetA.type} + {facetB.type}</span>
+                        <h1 class="text-6xl md:text-7xl font-black tracking-tighter leading-[0.85] mb-6">
+                            <span class="capitalize">{headline}</span> <br>
+                            <span class={`text-${accentColor}-700`}>{headlineAccent}</span>
+                        </h1>
+                        <p class="text-xl opacity-60 max-w-xl leading-relaxed">{subheadline}</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3 lg:justify-end">
+                        <div class="bg-white p-6 rounded-2xl border border-black/5 shadow-sm min-w-[200px]">
+                            <span class="block text-[10px] font-black opacity-30 uppercase mb-2">Facet A</span>
+                            <span class={`text-lg font-bold text-${accentColor}-800 capitalize`}>{facetALabel}</span>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-black/5 shadow-sm min-w-[200px]">
+                            <span class="block text-[10px] font-black opacity-30 uppercase mb-2">Facet B</span>
+                            <span class="text-lg font-bold text-slate-800 capitalize">{facetBLabel}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Top 10 Ranking -->
+        <section class="bg-slate-900 py-24 px-6 text-white overflow-hidden relative">
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+                    <div>
+                        <span class={`label-text !bg-white/10 !text-white !border-${accentColor}-500 mb-4`}>The Ranking Machine</span>
+                        <h2 class="text-4xl md:text-5xl font-black tracking-tight">Top 10 Protocols</h2>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {recipes.map((recipe, index) => (
+                        <div class="pantry-card !bg-white/5 border-white/10 rounded-3xl p-6 group hover:!bg-white/10 transition-all cursor-pointer">
+                            <div class="flex justify-between items-start mb-6">
+                                <span class={`text-4xl font-black text-white/10 group-hover:text-${accentColor}-500/50 transition-colors`}>{index + 1}</span>
+                                {recipe.tag && <span class="text-[0.75rem] font-bold uppercase px-3 py-1 rounded-full bg-white/10 text-white">{recipe.tag}</span>}
+                            </div>
+                            <h4 class="text-2xl font-bold mb-4">{recipe.title}</h4>
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div class="bg-white/5 rounded-xl p-3">
+                                    <div class="text-[10px] font-black uppercase opacity-40">Protein</div>
+                                    <div class={`text-lg font-black text-${accentColor}-400`}>{recipe.protein}</div>
+                                </div>
+                                <div class="bg-white/5 rounded-xl p-3">
+                                    <div class="text-[10px] font-black uppercase opacity-40">Calories</div>
+                                    <div class="text-lg font-black">{recipe.cal}</div>
+                                </div>
+                            </div>
+                            {recipe.method && (
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold opacity-40 uppercase tracking-widest">Method: {recipe.method}</span>
+                                    <div class={`w-8 h-8 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-${accentColor}-500 group-hover:border-${accentColor}-500 transition-all`}>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <div class={`absolute -bottom-32 -right-32 w-96 h-96 bg-${accentColor}-500/10 rounded-full blur-[120px]`}></div>
+        </section>
+
+        <!-- Sibling Protocols -->
+        {siblings.length > 0 && (
+            <section class="max-w-7xl mx-auto px-6 py-24">
+                <div class="flex items-center justify-between mb-12">
+                    <h3 class="text-3xl font-black">Sibling Protocols</h3>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6">
+                    {siblings.map((sibling) => (
+                        <a href={sibling.href} class="pantry-card p-6 rounded-2xl group">
+                            <span class="label-text mb-4">{sibling.label}</span>
+                            {sibling.sublabel && <p class="text-sm opacity-60 mb-4">{sibling.sublabel}</p>}
+                            <span class={`text-xs font-black text-${accentColor}-700 group-hover:translate-x-1 transition-transform inline-block`}>Explore →</span>
+                        </a>
+                    ))}
+                </div>
+            </section>
+        )}
+
+        <!-- FAQ Block -->
+        {faqs.length > 0 && (
+            <section class="bg-white py-24 px-6 border-y border-black/5">
+                <div class="max-w-3xl mx-auto" x-data="{ active: 0 }">
+                    <h2 class="text-4xl font-black mb-12 text-center">Protocol Intelligence (FAQ)</h2>
+                    <div class="space-y-6">
+                        {faqs.map((faq, i) => (
+                            <div class="border-b border-black/5 pb-6">
+                                <button @click={`active = active === ${i} ? -1 : ${i}`} class={`flex justify-between items-center w-full text-left font-bold text-lg hover:text-${accentColor}-700 transition-colors`}>
+                                    {faq.question}
+                                    <span x-text={`active === ${i} ? '−' : '+'`}></span>
+                                </button>
+                                <div x-show={`active === ${i}`} class="mt-4 text-slate-500 leading-relaxed text-sm">{faq.answer}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        )}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-16 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-white text-slate-900 flex items-center justify-center rounded-md font-black">M</div>
+                <span class="font-black text-xl tracking-tighter uppercase">The System Network</span>
+            </div>
+            <p class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">© 2024 Systemic Meals Network.</p>
+        </div>
+    </footer>
+</BaseLayout>

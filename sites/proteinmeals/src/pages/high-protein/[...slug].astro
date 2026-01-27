@@ -1,0 +1,65 @@
+---
+/**
+ * proteinmeals.co/high-protein/[...slug] — Two-Facet Combo Catch-all (T3)
+ * Handles routes like /high-protein/diet/vegan/goal/muscle-gain/
+ */
+import TwoFacetCombo from '@mealprepideas/shared/components/TwoFacetCombo.astro';
+import { generateTwoFacetPaths, slugToDisplay } from '@mealprepideas/shared/utils/urls';
+import type { FacetKey } from '@mealprepideas/shared/data/taxonomy';
+
+export function getStaticPaths() {
+  const paths = generateTwoFacetPaths('high-protein');
+  return paths.map(({ slug, facetA, facetB }) => ({
+    params: { slug: slug.join('/') },
+    props: { facetA, facetB },
+  }));
+}
+
+interface Props {
+  facetA: { type: FacetKey; value: string };
+  facetB: { type: FacetKey; value: string };
+}
+
+const { facetA, facetB } = Astro.props;
+const displayA = slugToDisplay(facetA.value);
+const displayB = slugToDisplay(facetB.value);
+
+// Placeholder recipes for T3 pages
+const placeholderRecipes = Array.from({ length: 6 }, (_, i) => ({
+  id: i + 1,
+  title: `${displayA} ${displayB} Protocol ${i + 1}`,
+  protein: `${30 + i * 3}g`,
+  cal: `${440 + i * 40}`,
+  method: ['no-cook', 'one-pan', 'air-fryer', 'crockpot', 'instant-pot', 'sheet-pan'][i],
+  tag: ['High Fiber', 'Gut Health', 'Budget', 'Freezer-Friendly', 'Spicy', 'Slow Cook'][i],
+}));
+
+const placeholderFaqs = [
+  {
+    question: `What makes ${displayA} + ${displayB} a valuable combination?`,
+    answer: `The intersection of ${displayA.toLowerCase()} and ${displayB.toLowerCase()} creates a unique protocol that optimizes for both macro targets simultaneously.`,
+  },
+  {
+    question: `How do I hit my protein targets with this combo?`,
+    answer: `Our protocols ensure a minimum of 30g protein per serving. Each recipe is optimized for the specific constraints of both ${displayA.toLowerCase()} and ${displayB.toLowerCase()}.`,
+  },
+];
+---
+
+<TwoFacetCombo
+  hub="high-protein"
+  facetA={facetA}
+  facetB={facetB}
+  title={`${displayA} ${displayB} Protocols | ProteinMeals.co`}
+  description={`${displayA} meets ${displayB}. High-protein protocols at the intersection of these two facets.`}
+  canonicalUrl={`https://proteinmeals.co/high-protein/${facetA.type}/${facetA.value}/${facetB.type}/${facetB.value}/`}
+  headline={displayA}
+  headlineAccent={`${displayB} Protocols`}
+  subheadline={`A systematic approach to high-protein ${displayA.toLowerCase()} nutrition with ${displayB.toLowerCase()} as the primary constraint.`}
+  recipes={placeholderRecipes}
+  faqs={placeholderFaqs}
+  siblings={[
+    { href: `/high-protein/${facetA.type}/${facetA.value}/`, label: `${displayA} Hub`, sublabel: `View all ${displayA} protocols` },
+    { href: `/high-protein/${facetB.type}/${facetB.value}/`, label: `${displayB} Hub`, sublabel: `View all ${displayB} protocols` },
+  ]}
+/>

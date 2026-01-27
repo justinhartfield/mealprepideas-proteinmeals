@@ -1,0 +1,47 @@
+---
+/**
+ * ExploreByBlock.astro — "Explore by Meal/Method/Diet/Goal" internal link blocks
+ * Used in footer sections and cross-system navigation areas.
+ */
+import { facets, type FacetKey } from '../data/taxonomy';
+
+export interface Props {
+  hubPath: string;
+  facetKeys?: FacetKey[];
+  accentColor?: string;
+  maxItems?: number;
+  variant?: 'dark' | 'light';
+}
+
+const {
+  hubPath,
+  facetKeys = ['method', 'persona', 'meal', 'constraint'],
+  accentColor = 'emerald',
+  maxItems = 7,
+  variant = 'dark',
+} = Astro.props;
+
+const isDark = variant === 'dark';
+---
+
+<div class={`grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 ${isDark ? '' : ''}`}>
+    {facetKeys.map((key) => (
+        <div>
+            <h6 class={`text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? `text-${accentColor}-500` : 'opacity-30'} mb-6`}>
+                By {facets[key].label}
+            </h6>
+            <ul class={`space-y-3 text-sm ${isDark ? 'opacity-60' : 'font-bold'}`}>
+                {facets[key].values.slice(0, maxItems).map((v) => (
+                    <li>
+                        <a
+                            href={`${hubPath}/${key}/${v}/`}
+                            class={`sidebar-link capitalize ${isDark ? '' : `hover:text-${accentColor}-600 transition-colors`}`}
+                        >
+                            {String(v).replace(/-/g, ' ')}
+                        </a>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    ))}
+</div>

@@ -1,0 +1,240 @@
+---
+/**
+ * FiveDayPlan.astro — T5 Five-Day Plan page template
+ * Converted from: 5_day_plan_page__t5_.html
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export interface TimelineStep {
+  timeRange: string;
+  title: string;
+  description: string;
+  tags?: string[];
+}
+
+export interface ProteinOption {
+  key: string;
+  name: string;
+  protein: number;
+  cal: number;
+  label: string;
+}
+
+export interface ShoppingItem {
+  name: string;
+  group: string;
+  scalable?: boolean;
+  multiplier?: number;
+  unit?: string;
+}
+
+export interface Props {
+  title: string;
+  description?: string;
+  canonicalUrl?: string;
+  planName: string;
+  planAccent: string;
+  planSubline: string;
+  totalPrep: string;
+  difficulty: string;
+  costPerMeal: string;
+  timeline?: TimelineStep[];
+  proteinOptions?: ProteinOption[];
+  shoppingList?: ShoppingItem[];
+  tags?: string[];
+}
+
+const {
+  title,
+  description,
+  canonicalUrl,
+  planName,
+  planAccent,
+  planSubline,
+  totalPrep = '90m',
+  difficulty = 'Systematic',
+  costPerMeal = '~$4.20',
+  timeline = [],
+  proteinOptions = [],
+  shoppingList = [],
+  tags = ['T5: System Plan', 'High-Protein', 'Work Lunch'],
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/80 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="/" class="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-lg text-white font-bold text-xl">M</a>
+                <span class="font-extrabold tracking-tighter text-2xl uppercase">Systemic Meals</span>
+            </div>
+            <div class="hidden md:flex gap-8 text-sm font-medium opacity-60">
+                <a href="/meal-prep/" class="hover:opacity-100 transition-opacity">Logistics Hub</a>
+                <a href="/high-protein/" class="hover:opacity-100 transition-opacity">Macro Hub</a>
+            </div>
+            <button class="bg-slate-900 text-white text-[10px] font-black tracking-widest px-4 py-2 rounded-full hover:bg-orange-600 transition-all">SAVE PLAN</button>
+        </div>
+    </nav>
+
+    <main class="flex-grow" x-data={`{
+        proteinSource: '${proteinOptions[0]?.key || 'chicken'}',
+        servings: 1,
+        isMetric: false
+    }`}>
+        <!-- Plan Hero -->
+        <header class="bg-white border-b border-black/5 pt-12 pb-16 px-6">
+            <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-12 items-end">
+                <div class="md:col-span-2">
+                    <nav class="flex gap-2 mb-6">
+                        {tags.map((tag) => (
+                            <span class="label-text">{tag}</span>
+                        ))}
+                    </nav>
+                    <h1 class="text-5xl md:text-7xl font-black leading-[0.85] tracking-tight mb-6">
+                        {planName} <br><span class="text-[var(--pantry-sage)]">{planAccent}</span>
+                    </h1>
+                    <p class="text-xl opacity-60 max-w-2xl">{planSubline}</p>
+                </div>
+                <div class="pantry-card rounded-2xl p-6 bg-slate-900 text-white">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <span class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Total Prep</span>
+                            <span class="text-2xl font-black">{totalPrep}</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Daily Protein</span>
+                            <span class="text-2xl font-black text-orange-400">35g+</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Difficulty</span>
+                            <span class="text-sm font-bold">{difficulty}</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Cost/Meal</span>
+                            <span class="text-sm font-bold">{costPerMeal}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="max-w-7xl mx-auto py-16 px-6 grid lg:grid-cols-12 gap-12">
+            <div class="lg:col-span-8 space-y-16">
+                <!-- Timeline -->
+                {timeline.length > 0 && (
+                    <section>
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="w-12 h-12 rounded-full border-2 border-slate-900 flex items-center justify-center font-black text-xl">01</div>
+                            <h3 class="text-3xl font-black tracking-tight uppercase italic">The Sunday Prep Flow</h3>
+                        </div>
+                        <div class="relative pl-12 space-y-12">
+                            <div class="absolute left-[19px] top-0 bottom-0 w-[2px]" style="background: repeating-linear-gradient(to bottom, transparent, transparent 4px, #D1D5DB 4px, #D1D5DB 8px);"></div>
+                            {timeline.map((step) => (
+                                <div class="relative">
+                                    <div class="absolute -left-12 w-6 h-6 rounded-full bg-white border-4 border-slate-900 z-10"></div>
+                                    <div class="pantry-card rounded-2xl p-6">
+                                        <span class="label-text mb-2">{step.timeRange}</span>
+                                        <h4 class="font-bold text-xl mb-2">{step.title}</h4>
+                                        <p class="text-sm opacity-60 mb-4">{step.description}</p>
+                                        {step.tags && (
+                                            <div class="flex gap-2">
+                                                {step.tags.map((t) => (
+                                                    <span class="text-[10px] font-bold px-2 py-1 bg-slate-100 rounded">{t}</span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                <!-- Weekly Grid -->
+                <section>
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-12 rounded-full border-2 border-slate-900 flex items-center justify-center font-black text-xl">02</div>
+                        <h3 class="text-3xl font-black tracking-tight uppercase italic">The Weekly Grid</h3>
+                    </div>
+                    <div class="grid grid-cols-5 gap-2">
+                        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((day) => (
+                            <div class="pantry-card rounded-xl p-4 text-center">
+                                <span class="block text-[10px] font-black text-slate-400 mb-2 uppercase">{day}</span>
+                                <span class="text-xs font-bold leading-tight block">Office Meal</span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                <!-- Protein Swap Engine -->
+                {proteinOptions.length > 0 && (
+                    <section class="bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white">
+                        <span class="label-text !bg-white/10 !text-white !border-orange-400 mb-4">Interactive Swap Engine</span>
+                        <h3 class="text-4xl font-black tracking-tight uppercase italic mb-4">Customize Your Macros</h3>
+                        <p class="opacity-60 text-lg mb-10">Change your primary protein source. The system automatically adjusts the shopping list and macro-count.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {proteinOptions.map((opt) => (
+                                <button @click={`proteinSource = '${opt.key}'`} x-bind:class={`proteinSource === '${opt.key}' ? 'border-orange-400 bg-[rgba(230,126,34,0.05)]' : 'border-white/10'`} class="flex items-center gap-4 p-4 border-2 rounded-2xl transition-all text-left group">
+                                    <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center font-black group-hover:bg-white group-hover:text-slate-900 transition-colors">{opt.key[0].toUpperCase()}</div>
+                                    <div>
+                                        <span class="block font-black uppercase text-sm">{opt.name}</span>
+                                        <span class="text-[10px] opacity-40">{opt.label}</span>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+                )}
+            </div>
+
+            <!-- Shopping List Sidebar -->
+            <div class="lg:col-span-4">
+                <div class="sticky top-[100px] space-y-8">
+                    <div class="pantry-card rounded-3xl p-8 bg-white">
+                        <h4 class="font-black text-xl mb-6 uppercase tracking-tighter">System Configuration</h4>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-400 block mb-2">Scale (People)</label>
+                                <div class="flex items-center gap-4">
+                                    <button @click="servings = Math.max(1, servings - 1)" class="w-10 h-10 border-2 border-slate-900 rounded-full font-black text-xl flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all">-</button>
+                                    <span class="text-3xl font-black" x-text="servings"></span>
+                                    <button @click="servings = servings + 1" class="w-10 h-10 border-2 border-slate-900 rounded-full font-black text-xl flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pantry-card rounded-3xl p-8 bg-[#F0EFED] border-none shadow-none">
+                        <h4 class="font-black text-xl mb-6 uppercase tracking-tighter flex justify-between items-center">
+                            Shopping List
+                            <span class="text-[10px] font-bold opacity-40">5-DAY PACK</span>
+                        </h4>
+                        <div class="space-y-4">
+                            {shoppingList.map((item) => (
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" class="w-5 h-5 rounded border-2 border-slate-900 accent-slate-900" />
+                                    <label class="text-sm font-medium">{item.name}</label>
+                                </div>
+                            ))}
+                        </div>
+                        <button class="w-full mt-10 bg-slate-900 text-white font-black uppercase tracking-widest py-4 rounded-xl hover:bg-[var(--pantry-sage)] transition-all text-xs">
+                            Export to Reminders
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-16 px-6 mt-12">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-white text-slate-900 flex items-center justify-center rounded-md font-black">M</div>
+                <span class="font-black text-xl tracking-tighter uppercase">The System Network</span>
+            </div>
+            <p class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">© 2024 Systemic Meals Network.</p>
+        </div>
+    </footer>
+</BaseLayout>

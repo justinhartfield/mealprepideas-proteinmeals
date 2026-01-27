@@ -1,0 +1,261 @@
+---
+/**
+ * RecipePage.astro — T4 Recipe Page template
+ * Converted from: recipe_page__t4_.html
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export interface NutritionInfo {
+  calories: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  peRatio: number;
+}
+
+export interface Ingredient {
+  name: string;
+  amount: string;
+  group: string;
+}
+
+export interface Step {
+  title: string;
+  description: string;
+}
+
+export interface StorageTip {
+  title: string;
+  description: string;
+  color: string;
+  icon: string;
+}
+
+export interface RelatedPlan {
+  href: string;
+  protocol: string;
+  title: string;
+  description: string;
+  color: string;
+}
+
+export interface Props {
+  title: string;
+  description?: string;
+  canonicalUrl?: string;
+  recipeName: string;
+  recipeAccent: string;
+  recipeSubline: string;
+  nutrition: NutritionInfo;
+  prepTime: string;
+  cookTime: string;
+  shelfLife: string;
+  freezable: boolean;
+  ingredients?: Ingredient[];
+  steps?: Step[];
+  storageTips?: StorageTip[];
+  relatedPlans?: RelatedPlan[];
+  imageUrl?: string;
+  tags?: string[];
+}
+
+const {
+  title,
+  description,
+  canonicalUrl,
+  recipeName,
+  recipeAccent,
+  recipeSubline,
+  nutrition,
+  prepTime,
+  cookTime,
+  shelfLife,
+  freezable,
+  ingredients = [],
+  steps = [],
+  storageTips = [],
+  relatedPlans = [],
+  imageUrl = 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?q=80&w=2000&auto=format&fit=crop',
+  tags = ['Batch-Cook Ready', 'Reheat Stable'],
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 w-full border-b border-black/5 bg-white/80 backdrop-blur-md px-6 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="/" class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-slate-900 flex items-center justify-center rounded text-white font-bold text-lg">M</div>
+                    <span class="font-black tracking-tighter text-xl uppercase hidden sm:block">Systemic Meals</span>
+                </a>
+                <div class="h-6 w-[1px] bg-black/10 mx-2"></div>
+                <div class="flex gap-2">
+                    <span class="label-text !border-emerald-500">Meal-Prep</span>
+                    <span class="label-text !border-orange-500 hidden sm:inline-block">High-Protein</span>
+                </div>
+            </div>
+            <button class="text-[10px] font-black tracking-widest bg-slate-100 px-3 py-1.5 rounded hover:bg-slate-200 transition-colors">SAVE TO SYSTEM</button>
+        </div>
+    </nav>
+
+    <main class="flex-grow" x-data={`{ servings: 5, activeTab: 'ingredients' }`}>
+        <!-- Recipe Header -->
+        <section class="max-w-7xl mx-auto px-6 pt-12 pb-16 grid lg:grid-cols-12 gap-12 items-start">
+            <div class="lg:col-span-7 space-y-8">
+                <nav class="flex items-center gap-2 text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+                    <a href="/high-protein/">High-Protein</a>
+                    <span>/</span>
+                    <span class="text-slate-900">{recipeName}</span>
+                </nav>
+
+                <div class="space-y-4">
+                    <h1 class="text-5xl md:text-6xl font-black leading-[0.9] tracking-tighter">
+                        {recipeName.split(' ').slice(0, -1).join(' ')} <br><span class="text-emerald-600">{recipeAccent}</span>
+                    </h1>
+                    <p class="text-xl opacity-60 font-medium max-w-2xl">{recipeSubline}</p>
+                </div>
+
+                <div class="flex flex-wrap gap-4">
+                    <div class="bg-white border-[1.5px] border-slate-900 p-2 px-4 rounded-lg shadow-[3px_3px_0px] shadow-slate-900 flex flex-col items-center min-w-[100px]">
+                        <span class="text-[10px] font-black text-slate-400 uppercase">Calories</span>
+                        <span class="text-2xl font-black" x-text={`Math.round(${nutrition.calories} * (servings/5))`}></span>
+                    </div>
+                    <div class="bg-orange-50 border-[1.5px] border-orange-500 p-2 px-4 rounded-lg shadow-[3px_3px_0px] shadow-orange-500 flex flex-col items-center min-w-[100px]">
+                        <span class="text-[10px] font-black text-orange-400 uppercase">Protein</span>
+                        <span class="text-2xl font-black text-orange-600" x-text={`Math.round(${nutrition.protein} * (servings/5)) + 'g'`}></span>
+                    </div>
+                    <div class="bg-white border-[1.5px] border-slate-900 p-2 px-4 rounded-lg shadow-[3px_3px_0px] shadow-slate-900 flex flex-col items-center min-w-[100px]">
+                        <span class="text-[10px] font-black text-slate-400 uppercase">P:E Ratio</span>
+                        <span class="text-2xl font-black">{nutrition.peRatio}</span>
+                    </div>
+                </div>
+
+                <div class="pantry-card rounded-2xl overflow-hidden relative">
+                    <img src={imageUrl} alt={recipeName} class="w-full aspect-video object-cover" />
+                    <div class="absolute bottom-4 right-4 flex gap-2">
+                        {tags.map((tag) => (
+                            <span class="px-3 py-1 bg-white/90 backdrop-blur text-[10px] font-black rounded shadow-sm uppercase">{tag}</span>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
+                <div class="pantry-card rounded-3xl p-8 bg-slate-900 text-white">
+                    <div class="flex justify-between items-center mb-8">
+                        <span class="label-text !bg-slate-800 !text-white !border-emerald-400">System Parameters</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-black opacity-40">SERVINGS</span>
+                            <div class="flex items-center bg-white/10 rounded-lg p-1">
+                                <button @click="servings = Math.max(1, servings - 1)" class="w-6 h-6 hover:bg-white/20 rounded">-</button>
+                                <span class="px-3 font-bold text-sm" x-text="servings"></span>
+                                <button @click="servings++" class="w-6 h-6 hover:bg-white/20 rounded">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                            <span class="block text-[10px] font-black opacity-40 mb-1">PREP TIME</span>
+                            <span class="font-bold">{prepTime}</span>
+                        </div>
+                        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                            <span class="block text-[10px] font-black opacity-40 mb-1">COOK TIME</span>
+                            <span class="font-bold">{cookTime}</span>
+                        </div>
+                        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                            <span class="block text-[10px] font-black opacity-40 mb-1">SHELF LIFE</span>
+                            <span class="font-bold">{shelfLife}</span>
+                        </div>
+                        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                            <span class="block text-[10px] font-black opacity-40 mb-1">FREEZABLE?</span>
+                            <span class={`font-bold ${freezable ? 'text-emerald-400' : 'text-red-400'}`}>{freezable ? 'YES' : 'NO'}</span>
+                        </div>
+                    </div>
+                    <a href="#" class="block w-full text-center py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-black rounded-xl transition-all shadow-[0_5px_0_#065f46] mt-6">
+                        ADD TO WEEKLY PLAN
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recipe Content Tabs -->
+        <section class="max-w-4xl mx-auto px-6 pb-24">
+            <div class="flex border-b border-black/10 mb-12 overflow-x-auto">
+                {['ingredients', 'steps', 'storage'].map((tab) => (
+                    <button @click={`activeTab = '${tab}'`} x-bind:class={`activeTab === '${tab}' ? 'border-b-4 border-slate-900' : 'opacity-40'`} class="px-8 py-4 font-black uppercase text-sm tracking-widest transition-all capitalize">{tab === 'storage' ? 'System Logic' : tab}</button>
+                ))}
+            </div>
+
+            <!-- Ingredients -->
+            <div x-show="activeTab === 'ingredients'">
+                <div class="space-y-6">
+                    {ingredients.map((ing) => (
+                        <div class="flex items-center gap-4">
+                            <input type="checkbox" class="w-5 h-5 rounded border-2 border-slate-900 accent-slate-900" />
+                            <label class="text-lg font-medium">{ing.name}</label>
+                            <span class="ml-auto font-black text-slate-400">{ing.amount}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <!-- Steps -->
+            <div x-show="activeTab === 'steps'" x-cloak class="space-y-12">
+                {steps.map((step, i) => (
+                    <div class="relative pl-12">
+                        <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-sm">{i + 1}</div>
+                        <h4 class="text-xl font-black mb-2 uppercase tracking-tighter">{step.title}</h4>
+                        <p class="opacity-60 text-lg">{step.description}</p>
+                    </div>
+                ))}
+            </div>
+
+            <!-- Storage -->
+            <div x-show="activeTab === 'storage'" x-cloak>
+                <div class="grid md:grid-cols-3 gap-6">
+                    {storageTips.map((tip) => (
+                        <div class={`pantry-card p-6 rounded-2xl border-b-4 border-${tip.color}-400`}>
+                            <h5 class="font-black text-sm uppercase mb-2">{tip.title}</h5>
+                            <p class="text-xs opacity-60 leading-relaxed">{tip.description}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Plans -->
+        {relatedPlans.length > 0 && (
+            <section class="bg-slate-900 py-24 px-6 text-white">
+                <div class="max-w-7xl mx-auto">
+                    <span class="label-text !bg-slate-800 !text-white !border-emerald-500 mb-4">System Integration</span>
+                    <h3 class="text-4xl font-black tracking-tight mb-12">Deployment Plans.</h3>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        {relatedPlans.map((plan) => (
+                            <a href={plan.href} class="group pantry-card !bg-white/5 !border-white/10 p-8 rounded-3xl hover:!bg-white/10 transition-all flex justify-between items-center">
+                                <div class="space-y-2">
+                                    <span class={`text-${plan.color}-400 font-black text-xs uppercase tracking-widest`}>{plan.protocol}</span>
+                                    <h4 class="text-2xl font-black">{plan.title}</h4>
+                                    <p class="text-slate-400 text-sm">{plan.description}</p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-slate-900 transition-all">→</div>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        )}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-black/5 py-12 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 bg-slate-900 flex items-center justify-center rounded text-white font-bold">M</div>
+                <span class="font-black tracking-tighter uppercase">The Systemic Network</span>
+            </div>
+            <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">© 2024 SYSTEMIC MEALS LLC</p>
+        </div>
+    </footer>
+</BaseLayout>

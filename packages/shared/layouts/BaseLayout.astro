@@ -1,0 +1,170 @@
+---
+/**
+ * BaseLayout.astro — Shared base layout for all pages across both sites.
+ * Extracts the common head/style/grain overlay from all 14 HTML templates.
+ */
+
+export interface Props {
+  title: string;
+  description?: string;
+  canonicalUrl?: string;
+  bodyClass?: string;
+  bodyAttrs?: string;
+}
+
+const {
+  title,
+  description = 'Systematic meal planning taxonomy. High-protein, high-efficiency, zero-fluff.',
+  canonicalUrl,
+  bodyClass = '',
+  bodyAttrs = '',
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
+    <style is:global>
+        :root {
+            --pantry-cream: #F9F7F2;
+            --pantry-slate: #2D3436;
+            --pantry-sage: #7E9680;
+            --pantry-accent: #E67E22;
+            --label-tape: #EFEFEF;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--pantry-cream);
+            color: var(--pantry-slate);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* SVG Grain Overlay */
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Tactical Depth Styling */
+        .pantry-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow:
+                0 4px 0px rgba(0,0,0,0.02),
+                0 15px 35px -5px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pantry-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
+        }
+
+        .label-text {
+            display: inline-block;
+            background: var(--label-tape);
+            padding: 2px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            font-size: 0.7rem;
+            border-left: 3px solid var(--pantry-sage);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--pantry-cream); }
+        ::-webkit-scrollbar-thumb { background: var(--pantry-sage); border-radius: 10px; }
+
+        /* Perspective Layout */
+        .perspective-container { perspective: 1200px; }
+
+        .hero-split {
+            transition: transform 0.6s ease;
+        }
+
+        /* Button Glow */
+        .btn-system {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .btn-system::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .btn-system:hover::after {
+            left: 100%;
+        }
+
+        /* Alpine Cloak */
+        [x-cloak] { display: none !important; }
+
+        /* Facet Chip Transitions */
+        .mega-chip, .facet-chip, .filter-chip, .system-pill {
+            transition: all 0.2s ease;
+        }
+
+        /* Fade animations */
+        .fade-enter { opacity: 0; transform: translateY(10px); }
+        .fade-enter-active { opacity: 1; transform: translateY(0); transition: all 0.4s ease; }
+
+        /* Sidebar link underline effect */
+        .sidebar-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .sidebar-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0; width: 0; height: 2px;
+            background: var(--pantry-accent);
+            transition: width 0.3s ease;
+        }
+        .sidebar-link:hover::after { width: 100%; }
+
+        /* Mesh background variant */
+        .bg-mesh {
+            background-color: #f9f7f2;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(161,15%,88%,1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(180,20%,94%,1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(28,24%,90%,1) 0, transparent 50%);
+        }
+
+        /* Custom scrollbar for horizontal scroll sections */
+        .custom-scrollbar::-webkit-scrollbar { height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--pantry-accent); border-radius: 10px; }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+    <slot name="head" />
+</head>
+<body class={bodyClass}>
+    <div class="grain"></div>
+    <slot />
+</body>
+</html>

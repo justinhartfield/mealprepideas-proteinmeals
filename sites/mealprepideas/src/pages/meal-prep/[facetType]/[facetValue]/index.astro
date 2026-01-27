@@ -1,0 +1,52 @@
+---
+/**
+ * mealprepideas.co/meal-prep/[facetType]/[facetValue]/ — Single Facet Category (T2)
+ * Dynamic route using taxonomy data
+ */
+import SingleFacetCategory from '@mealprepideas/shared/components/SingleFacetCategory.astro';
+import { generateSingleFacetPaths, slugToDisplay } from '@mealprepideas/shared/utils/urls';
+import type { FacetKey } from '@mealprepideas/shared/data/taxonomy';
+
+export function getStaticPaths() {
+  const paths = generateSingleFacetPaths('meal-prep');
+  return paths.map(({ facetType, facetValue }) => ({
+    params: { facetType, facetValue },
+  }));
+}
+
+const { facetType, facetValue } = Astro.params;
+const displayValue = slugToDisplay(facetValue!);
+const displayType = slugToDisplay(facetType!);
+
+// Placeholder recipe data — to be replaced with CMS/content later
+const placeholderRecipes = [
+  { id: 1, title: `${displayValue} Protein Bowl`, tags: ['High Protein', 'Batch-Cook'], time: '15m Prep', category: 'lunch' },
+  { id: 2, title: `${displayValue} Recovery Stew`, tags: ['Iron-Rich', 'Slow Cooker'], time: '10m Prep', category: 'dinner' },
+  { id: 3, title: `${displayValue} Sheet Pan Meal`, tags: ['Quick', 'Low Cleanup'], time: '20m Cook', category: 'dinner' },
+  { id: 4, title: `${displayValue} Energy Bites`, tags: ['Snack', 'No Bake'], time: '5m Prep', category: 'snacks' },
+];
+
+const placeholderFaqs = [
+  { question: `What makes ${displayValue} meal prep unique?`, answer: `Our ${displayValue} protocols are optimized for efficiency, batch-cooking stability, and nutrient density specific to this category.` },
+  { question: `How long do these meals last?`, answer: `Most ${displayValue} meals are optimized for 5-day fridge life and 90-day freezer stability.` },
+];
+---
+
+<SingleFacetCategory
+  hub="meal-prep"
+  facetType={facetType as FacetKey}
+  facetValue={facetValue!}
+  title={`${displayValue} Meal Prep System | MealPrepIdeas.co`}
+  description={`Explore ${displayValue} meal prep protocols. Batch-cooking, storage, and logistics for ${displayValue.toLowerCase()}.`}
+  canonicalUrl={`https://mealprepideas.co/meal-prep/${facetType}/${facetValue}/`}
+  headline={`The ${displayValue}`}
+  headlineAccent="Prep System."
+  subheadline={`Data-backed ${displayValue.toLowerCase()} meal prep protocols optimized for batch-cooking and weekly logistics.`}
+  useCases={[
+    { number: '01. Efficiency', title: 'Efficiency', description: 'Optimized for batch-cooking and storage.' },
+    { number: '02. Nutrition', title: 'Nutrition', description: 'Macro-balanced for sustained energy.' },
+    { number: '03. Logistics', title: 'Logistics', description: 'Fridge and freezer optimized.' },
+  ]}
+  recipes={placeholderRecipes}
+  faqs={placeholderFaqs}
+/>
