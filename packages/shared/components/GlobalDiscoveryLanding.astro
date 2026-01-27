@@ -16,10 +16,23 @@ interface Props {
 const { title, description } = Astro.props;
 
 const facetChips = [
-  'Crockpot', 'Slow-Cooker', 'Trader Joes', 'Costco', 'Weight-Loss',
-  'Postpartum', 'High Fiber', 'Budget', 'Chicken', 'Salmon',
-  'Low-Sodium', 'Air-Fryer', 'Walmart', 'Chick-Fil-A', 'Bariatric', 'College',
-].map(label => ({ label, href: '#' }));
+  { label: 'Crockpot', href: '/meal-prep/method/crockpot/' },
+  { label: 'Slow-Cooker', href: '/meal-prep/method/slow-cooker/' },
+  { label: 'Trader Joes', href: '/stores/trader-joes/' },
+  { label: 'Costco', href: '/stores/costco/' },
+  { label: 'Weight-Loss', href: '/high-protein/goal/weight-loss/' },
+  { label: 'Postpartum', href: '/meal-prep/persona/postpartum/' },
+  { label: 'High Fiber', href: '/high-protein/constraint/high-fiber/' },
+  { label: 'Budget', href: '/meal-prep/constraint/budget/' },
+  { label: 'Chicken', href: '/meal-prep/ingredient/chicken/' },
+  { label: 'Salmon', href: '/high-protein/ingredient/salmon/' },
+  { label: 'Low-Sodium', href: '/high-protein/constraint/low-sodium/' },
+  { label: 'Air-Fryer', href: '/meal-prep/method/air-fryer/' },
+  { label: 'Walmart', href: '/stores/walmart/' },
+  { label: 'Chick-Fil-A', href: '/stores/chick-fil-a/' },
+  { label: 'Bariatric', href: '/high-protein/persona/bariatric/' },
+  { label: 'College', href: '/meal-prep/persona/college/' },
+];
 ---
 
 <BaseLayout title={title} description={description}>
@@ -159,7 +172,7 @@ const facetChips = [
                      style="background: var(--bg-tertiary); border: 2px solid var(--bg-primary); color: var(--text-primary);">{abbr}</div>
               ))}
             </div>
-            <a href="#" class="text-[10px] font-black uppercase tracking-[0.2em] transition-colors flex items-center gap-2" style="color: var(--text-secondary);">
+            <a href="/stores/trader-joes/" class="text-[10px] font-black uppercase tracking-[0.2em] transition-colors flex items-center gap-2" style="color: var(--text-secondary);">
               View Full Pack <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
             </a>
           </div>
@@ -177,7 +190,7 @@ const facetChips = [
             <p class="font-medium text-sm opacity-70">Targeted recovery nutrition for new mothers. High-fiber, anti-inflammatory protocols.</p>
           </div>
           <div class="mt-8">
-            <a href="#" class="w-full py-4 rounded-xl font-black uppercase text-xs tracking-widest flex items-center justify-center transition-colors"
+            <a href="/meal-prep/persona/postpartum/" class="w-full py-4 rounded-xl font-black uppercase text-xs tracking-widest flex items-center justify-center transition-colors"
                style="background: var(--text-primary); color: var(--bg-primary);">
               Explore Vault
             </a>
@@ -234,9 +247,9 @@ const facetChips = [
           <h2 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.8] mb-8" style="color: var(--text-primary);">THE 5-DAY<br/>PROTOCOL</h2>
           <p class="text-xl font-medium mb-8" style="color: var(--text-secondary);">Download the Sunday Prep Execution Plan. 90 minutes of work for 15 high-protein meals.</p>
           <div class="flex gap-4">
-            <button class="theme-btn-primary px-8 py-4 rounded-full font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform">Get The Plan</button>
-            <button class="px-8 py-4 rounded-full font-black uppercase text-xs tracking-widest transition-all"
-                    style="border: 2px solid var(--text-primary); color: var(--text-primary);">Preview Steps</button>
+            <a href="/meal-prep/plans/beginner-meal-prep-5-day/" class="theme-btn-primary px-8 py-4 rounded-full font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform inline-block">Get The Plan</a>
+            <a href="/high-protein/plans/high-protein-muscle-gain-5-day/" class="px-8 py-4 rounded-full font-black uppercase text-xs tracking-widest transition-all inline-block"
+                    style="border: 2px solid var(--text-primary); color: var(--text-primary);">Preview Steps</a>
           </div>
         </div>
         <div class="flex-1 relative">

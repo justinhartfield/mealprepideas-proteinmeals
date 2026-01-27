@@ -45,7 +45,7 @@ const isStore = entityType === 'store';
   <main class="flex-grow" x-data={`{ filter: 'all', skus: ${skusJson} }`}>
     <BreadcrumbNav items={[
       { label: 'Home', href: '/' },
-      { label: isStore ? 'Store Index' : 'Chain Guide' },
+      { label: isStore ? 'Meal Prep Hub' : 'High Protein Hub', href: isStore ? '/meal-prep/' : '/high-protein/' },
       { label: entityName },
     ]} />
 

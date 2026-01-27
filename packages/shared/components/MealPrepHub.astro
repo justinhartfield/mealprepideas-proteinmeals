@@ -24,18 +24,41 @@ const facetGroups = [
   },
   {
     title: 'By Persona',
-    items: ['Work / Office', 'College Student', 'Picky Eaters', 'Toddlers', 'Pregnancy', 'Postpartum', 'Bariatric', 'PCOS', 'Cholesterol-Lowering']
-      .map(v => ({ label: v, href: `/meal-prep/persona/${v.toLowerCase().replace(/[\s\/]+/g, '-')}/` })),
+    items: [
+      { label: 'Work / Office', href: '/meal-prep/persona/work/' },
+      { label: 'College Student', href: '/meal-prep/persona/college/' },
+      { label: 'Picky Eaters', href: '/meal-prep/persona/picky-eaters/' },
+      { label: 'Toddlers', href: '/meal-prep/persona/toddler/' },
+      { label: 'Pregnancy', href: '/meal-prep/persona/pregnancy/' },
+      { label: 'Postpartum', href: '/meal-prep/persona/postpartum/' },
+      { label: 'Bariatric', href: '/meal-prep/persona/bariatric/' },
+      { label: 'PCOS', href: '/meal-prep/persona/pcos/' },
+      { label: 'Cholesterol', href: '/meal-prep/persona/cholesterol/' },
+    ],
   },
   {
-    title: 'By Goal/Diet',
-    items: ['Weight-Loss', 'Muscle-Gain', 'Healthy', 'Vegan', 'Vegetarian', 'Low-Carb', 'Keto', 'Low-Calorie', 'Gluten-Free', 'Dairy-Free']
+    title: 'By Goal',
+    items: ['Weight-Loss', 'Muscle-Gain', 'Healthy'].map(v => ({ label: v, href: `/meal-prep/goal/${v.toLowerCase()}/` })),
+  },
+  {
+    title: 'By Diet',
+    items: ['Vegan', 'Vegetarian', 'Low-Carb', 'Keto', 'Low-Calorie', 'Gluten-Free', 'Dairy-Free']
       .map(v => ({ label: v, href: `/meal-prep/diet/${v.toLowerCase()}/` })),
   },
   {
     title: 'By Ingredient',
-    items: ['Chicken', 'Ground-Beef', 'Ground-Turkey', 'Salmon', 'Shrimp', 'Steak', 'High-Fiber', 'Budget-Friendly', 'Quick & Simple']
-      .map(v => ({ label: v, href: `/meal-prep/ingredient/${v.toLowerCase().replace(/[\s&]+/g, '-')}/` })),
+    items: ['Chicken', 'Ground-Beef', 'Ground-Turkey', 'Salmon', 'Shrimp', 'Steak']
+      .map(v => ({ label: v, href: `/meal-prep/ingredient/${v.toLowerCase()}/` })),
+  },
+  {
+    title: 'By Constraint',
+    items: ['High-Fiber', 'Budget', 'Quick', 'Simple', 'For-The-Week', 'Cheap']
+      .map(v => ({ label: v, href: `/meal-prep/constraint/${v.toLowerCase()}/` })),
+  },
+  {
+    title: 'By Store',
+    items: ["Trader Joe's", 'Costco', 'Walmart', 'Aldi', 'Whole Foods']
+      .map(v => ({ label: v, href: `/stores/${v.toLowerCase().replace(/['\s]+/g, '-').replace(/--/g, '-')}/` })),
   },
 ];
 
@@ -58,9 +81,9 @@ const structuredData = JSON.stringify({
     activeLink="/meal-prep/"
     navLinks={[
       { href: '/meal-prep/', label: 'Core Hub' },
-      { href: '#', label: 'Methods' },
-      { href: '#', label: 'Personas' },
-      { href: '#', label: 'Storage Guides' },
+      { href: '#clusters', label: 'Methods' },
+      { href: '/meal-prep/persona/work/', label: 'Personas' },
+      { href: '/meal-prep/plans/beginner-meal-prep-5-day/', label: '5-Day Plans' },
     ]}
     statusText="5-DAY SYSTEMS: READY"
   />
@@ -204,7 +227,7 @@ const structuredData = JSON.stringify({
             <h3 class="text-4xl font-black tracking-tighter mb-4 leading-none uppercase" style="color: var(--text-primary);">PERSONA<br/>FLOWS</h3>
             <p class="font-bold mb-6" style="color: var(--text-secondary);">Optimized meal systems for postpartum recovery, student life, and picky toddlers.</p>
           </div>
-          <a href="#" class="group flex items-center justify-between text-xs font-black uppercase tracking-widest pt-6"
+          <a href="/meal-prep/persona/work/" class="group flex items-center justify-between text-xs font-black uppercase tracking-widest pt-6"
              style="border-top: 1px solid var(--border-default); color: var(--text-primary);">
             Explore Personas
             <svg class="w-5 h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>

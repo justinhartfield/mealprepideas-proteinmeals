@@ -17,12 +17,48 @@ interface Props {
 const { title, description, canonicalUrl } = Astro.props;
 
 const facetGroups = [
-  { title: 'By Diet', items: ['High Protein Vegan', 'Keto Protein Meals', 'Low Calorie Bands', 'Gluten-Free Macros', 'Dairy-Free Muscle'].map(v => ({ label: v, href: '#' })) },
-  { title: 'By Method', items: ['Air Fryer Protein', 'Slow Cooker Batch', 'Instant Pot High-Pro', 'Microwave Survival', 'No-Cook Macros'].map(v => ({ label: v, href: '#' })) },
-  { title: 'By Constraint', items: ['High Fiber Protein', 'Low Sodium Choices', 'Budget Protein Prep', 'Quick/Simple Macros', 'No-Microwave Lunch'].map(v => ({ label: v, href: '#' })) },
-  { title: 'By Persona', items: ['Office Lunch Prep', 'College Student Gains', 'Postpartum Recovery', 'Bariatric Support', 'Picky Eater Hacks'].map(v => ({ label: v, href: '#' })) },
-  { title: 'By Ingredient', items: ['Chicken Breast Prep', 'Ground Turkey Ideas', 'Wild Salmon Prep', 'Lean Steak Meals', 'Plant Protein Bases'].map(v => ({ label: v, href: '#' })) },
-  { title: 'By Retailer', items: ["Trader Joe's List", 'Costco Bulk Protein', 'Aldi Finds Index', 'Walmart SKU Guide', 'Whole Foods Choice'].map(v => ({ label: v, href: '#' })) },
+  { title: 'By Diet', items: [
+    { label: 'High Protein Vegan', href: '/high-protein/diet/vegan/' },
+    { label: 'Keto Protein Meals', href: '/high-protein/diet/keto/' },
+    { label: 'Low Calorie Bands', href: '/high-protein/diet/low-calorie/' },
+    { label: 'Gluten-Free Macros', href: '/high-protein/diet/gluten-free/' },
+    { label: 'Dairy-Free Muscle', href: '/high-protein/diet/dairy-free/' },
+  ] },
+  { title: 'By Method', items: [
+    { label: 'Air Fryer Protein', href: '/high-protein/method/air-fryer/' },
+    { label: 'Slow Cooker Batch', href: '/high-protein/method/slow-cooker/' },
+    { label: 'Instant Pot High-Pro', href: '/high-protein/method/instant-pot/' },
+    { label: 'Microwave Survival', href: '/high-protein/method/microwave/' },
+    { label: 'No-Cook Macros', href: '/high-protein/method/no-cook/' },
+  ] },
+  { title: 'By Constraint', items: [
+    { label: 'High Fiber Protein', href: '/high-protein/constraint/high-fiber/' },
+    { label: 'Low Sodium Choices', href: '/high-protein/constraint/low-sodium/' },
+    { label: 'Budget Protein Prep', href: '/high-protein/constraint/budget/' },
+    { label: 'Quick/Simple Macros', href: '/high-protein/constraint/quick/' },
+    { label: 'No-Microwave Lunch', href: '/high-protein/constraint/no-microwave/' },
+  ] },
+  { title: 'By Persona', items: [
+    { label: 'Office Lunch Prep', href: '/high-protein/persona/work/' },
+    { label: 'College Student Gains', href: '/high-protein/persona/college/' },
+    { label: 'Postpartum Recovery', href: '/high-protein/persona/postpartum/' },
+    { label: 'Bariatric Support', href: '/high-protein/persona/bariatric/' },
+    { label: 'Picky Eater Hacks', href: '/high-protein/persona/picky-eaters/' },
+  ] },
+  { title: 'By Ingredient', items: [
+    { label: 'Chicken Breast Prep', href: '/high-protein/ingredient/chicken/' },
+    { label: 'Ground Turkey Ideas', href: '/high-protein/ingredient/ground-turkey/' },
+    { label: 'Wild Salmon Prep', href: '/high-protein/ingredient/salmon/' },
+    { label: 'Lean Steak Meals', href: '/high-protein/ingredient/steak/' },
+    { label: 'Shrimp Meals', href: '/high-protein/ingredient/shrimp/' },
+  ] },
+  { title: 'By Store / Chain', items: [
+    { label: "Trader Joe's List", href: '/stores/trader-joes/' },
+    { label: 'Costco Bulk Protein', href: '/stores/costco/' },
+    { label: 'Aldi Finds Index', href: '/stores/aldi/' },
+    { label: 'Chick-fil-A Guide', href: '/stores/chick-fil-a/' },
+    { label: 'Chipotle Hacks', href: '/stores/chipotle/' },
+  ] },
 ];
 ---
 
@@ -33,9 +69,9 @@ const facetGroups = [
     activeLink="/high-protein/"
     navLinks={[
       { href: '/high-protein/', label: 'High-Protein Hub' },
-      { href: '/meal-prep/', label: 'MealPrepIdeas.co' },
-      { href: '#', label: 'Store Index' },
-      { href: '#', label: 'Chain Guide' },
+      { href: '/meal-prep/', label: 'Meal Prep' },
+      { href: '/stores/trader-joes/', label: 'Store Index' },
+      { href: '/stores/chick-fil-a/', label: 'Chain Guide' },
     ]}
     statusText="LIVE FEED:"
     statusBadge="NEW TRADER JOE'S SKUS DETECTED"
@@ -180,7 +216,7 @@ const facetGroups = [
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <!-- Retail Frozen -->
-          <a href="#" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden">
+          <a href="/stores/trader-joes/" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden">
             <div class="relative z-10">
               <div class="flex justify-between items-start mb-8">
                 <span class="px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded"
@@ -195,7 +231,7 @@ const facetGroups = [
             </div>
           </a>
           <!-- Fast Food -->
-          <a href="#" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden"
+          <a href="/stores/chick-fil-a/" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden"
              style="background: var(--bg-tertiary);">
             <div class="relative z-10">
               <div class="flex justify-between items-start mb-8">
@@ -219,7 +255,7 @@ const facetGroups = [
             </div>
           </a>
           <!-- Clinical -->
-          <a href="#" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden"
+          <a href="/high-protein/persona/bariatric/" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden"
              style="border-left: 4px solid var(--accent-primary);">
             <div class="relative z-10">
               <div class="flex justify-between items-start mb-8">
@@ -261,10 +297,10 @@ const facetGroups = [
             The ultimate execution plan. 5 days, 200g protein daily, under 2400 calories. Sunday prep: 105 mins.
           </p>
           <div class="flex flex-wrap gap-4">
-            <button class="px-10 py-5 text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
-                    style="background: var(--text-primary); color: var(--bg-primary);">Download Plan (PDF)</button>
-            <button class="px-10 py-5 text-xs font-black uppercase tracking-widest rounded-full transition-all"
-                    style="border: 2px solid var(--text-inverse);">View Batch Guide</button>
+            <a href="/high-protein/plans/high-protein-muscle-gain-5-day/" class="px-10 py-5 text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform inline-block"
+                    style="background: var(--text-primary); color: var(--bg-primary);">Download Plan (PDF)</a>
+            <a href="/high-protein/plans/keto-weight-loss-5-day/" class="px-10 py-5 text-xs font-black uppercase tracking-widest rounded-full transition-all inline-block"
+                    style="border: 2px solid var(--text-inverse);">View Keto Plan</a>
           </div>
         </div>
         <div class="flex-1 relative">

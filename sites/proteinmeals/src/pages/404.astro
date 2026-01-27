@@ -1,0 +1,56 @@
+---
+/**
+ * 404 — Page Not Found (ProteinMeals)
+ */
+import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
+import HeaderNav from '@mealprepideas/shared/components/HeaderNav.astro';
+import FooterNav from '@mealprepideas/shared/components/FooterNav.astro';
+---
+
+<BaseLayout title="404 — Page Not Found | ProteinMeals.co" description="This page doesn't exist. Find high-protein recipes, macro guides, and plans.">
+  <HeaderNav />
+
+  <main class="flex-grow flex items-center justify-center px-6 py-24">
+    <div class="max-w-2xl text-center">
+      <div class="mb-8">
+        <span class="text-[10px] font-black tracking-[0.5em] uppercase block mb-4" style="color: var(--accent-primary);">ERROR 404</span>
+        <h1 class="text-8xl md:text-[160px] font-black tracking-tighter leading-none mb-4" style="color: var(--text-primary);">404</h1>
+        <p class="text-xl font-bold mb-2" style="color: var(--text-secondary);">This page doesn't exist.</p>
+        <p class="font-medium" style="color: var(--text-tertiary);">The recipe you're looking for may have moved, or the URL might be incorrect.</p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+        <a href="/" class="theme-btn-primary px-8 py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform inline-block">
+          Back to Home
+        </a>
+        <a href="/high-protein/" class="px-8 py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all inline-block"
+           style="border: 1px solid var(--border-default); color: var(--text-primary);">
+          High Protein Hub
+        </a>
+      </div>
+
+      <div class="text-left">
+        <h2 class="text-xs font-black tracking-[0.3em] uppercase mb-6" style="color: var(--text-tertiary);">Popular Pages</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { label: 'High Protein Hub', href: '/high-protein/' },
+            { label: 'Muscle Gain Plan', href: '/high-protein/plans/high-protein-muscle-gain-5-day/' },
+            { label: 'Keto Weight Loss Plan', href: '/high-protein/plans/keto-weight-loss-5-day/' },
+            { label: 'Air Fryer Chicken', href: '/high-protein/method/air-fryer/' },
+            { label: 'Vegan High Protein', href: '/high-protein/diet/vegan/' },
+            { label: 'Chick-fil-A Guide', href: '/stores/chick-fil-a/' },
+            { label: 'Chipotle Macro Hacks', href: '/stores/chipotle/' },
+            { label: 'Budget Protein', href: '/high-protein/constraint/budget/' },
+          ].map(link => (
+            <a href={link.href} class="p-4 rounded-xl font-bold text-sm transition-all hover-accent-border"
+               style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);">
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <FooterNav />
+</BaseLayout>
