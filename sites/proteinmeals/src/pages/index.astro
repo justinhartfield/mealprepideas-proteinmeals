@@ -1,12 +1,13 @@
 ---
 /**
  * proteinmeals.co — Homepage
- * Uses GlobalDiscoveryLanding component
+ * Redirects to the High Protein Hub (the site IS the hub)
  */
-import GlobalDiscoveryLanding from '@mealprepideas/shared/components/GlobalDiscoveryLanding.astro';
+import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
+import HighProteinHub from '@mealprepideas/shared/components/HighProteinHub.astro';
 ---
 
-<GlobalDiscoveryLanding
-  title="The Meal Authority | High Protein & Meal Prep Systems"
-  description="Fuel the machine. High P:E ratios, calorie bands, and nutrient-dense fuel for muscle and weight management."
+<HighProteinHub
+  title="ProteinMeals.co | High Protein Recipes, Macros & Store Guides"
+  description="Hit your protein targets. Keto, vegan, and budget-friendly high protein recipes with macro breakdowns, store guides, and 5-day plans."
 />

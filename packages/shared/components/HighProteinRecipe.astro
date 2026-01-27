@@ -14,6 +14,7 @@ import type { Recipe } from '../data/content/recipes';
 interface Props {
   recipe: Recipe;
   relatedRecipes?: Recipe[];
+  site?: "mealprepideas" | "proteinmeals";
 }
 
 const { recipe, relatedRecipes = [] } = Astro.props;
@@ -273,5 +274,5 @@ const structuredData = JSON.stringify({
     )}
   </main>
 
-  <FooterNav copyrightSuffix={`Index Authority Network. Recipe ${recipeId}.`} />
+  <FooterNav site="proteinmeals" copyrightSuffix={`Index Authority Network. Recipe ${recipeId}.`} />
 </BaseLayout>

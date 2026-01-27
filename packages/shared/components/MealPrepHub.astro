@@ -96,18 +96,8 @@ const structuredData = JSON.stringify({
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl} structuredData={structuredData}>
   <HeaderNav
-    brandLabel="Meal Prep Hub"
-    brandName="MEALPREPIDEAS.CO"
+    site="mealprepideas"
     activeLink="/meal-prep/"
-    navLinks={[
-      { href: '/', label: 'Home' },
-      { href: '/meal-prep/', label: 'Meal Prep Hub' },
-      { href: '/high-protein/', label: 'High Protein' },
-      { href: '/meal-prep/method/crockpot/', label: 'Methods' },
-      { href: '/meal-prep/for/work/', label: 'Personas' },
-      { href: '/stores/trader-joes/', label: 'Stores' },
-      { href: '/meal-prep/plans/beginner-meal-prep-5-day/', label: '5-Day Plans' },
-    ]}
     statusText="5-DAY SYSTEMS: READY"
   />
 
@@ -351,9 +341,5 @@ const structuredData = JSON.stringify({
     </section>
   </main>
 
-  <FooterNav
-    brandName="LOGISTICS.IO"
-    brandDescription="The universal meal prep taxonomy for modern logistics and high-performance nutrition planning."
-    copyrightSuffix="Index Authority Network. Part of MealPrepIdeas.co Group."
-  />
+  <FooterNav site="mealprepideas" />
 </BaseLayout>

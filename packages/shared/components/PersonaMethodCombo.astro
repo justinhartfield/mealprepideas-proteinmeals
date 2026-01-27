@@ -15,6 +15,7 @@ interface FAQ { question: string; answer: string; }
 
 interface Props {
   title: string; description?: string; canonicalUrl?: string;
+  site?: "mealprepideas" | "proteinmeals";
   hub: string; facetA: { type: string; value: string }; facetB: { type: string; value: string };
   headline: string; headlineAccent: string; subheadline: string;
   recipes?: Recipe[]; faqs?: FAQ[];

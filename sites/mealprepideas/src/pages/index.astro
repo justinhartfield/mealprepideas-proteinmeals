@@ -1,12 +1,13 @@
 ---
 /**
  * mealprepideas.co — Homepage
- * Uses GlobalDiscoveryLanding component
+ * Redirects to the Meal Prep Hub (the site IS the hub)
  */
-import GlobalDiscoveryLanding from '@mealprepideas/shared/components/GlobalDiscoveryLanding.astro';
+import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
+import MealPrepHub from '@mealprepideas/shared/components/MealPrepHub.astro';
 ---
 
-<GlobalDiscoveryLanding
-  title="The Grocery Index | Meal Prep & High Protein Authority"
-  description="Master the Sunday batch. Optimized storage, efficient reheating, and 5-day logistics for a friction-free week."
+<MealPrepHub
+  title="MealPrepIdeas.co | Meal Prep Recipes, Plans & Store Guides"
+  description="Master the Sunday batch. Crockpot, air fryer, sheet pan, and freezer meal prep ideas with 5-day plans, store guides, and real macros."
 />

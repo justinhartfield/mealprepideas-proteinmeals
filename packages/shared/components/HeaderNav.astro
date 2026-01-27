@@ -6,6 +6,7 @@
 import ThemeToggle from './ThemeToggle.astro';
 
 interface Props {
+  site?: 'mealprepideas' | 'proteinmeals';
   brandLabel?: string;
   brandName?: string;
   activeLink?: string;
@@ -14,17 +15,34 @@ interface Props {
   statusBadge?: string;
 }
 
+const mealprepNav = [
+  { href: '/', label: 'Home' },
+  { href: '/meal-prep/', label: 'Meal Prep Hub' },
+  { href: '/meal-prep/method/crockpot/', label: 'Methods' },
+  { href: '/meal-prep/for/work/', label: 'Personas' },
+  { href: '/stores/trader-joes/', label: 'Stores' },
+  { href: '/meal-prep/plans/beginner-meal-prep-5-day/', label: 'Plans' },
+];
+
+const proteinNav = [
+  { href: '/', label: 'Home' },
+  { href: '/high-protein/', label: 'High Protein Hub' },
+  { href: '/high-protein/diet/keto/', label: 'Diets' },
+  { href: '/high-protein/goal/muscle-gain/', label: 'Goals' },
+  { href: '/stores/trader-joes/', label: 'Stores' },
+  { href: '/stores/chick-fil-a/', label: 'Chains' },
+];
+
+// Auto-detect site from the Astro site config URL
+const siteUrl = Astro.site?.hostname || '';
+const autoSite = siteUrl.includes('proteinmeals') ? 'proteinmeals' : 'mealprepideas';
+
 const {
-  brandLabel = 'Authority Network',
-  brandName = 'INDEX.01',
+  site = autoSite,
+  brandLabel = site === 'proteinmeals' ? 'High Protein Authority' : 'Meal Prep Authority',
+  brandName = site === 'proteinmeals' ? 'PROTEINMEALS.CO' : 'MEALPREPIDEAS.CO',
   activeLink,
-  navLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/meal-prep/', label: 'Meal Prep' },
-    { href: '/high-protein/', label: 'High Protein' },
-    { href: '/stores/trader-joes/', label: 'Stores' },
-    { href: '/stores/chick-fil-a/', label: 'Chains' },
-  ],
+  navLinks = site === 'proteinmeals' ? proteinNav : mealprepNav,
   statusText,
   statusBadge,
 } = Astro.props;

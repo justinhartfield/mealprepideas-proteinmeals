@@ -96,17 +96,8 @@ const facetGroups = [
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
   <HeaderNav
-    brandLabel="Authority Pillar"
-    brandName="PROTEINMEALS.CO"
+    site="proteinmeals"
     activeLink="/high-protein/"
-    navLinks={[
-      { href: '/', label: 'Home' },
-      { href: '/high-protein/', label: 'High Protein Hub' },
-      { href: '/meal-prep/', label: 'Meal Prep' },
-      { href: '/high-protein/diet/keto/', label: 'Diets' },
-      { href: '/stores/trader-joes/', label: 'Stores' },
-      { href: '/stores/chick-fil-a/', label: 'Chains' },
-    ]}
     statusText="LIVE FEED:"
     statusBadge="NEW TRADER JOE'S SKUS DETECTED"
   />
@@ -403,9 +394,5 @@ const facetGroups = [
     </section>
   </main>
 
-  <FooterNav
-    brandName="PROTEINMEALS.CO"
-    brandDescription="The macro-intent pillar of the Authority Network. Structural data for automated high-protein nutrition."
-    copyrightSuffix="Authority Network. Built for Biological Optimization."
-  />
+  <FooterNav site="proteinmeals" />
 </BaseLayout>

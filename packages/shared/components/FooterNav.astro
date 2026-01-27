@@ -4,6 +4,7 @@
  * Uses CSS custom properties for light/dark adaptation
  */
 interface Props {
+  site?: 'mealprepideas' | 'proteinmeals';
   brandName?: string;
   brandDescription?: string;
   columns?: {
@@ -13,41 +14,82 @@ interface Props {
   copyrightSuffix?: string;
 }
 
+const mealprepColumns = [
+  {
+    title: 'Meal Prep',
+    links: [
+      { href: '/meal-prep/', label: 'Meal Prep Hub' },
+      { href: '/meal-prep/plans/beginner-meal-prep-5-day/', label: '5-Day Plans' },
+      { href: '/meal-prep/recipes/chicken-teriyaki-stir-fry/', label: 'Recipes' },
+      { href: '/meal-prep/for/work/', label: 'Work Prep' },
+    ],
+  },
+  {
+    title: 'Stores & Chains',
+    links: [
+      { href: '/stores/trader-joes/', label: "Trader Joe's" },
+      { href: '/stores/costco/', label: 'Costco' },
+      { href: '/stores/walmart/', label: 'Walmart' },
+      { href: '/stores/kroger/', label: 'Kroger' },
+      { href: '/stores/aldi/', label: 'Aldi' },
+    ],
+  },
+  {
+    title: 'Popular',
+    links: [
+      { href: '/meal-prep/method/crockpot/', label: 'Crockpot Meals' },
+      { href: '/meal-prep/method/air-fryer/', label: 'Air Fryer Prep' },
+      { href: '/meal-prep/method/sheet-pan/', label: 'Sheet Pan Dinners' },
+      { href: '/meal-prep/for/college/', label: 'College Budget' },
+      { href: '/meal-prep/for/kids/', label: 'Kid-Friendly' },
+    ],
+  },
+];
+
+const proteinColumns = [
+  {
+    title: 'High Protein',
+    links: [
+      { href: '/high-protein/', label: 'High Protein Hub' },
+      { href: '/high-protein/plans/high-protein-muscle-gain-5-day/', label: '5-Day Plans' },
+      { href: '/high-protein/recipes/steak-and-egg-protein-plate/', label: 'Recipes' },
+      { href: '/high-protein/goal/muscle-gain/', label: 'Muscle Gain' },
+    ],
+  },
+  {
+    title: 'Stores & Chains',
+    links: [
+      { href: '/stores/trader-joes/', label: "Trader Joe's" },
+      { href: '/stores/costco/', label: 'Costco' },
+      { href: '/stores/chick-fil-a/', label: 'Chick-fil-A' },
+      { href: '/stores/chipotle/', label: 'Chipotle' },
+      { href: '/stores/sweetgreen/', label: 'Sweetgreen' },
+    ],
+  },
+  {
+    title: 'Popular',
+    links: [
+      { href: '/high-protein/diet/keto/', label: 'Keto Protein' },
+      { href: '/high-protein/diet/vegan/', label: 'Vegan Protein' },
+      { href: '/high-protein/goal/weight-loss/', label: 'Weight Loss' },
+      { href: '/high-protein/for/bariatric/', label: 'Bariatric' },
+      { href: '/high-protein/for/postpartum/', label: 'Postpartum' },
+    ],
+  },
+];
+
+// Auto-detect site from the Astro site config URL
+const siteUrl = Astro.site?.hostname || '';
+const autoSite = siteUrl.includes('proteinmeals') ? 'proteinmeals' : 'mealprepideas';
+
 const {
-  brandName = 'INDEX.01',
-  brandDescription = 'The universal taxonomy for high-performance nutrition and logistical meal planning.',
-  columns = [
-    {
-      title: 'Hubs',
-      links: [
-        { href: '/meal-prep/', label: 'Meal Prep Hub' },
-        { href: '/high-protein/', label: 'High Protein Hub' },
-        { href: '/meal-prep/plans/beginner-meal-prep-5-day/', label: '5-Day Plans' },
-        { href: '/meal-prep/recipes/chicken-teriyaki-stir-fry/', label: 'Recipes' },
-      ],
-    },
-    {
-      title: 'Stores & Chains',
-      links: [
-        { href: '/stores/trader-joes/', label: "Trader Joe's" },
-        { href: '/stores/costco/', label: 'Costco' },
-        { href: '/stores/walmart/', label: 'Walmart' },
-        { href: '/stores/chipotle/', label: 'Chipotle' },
-        { href: '/stores/chick-fil-a/', label: 'Chick-fil-A' },
-      ],
-    },
-    {
-      title: 'Popular',
-      links: [
-        { href: '/meal-prep/for/work/', label: 'Work Meal Prep' },
-        { href: '/meal-prep/for/college/', label: 'College Budget' },
-        { href: '/meal-prep/method/air-fryer/', label: 'Air Fryer Meals' },
-        { href: '/meal-prep/method/crockpot/', label: 'Crockpot Recipes' },
-        { href: '/high-protein/diet/keto/', label: 'Keto High Protein' },
-      ],
-    },
-  ],
-  copyrightSuffix = 'Index Authority Network.',
+  site = autoSite,
+  brandName = site === 'proteinmeals' ? 'PROTEINMEALS.CO' : 'MEALPREPIDEAS.CO',
+  brandDescription = site === 'proteinmeals'
+    ? 'Your authority guide to high-protein nutrition. Recipes, macros, store guides, and meal plans for muscle gain and weight management.'
+    : 'Your authority guide to meal prep. Batch cooking, storage logistics, 5-day plans, and store guides for efficient weekly nutrition.',
+  columns = site === 'proteinmeals' ? proteinColumns : mealprepColumns,
+  copyrightSuffix = site === 'proteinmeals' ? 'ProteinMeals.co' : 'MealPrepIdeas.co',
 } = Astro.props;
 ---
 

@@ -14,6 +14,7 @@ import type { Recipe } from '../data/content/recipes';
 interface Props {
   recipe: Recipe;
   relatedRecipes?: Recipe[];
+  site?: "mealprepideas" | "proteinmeals";
 }
 
 const { recipe, relatedRecipes = [] } = Astro.props;
@@ -92,7 +93,7 @@ const structuredData = JSON.stringify({
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription} canonicalUrl={`/meal-prep/recipes/${recipe.slug}/`} structuredData={structuredData}>
-  <HeaderNav statusText={`Recipe: ${recipeId}`} />
+  <HeaderNav site="mealprepideas" statusText={`Recipe: ${recipeId}`} />
 
   <main class="flex-grow" x-data={`{ servings: ${servings}, showReheat: false, checkedIngredients: [], toggleIngredient(id) { this.checkedIngredients.includes(id) ? this.checkedIngredients = this.checkedIngredients.filter(i => i !== id) : this.checkedIngredients.push(id) } }`}>
     <!-- BREADCRUMB -->
@@ -280,5 +281,5 @@ const structuredData = JSON.stringify({
     )}
   </main>
 
-  <FooterNav copyrightSuffix={`Index Authority Network. Recipe ${recipeId}.`} />
+  <FooterNav site="mealprepideas" copyrightSuffix={`Index Authority Network. Recipe ${recipeId}.`} />
 </BaseLayout>
