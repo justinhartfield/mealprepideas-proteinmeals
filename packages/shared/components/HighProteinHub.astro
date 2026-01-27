@@ -20,8 +20,28 @@ import {
   getFastFoodChains,
 } from '../utils/stats';
 
-const highProteinRecipes = recipes.filter(r => r.hub === 'high-protein').slice(0, 8);
+const allHPRecipes = recipes.filter(r => r.hub === 'high-protein');
+const highProteinRecipes = allHPRecipes.slice(0, 8);
 const fallbackImage = '/images/placeholder.svg';
+
+// Serialize recipe data for Alpine.js (lightweight payload)
+const alpineRecipeData = JSON.stringify(
+  allHPRecipes.map(r => ({
+    slug: r.slug,
+    title: r.title,
+    protein: r.protein,
+    calories: r.calories,
+    imageAlt: r.imageAlt || r.title,
+    prepTime: r.prepTime + r.cookTime,
+    servings: r.servings,
+    facets: {
+      goal: r.facets.goal || null,
+      diet: r.facets.diet || null,
+      method: r.facets.method || null,
+      constraint: r.facets.constraint || null,
+    },
+  }))
+);
 
 // Dynamic stats
 const totalStrategies = getTotalStrategies();
@@ -103,12 +123,53 @@ const facetGroups = [
   />
 
   <main class="flex-grow" x-data={`{
-    query: { goal: 'muscle-gain', diet: 'none', method: 'any', constraint: 'none' },
+    query: { goal: 'any', diet: 'none', method: 'any', store: 'any' },
+    allRecipes: ${alpineRecipeData},
+    showResults: false,
+    get filteredRecipes() {
+      return this.allRecipes.filter(r => {
+        if (this.query.goal !== 'any' && r.facets.goal !== this.query.goal) return false;
+        if (this.query.diet !== 'none' && r.facets.diet !== this.query.diet) return false;
+        if (this.query.method !== 'any') {
+          const mm = { 'Air Fryer': 'air-fryer', 'Crockpot': 'crockpot', 'Microwave': 'microwave', 'Frozen SKUs': 'freezer' };
+          const mv = mm[this.query.method] || this.query.method;
+          if (r.facets.method !== mv && r.facets.method !== this.query.method) return false;
+        }
+        return true;
+      });
+    },
     get resultsCount() {
-      let base = ${totalStrategies};
-      if(this.query.goal !== 'muscle-gain') base -= Math.floor(base * 0.25);
-      if(this.query.diet !== 'none') base -= Math.floor(base * 0.18);
-      return Math.max(base, ${hpRecipeCount});
+      return this.filteredRecipes.length;
+    },
+    viewResults() {
+      const parts = [];
+      const methodMap = { 'Air Fryer': 'air-fryer', 'Crockpot': 'slow-cooker', 'Microwave': 'microwave', 'Frozen SKUs': 'no-cook' };
+      if (this.query.goal !== 'any') {
+        parts.push('goal/' + this.query.goal);
+      }
+      if (this.query.diet !== 'none') {
+        parts.push('diet/' + this.query.diet);
+      }
+      if (this.query.method !== 'any') {
+        const m = methodMap[this.query.method] || this.query.method.toLowerCase().replace(/ /g, '-');
+        parts.push('method/' + m);
+      }
+      if (parts.length === 0) {
+        this.showResults = true;
+        this.$nextTick(() => {
+          const el = document.getElementById('engine-results');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        });
+      } else {
+        window.location.href = '/high-protein/' + parts[0] + '/';
+      }
+    },
+    lockParameters(protein) {
+      const el = document.getElementById('decision-engine');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      if (protein >= 200) this.query.goal = 'muscle-gain';
+      else if (protein <= 140) this.query.goal = 'weight-loss';
+      else this.query.goal = 'healthy';
     }
   }`}>
     <!-- T1 HERO: MACRO INTENT PILLAR -->
@@ -152,7 +213,7 @@ const facetGroups = [
                   <span class="text-xl font-black tabular-nums" style="color: var(--accent-primary);">{hpAvgProtein}g</span>
                 </div>
               </div>
-              <button class="theme-btn-primary w-full py-4 text-xs font-black uppercase tracking-widest rounded-xl">Lock Parameters</button>
+              <button x-on:click="lockParameters(protein)" class="theme-btn-primary w-full py-4 text-xs font-black uppercase tracking-widest rounded-xl">Lock Parameters</button>
             </div>
           </div>
         </div>
@@ -162,7 +223,7 @@ const facetGroups = [
     </section>
 
     <!-- DECISION ENGINE -->
-    <section class="py-24 px-6 max-w-7xl mx-auto">
+    <section id="decision-engine" class="py-24 px-6 max-w-7xl mx-auto">
       <div class="flex items-center gap-4 mb-12">
         <div class="h-[1px] flex-grow" style="background: var(--border-default);"></div>
         <h2 class="text-[10px] font-black uppercase tracking-[0.5em] whitespace-nowrap" style="color: var(--text-tertiary);">Decision Engine v1.0</h2>
@@ -173,11 +234,11 @@ const facetGroups = [
           <div class="p-8 rounded-3xl transition-all" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
             <label class="block text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-tertiary);">01. Primary Goal</label>
             <div class="flex flex-wrap gap-2">
-              <template x-for="g in ['Weight-Loss', 'Muscle-Gain', 'Healthy']">
-                <button x-on:click="query.goal = g"
+              <template x-for="g in ['weight-loss', 'muscle-gain', 'healthy']">
+                <button x-on:click="query.goal = query.goal === g ? 'any' : g"
                         x-bind:style="query.goal === g ? 'background: var(--accent-primary); color: var(--text-inverse); border-color: var(--accent-primary);' : 'color: var(--text-secondary); border-color: var(--border-default);'"
                         class="px-4 py-2 border rounded-full text-[11px] font-bold uppercase transition-all"
-                        x-text="g.replace('-', ' ')"></button>
+                        x-text="g.replace(/-/g, ' ')"></button>
               </template>
             </div>
           </div>
@@ -186,20 +247,22 @@ const facetGroups = [
             <select x-model="query.diet" class="w-full py-2 text-xl font-bold outline-none transition-all appearance-none cursor-pointer bg-transparent"
                     style="border-bottom: 2px solid var(--border-default); color: var(--text-primary);">
               <option value="none">No Restrictions</option>
-              <option value="low-carb">Low Carb / Keto</option>
+              <option value="low-carb">Low Carb</option>
+              <option value="keto">Keto</option>
               <option value="vegan">Vegan / Plant-Based</option>
-              <option value="gf-df">Gluten & Dairy Free</option>
-              <option value="high-fiber">High Fiber Focused</option>
+              <option value="gluten-free">Gluten-Free</option>
+              <option value="dairy-free">Dairy-Free</option>
             </select>
           </div>
           <div class="p-8 rounded-3xl transition-all" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
             <label class="block text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-tertiary);">03. Logistics / Method</label>
             <div class="grid grid-cols-2 gap-3">
               <template x-for="m in ['Air Fryer', 'Crockpot', 'Microwave', 'Frozen SKUs']">
-                <button class="p-3 rounded-xl text-[10px] font-bold uppercase text-left flex justify-between items-center group transition-colors"
-                        style="border: 1px solid var(--border-default); color: var(--text-secondary);">
+                <button x-on:click="query.method = query.method === m ? 'any' : m"
+                        x-bind:style="query.method === m ? 'border-color: var(--accent-primary); color: var(--accent-primary); background: var(--accent-glow);' : 'border: 1px solid var(--border-default); color: var(--text-secondary);'"
+                        class="p-3 rounded-xl text-[10px] font-bold uppercase text-left flex justify-between items-center group transition-colors">
                   <span x-text="m"></span>
-                  <span class="w-1.5 h-1.5 rounded-full" style="background: var(--text-tertiary);"></span>
+                  <span class="w-1.5 h-1.5 rounded-full" x-bind:style="query.method === m ? 'background: var(--accent-primary);' : 'background: var(--text-tertiary);'"></span>
                 </button>
               </template>
             </div>
@@ -224,9 +287,56 @@ const facetGroups = [
             <div class="text-8xl font-black tracking-tighter tabular-nums" x-text="resultsCount">842</div>
             <span class="font-bold uppercase text-[10px] tracking-widest">Available Strategies</span>
           </div>
-          <button class="w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-[0.98] transition-all"
+          <button x-on:click="viewResults()" class="w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-[0.98] transition-all"
                   style="background: var(--text-primary); color: var(--bg-primary);">View Results →</button>
         </div>
+      </div>
+    </section>
+
+    <!-- INLINE RESULTS (shown when showResults is true) -->
+    <section id="engine-results" x-show="showResults" x-cloak class="py-16 px-6 max-w-7xl mx-auto" x-transition>
+      <div class="flex items-center gap-4 mb-8">
+        <div class="h-[1px] flex-grow" style="background: var(--border-default);"></div>
+        <h2 class="text-[10px] font-black uppercase tracking-[0.5em] whitespace-nowrap" style="color: var(--text-tertiary);">
+          Filtered Results (<span x-text="filteredRecipes.length"></span>)
+        </h2>
+        <div class="h-[1px] flex-grow" style="background: var(--border-default);"></div>
+      </div>
+      <div x-show="filteredRecipes.length === 0" class="text-center py-12">
+        <p class="text-lg font-bold" style="color: var(--text-secondary);">No recipes match your current filters. Try adjusting your selections above.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <template x-for="r in filteredRecipes" x-bind:key="r.slug">
+          <a x-bind:href="'/high-protein/recipes/' + r.slug + '/'" class="group rounded-2xl overflow-hidden border transition-all hover:shadow-lg hover:-translate-y-1" style="border-color: var(--border-default); background: var(--bg-secondary);">
+            <div class="aspect-video overflow-hidden relative">
+              <img
+                x-bind:src="'/images/recipes/' + r.slug + '.jpg'"
+                x-on:error="$el.src='/images/placeholder.svg'"
+                x-bind:alt="r.imageAlt"
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                width="400" height="225" loading="lazy"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div class="absolute bottom-3 left-3 flex gap-2">
+                <span class="px-2 py-1 rounded text-[9px] font-black uppercase" style="background-color: var(--accent-primary); color: var(--text-inverse);" x-text="r.protein + 'g protein'"></span>
+                <span class="px-2 py-1 rounded text-[9px] font-black uppercase" style="background: rgba(0,0,0,0.6); color: white;" x-text="r.calories + ' cal'"></span>
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-black text-sm mb-2 leading-tight group-hover:opacity-80 transition-opacity" x-text="r.title"></h3>
+              <div class="flex gap-3 text-[10px] font-bold" style="color: var(--text-tertiary);">
+                <span x-text="r.prepTime + 'm total'"></span>
+                <span>·</span>
+                <span x-text="r.servings + ' servings'"></span>
+              </div>
+            </div>
+          </a>
+        </template>
+      </div>
+      <div class="text-center mt-8">
+        <button x-on:click="showResults = false" class="text-xs font-black uppercase tracking-widest" style="color: var(--accent-primary);">
+          ← Back to Engine
+        </button>
       </div>
     </section>
 

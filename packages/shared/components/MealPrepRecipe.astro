@@ -95,7 +95,32 @@ const structuredData = JSON.stringify({
 <BaseLayout title={pageTitle} description={pageDescription} canonicalUrl={`/meal-prep/recipes/${recipe.slug}/`} structuredData={structuredData}>
   <HeaderNav site="mealprepideas" statusText={`Recipe: ${recipeId}`} />
 
-  <main class="flex-grow" x-data={`{ servings: ${servings}, showReheat: false, checkedIngredients: [], toggleIngredient(id) { this.checkedIngredients.includes(id) ? this.checkedIngredients = this.checkedIngredients.filter(i => i !== id) : this.checkedIngredients.push(id) } }`}>
+  <main class="flex-grow" x-data={`{
+    servings: ${servings},
+    baseServings: ${servings},
+    showReheat: false,
+    checkedIngredients: [],
+    baseMacros: { calories: ${recipe.calories}, protein: ${recipe.protein}, carbs: ${recipe.carbs}, fat: ${recipe.fat} },
+    get scaledCalories() { return Math.round(this.baseMacros.calories * this.servings / this.baseServings); },
+    get scaledProtein() { return Math.round(this.baseMacros.protein * this.servings / this.baseServings); },
+    get scaledCarbs() { return Math.round(this.baseMacros.carbs * this.servings / this.baseServings); },
+    get scaledFat() { return Math.round(this.baseMacros.fat * this.servings / this.baseServings); },
+    scaleIngredient(text) {
+      const ratio = this.servings / this.baseServings;
+      return text.replace(/^([\\d]+\\.?[\\d]*)/, (m, n) => {
+        const scaled = parseFloat(n) * ratio;
+        return scaled % 1 === 0 ? String(scaled) : scaled.toFixed(1);
+      }).replace(/^(\\d+)\\/(\\d+)/, (m, a, b) => {
+        const scaled = (parseInt(a) / parseInt(b)) * ratio;
+        return scaled % 1 === 0 ? String(scaled) : scaled.toFixed(2);
+      });
+    },
+    toggleIngredient(id) {
+      this.checkedIngredients.includes(id)
+        ? this.checkedIngredients = this.checkedIngredients.filter(i => i !== id)
+        : this.checkedIngredients.push(id);
+    }
+  }`}>
     <!-- BREADCRUMB -->
     <BreadcrumbNav items={[
       { label: 'Home', href: '/' },
@@ -131,19 +156,38 @@ const structuredData = JSON.stringify({
           </div>
           <!-- Macros -->
           <div class="border rounded-2xl p-6" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
-            <h3 class="text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-secondary);">Macro Profile (Per Serving)</h3>
+            <h3 class="text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-secondary);">
+              Macro Profile (<span x-text="servings === baseServings ? 'Per Serving' : 'Scaled to ' + servings + ' servings'"></span>)
+            </h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {macros.map(m => (
-                <div>
-                  <div class="flex justify-between text-[10px] font-black mb-2">
-                    <span style="color: var(--text-secondary);">{m.label}</span>
-                    <span style="color: var(--accent-primary);">{m.value}</span>
-                  </div>
-                  <div class="macro-bar">
-                    <div class="macro-fill" style={`width: ${m.percent}%`}></div>
-                  </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-black mb-2">
+                  <span style="color: var(--text-secondary);">Protein</span>
+                  <span style="color: var(--accent-primary);" x-text="scaledProtein + 'g'"></span>
                 </div>
-              ))}
+                <div class="macro-bar"><div class="macro-fill" x-bind:style="'width: ' + Math.min(100, Math.round(scaledProtein / 50 * 100)) + '%'"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-black mb-2">
+                  <span style="color: var(--text-secondary);">Carbs</span>
+                  <span style="color: var(--accent-primary);" x-text="scaledCarbs + 'g'"></span>
+                </div>
+                <div class="macro-bar"><div class="macro-fill" x-bind:style="'width: ' + Math.min(100, Math.round(scaledCarbs / 100 * 100)) + '%'"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-black mb-2">
+                  <span style="color: var(--text-secondary);">Fat</span>
+                  <span style="color: var(--accent-primary);" x-text="scaledFat + 'g'"></span>
+                </div>
+                <div class="macro-bar"><div class="macro-fill" x-bind:style="'width: ' + Math.min(100, Math.round(scaledFat / 65 * 100)) + '%'"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[10px] font-black mb-2">
+                  <span style="color: var(--text-secondary);">Calories</span>
+                  <span style="color: var(--accent-primary);" x-text="scaledCalories"></span>
+                </div>
+                <div class="macro-bar"><div class="macro-fill" x-bind:style="'width: ' + Math.min(100, Math.round(scaledCalories / 800 * 100)) + '%'"></div></div>
+              </div>
             </div>
           </div>
         </div>
@@ -193,6 +237,7 @@ const structuredData = JSON.stringify({
                   <span
                     x-bind:style={`checkedIngredients.includes('${ing.id}') ? 'text-decoration: line-through; color: var(--text-tertiary)' : ''`}
                     class="text-sm font-bold transition-colors"
+                    x-text={`scaleIngredient('${ing.text.replace(/'/g, "\\'")}')`}
                   >{ing.text}</span>
                 </label>
               ))}

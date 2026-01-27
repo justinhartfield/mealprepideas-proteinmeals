@@ -16,8 +16,34 @@ import {
   getMealPrepRecipeCount,
 } from '../utils/stats';
 
-const mealPrepRecipes = recipes.filter(r => r.hub === 'meal-prep').slice(0, 8);
+const allMPRecipes = recipes.filter(r => r.hub === 'meal-prep');
+const mealPrepRecipes = allMPRecipes.slice(0, 8);
 const fallbackImage = '/images/placeholder.svg';
+
+// Serialize recipe data for Alpine.js
+const alpineRecipeData = JSON.stringify(
+  allMPRecipes.map(r => ({
+    slug: r.slug,
+    title: r.title,
+    protein: r.protein,
+    calories: r.calories,
+    imageAlt: r.imageAlt || r.title,
+    prepTime: r.prepTime + r.cookTime,
+    servings: r.servings,
+    facets: {
+      goal: r.facets.goal || null,
+      diet: r.facets.diet || null,
+      method: r.facets.method || null,
+    },
+  }))
+);
+
+// Plan slugs for linking from decision engine
+const planMap = JSON.stringify({
+  'Weight Loss': plans.find(p => p.hub === 'meal-prep' && p.facets.constraint === 'budget')?.slug || 'beginner-meal-prep-5-day',
+  'Muscle Gain': plans.find(p => p.hub === 'meal-prep' && p.facets.persona === 'work')?.slug || 'beginner-meal-prep-5-day',
+  'Cheap & Quick': plans.find(p => p.hub === 'meal-prep' && p.facets.constraint === 'quick')?.slug || 'quick-30-min-prep-plan',
+});
 
 // Dynamic stats
 const avgProtein = getAverageProtein();
@@ -101,7 +127,39 @@ const structuredData = JSON.stringify({
     statusText="5-DAY SYSTEMS: READY"
   />
 
-  <main class="flex-grow" x-data="{ decisionGoal: 'Weight Loss', decisionMethod: 'Batch Cooking' }">
+  <main class="flex-grow" x-data={`{
+    decisionGoal: 'Weight Loss',
+    decisionMethod: 'Batch Cooking',
+    showResults: false,
+    allRecipes: ${alpineRecipeData},
+    planMap: ${planMap},
+    get filteredRecipes() {
+      const goalMap = { 'Weight Loss': 'weight-loss', 'Muscle Gain': 'muscle-gain', 'Cheap & Quick': null };
+      const methodMap = { 'Batch Cooking': null, 'Freezer Dump': 'freezer', 'Slow Cooker': ['crockpot', 'slow-cooker'], 'No-Cook Cold': 'no-cook' };
+      return this.allRecipes.filter(r => {
+        const gv = goalMap[this.decisionGoal];
+        if (gv && r.facets.goal && r.facets.goal !== gv) return false;
+        const mv = methodMap[this.decisionMethod];
+        if (mv) {
+          if (Array.isArray(mv)) { if (r.facets.method && !mv.includes(r.facets.method)) return false; }
+          else { if (r.facets.method && r.facets.method !== mv) return false; }
+        }
+        return true;
+      });
+    },
+    get resultsCount() { return this.filteredRecipes.length; },
+    getFullPlan() {
+      const slug = this.planMap[this.decisionGoal] || 'beginner-meal-prep-5-day';
+      window.location.href = '/meal-prep/plans/' + slug + '/';
+    },
+    viewDecisionResults() {
+      this.showResults = true;
+      this.$nextTick(() => {
+        const el = document.getElementById('mp-engine-results');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+  }`}>
     <!-- T1 HERO: LOGISTICS COMMAND CENTER -->
     <section class="relative min-h-[80vh] flex flex-col justify-center px-6 overflow-hidden"
              style="border-bottom: 1px solid var(--border-default); background: var(--bg-primary);">
@@ -199,14 +257,63 @@ const structuredData = JSON.stringify({
                 <span class="text-xs font-black italic">INDEX-V4.2</span>
               </div>
               <h4 class="text-4xl font-black tracking-tighter leading-none mb-4" x-text="'The ' + decisionGoal + ' ' + decisionMethod + ' Protocol'"></h4>
-              <p class="font-bold text-sm max-w-xs opacity-70">Custom-generated execution plan focusing on caloric density and storage shelf-life.</p>
+              <p class="font-bold text-sm max-w-xs opacity-70">Custom-generated execution plan. <span x-text="resultsCount"></span> matching recipes found.</p>
             </div>
             <div class="mt-12 flex gap-4 relative z-10">
-              <button class="flex-1 py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-[1.02] transition-transform"
+              <button x-on:click="getFullPlan()" class="flex-1 py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-[1.02] transition-transform"
                       style="background: var(--text-primary); color: var(--bg-primary);">Get The Full Plan</button>
+              <button x-on:click="viewDecisionResults()" class="flex-1 py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-[1.02] transition-transform"
+                      style="border: 2px solid var(--text-inverse);">View Recipes</button>
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- INLINE DECISION RESULTS -->
+    <section id="mp-engine-results" x-show="showResults" x-cloak class="py-16 px-6 max-w-7xl mx-auto" x-transition>
+      <div class="flex items-center gap-4 mb-8">
+        <div class="h-[2px] w-16" style="background-color: var(--accent-primary);"></div>
+        <h3 class="text-xs font-black tracking-[0.5em] uppercase" style="color: var(--text-tertiary);">
+          Matching Recipes (<span x-text="filteredRecipes.length"></span>)
+        </h3>
+      </div>
+      <div x-show="filteredRecipes.length === 0" class="text-center py-12">
+        <p class="text-lg font-bold" style="color: var(--text-secondary);">No recipes match your current selections. Try adjusting your goal or method.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <template x-for="r in filteredRecipes" x-bind:key="r.slug">
+          <a x-bind:href="'/meal-prep/recipes/' + r.slug + '/'" class="group rounded-2xl overflow-hidden border transition-all hover:shadow-lg hover:-translate-y-1" style="border-color: var(--border-default); background: var(--bg-secondary);">
+            <div class="aspect-video overflow-hidden relative">
+              <img
+                x-bind:src="'/images/recipes/' + r.slug + '.jpg'"
+                x-on:error="$el.src='/images/placeholder.svg'"
+                x-bind:alt="r.imageAlt"
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                width="400" height="225" loading="lazy"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div class="absolute bottom-3 left-3">
+                <span class="px-2 py-1 rounded text-[9px] font-black uppercase" style="background-color: var(--accent-primary); color: var(--text-inverse);" x-text="r.protein + 'g protein'"></span>
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-black text-sm mb-2 leading-tight group-hover:opacity-80 transition-opacity" x-text="r.title"></h3>
+              <div class="flex gap-3 text-[10px] font-bold" style="color: var(--text-tertiary);">
+                <span x-text="r.calories + ' cal'"></span>
+                <span>·</span>
+                <span x-text="r.prepTime + 'm total'"></span>
+                <span>·</span>
+                <span x-text="r.servings + ' servings'"></span>
+              </div>
+            </div>
+          </a>
+        </template>
+      </div>
+      <div class="text-center mt-8">
+        <button x-on:click="showResults = false" class="text-xs font-black uppercase tracking-widest" style="color: var(--accent-primary);">
+          ← Back to Engine
+        </button>
       </div>
     </section>
 

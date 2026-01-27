@@ -127,7 +127,23 @@ const facetChips = [
     </section>
 
     <!-- SEARCH & SOLVE WIDGET -->
-    <section class="py-20 px-6 max-w-7xl mx-auto" x-data="{ goal: 'Weight Loss', method: 'Air Fryer', diet: 'Low Carb' }">
+    <section class="py-20 px-6 max-w-7xl mx-auto" x-data="{
+      goal: 'Weight Loss',
+      method: 'Air Fryer',
+      diet: 'Low Carb',
+      generateIndex() {
+        const goalMap = { 'Weight Loss': 'weight-loss', 'Muscle Gain': 'muscle-gain', 'Healthy (General)': 'healthy' };
+        const methodMap = { 'Air Fryer': 'air-fryer', 'Crockpot': 'crockpot', 'No-Cook': 'no-cook', 'Microwave': 'microwave', 'Instant Pot': 'instant-pot' };
+        const dietMap = { 'Low Carb': 'low-carb', 'Vegan': 'vegan', 'High Protein': 'keto', 'Gluten Free': 'gluten-free' };
+        const g = goalMap[this.goal];
+        const m = methodMap[this.method];
+        const d = dietMap[this.diet];
+        if (g) { window.location.href = '/high-protein/goal/' + g + '/'; }
+        else if (m) { window.location.href = '/meal-prep/method/' + m + '/'; }
+        else if (d) { window.location.href = '/high-protein/diet/' + d + '/'; }
+        else { window.location.href = '/meal-prep/'; }
+      }
+    }">
       <div class="flex flex-col md:flex-row items-end justify-between mb-12 gap-8">
         <div class="max-w-xl">
           <div class="flex items-center gap-4 mb-4">
@@ -175,7 +191,7 @@ const facetChips = [
             <option>Gluten Free</option>
           </select>
         </div>
-        <button class="theme-btn-cta rounded-xl p-6 flex flex-col items-center justify-center transition-all group overflow-hidden relative">
+        <button x-on:click="generateIndex()" class="theme-btn-cta rounded-xl p-6 flex flex-col items-center justify-center transition-all group overflow-hidden relative cursor-pointer">
           <span class="relative z-10 text-xl font-black uppercase tracking-tight">Generate Index</span>
           <span class="relative z-10 text-[10px] font-bold opacity-60">MATCHING DATA POINTS</span>
         </button>

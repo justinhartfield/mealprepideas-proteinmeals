@@ -43,7 +43,26 @@ const isStore = entityType === 'store';
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
   <HeaderNav statusText={`${entityType === 'store' ? 'Retailer' : 'Chain'}: ${entityName}`} />
 
-  <main class="flex-grow" x-data={`{ filter: 'all', skus: ${skusJson} }`}>
+  <main class="flex-grow" x-data={`{
+    filter: 'all',
+    sortBy: 'default',
+    allSkus: ${skusJson},
+    get categories() {
+      const cats = [...new Set(this.allSkus.map(s => s.category))].filter(Boolean);
+      return cats;
+    },
+    get skus() {
+      let filtered = this.filter === 'all' ? [...this.allSkus] : this.allSkus.filter(s => s.category === this.filter);
+      if (this.sortBy === 'protein') {
+        filtered.sort((a, b) => parseFloat(b.protein) - parseFloat(a.protein));
+      } else if (this.sortBy === 'calories') {
+        filtered.sort((a, b) => parseFloat(a.cals) - parseFloat(b.cals));
+      } else if (this.sortBy === 'pe') {
+        filtered.sort((a, b) => parseFloat(b.peScore) - parseFloat(a.peScore));
+      }
+      return filtered;
+    }
+  }`}>
     <BreadcrumbNav items={[
       { label: 'Home', href: '/' },
       { label: isStore ? 'Meal Prep Hub' : 'High Protein Hub', href: isStore ? '/meal-prep/' : '/high-protein/' },
@@ -87,10 +106,17 @@ const isStore = entityType === 'store';
     {skus.length > 0 && (
       <section class="py-16 px-6 border-y" style="background-color: var(--bg-primary); border-color: var(--border-default);">
         <div class="max-w-7xl mx-auto">
-          <div class="flex items-center justify-between mb-8">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
             <h2 class="text-3xl font-black tracking-tighter">{isStore ? 'Product Index' : 'Menu Matrix'}</h2>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <button x-on:click="filter = 'all'" x-bind:class="filter === 'all' ? 'pill-active' : 'theme-pill-inactive'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">All</button>
+              <template x-for="cat in categories" x-bind:key="cat">
+                <button x-on:click="filter = cat" x-bind:class="filter === cat ? 'pill-active' : 'theme-pill-inactive'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all" x-text="cat"></button>
+              </template>
+              <span class="w-px h-6 mx-1" style="background: var(--border-default);"></span>
+              <button x-on:click="sortBy = sortBy === 'protein' ? 'default' : 'protein'" x-bind:class="sortBy === 'protein' ? 'pill-active' : 'theme-pill-inactive'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">↑ Protein</button>
+              <button x-on:click="sortBy = sortBy === 'calories' ? 'default' : 'calories'" x-bind:class="sortBy === 'calories' ? 'pill-active' : 'theme-pill-inactive'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">↓ Calories</button>
+              <button x-on:click="sortBy = sortBy === 'pe' ? 'default' : 'pe'" x-bind:class="sortBy === 'pe' ? 'pill-active' : 'theme-pill-inactive'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">↑ P:E</button>
             </div>
           </div>
 
