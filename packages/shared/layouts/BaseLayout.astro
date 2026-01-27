@@ -75,6 +75,21 @@ const resolvedFavicon = faviconEmoji || (isMealPrep ? '🥦' : '🍗');
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
 
+  <!-- Clerk Auth -->
+  <script is:inline>
+    // Clerk auth state for Alpine.js integration
+    window.__clerkPublishableKey = 'pk_test_ZGVhci1saW9uZmlzaC00OS5jbGVyay5hY2NvdW50cy5kZXYk';
+    window.__authReady = false;
+    window.__authUser = null;
+  </script>
+  <script async crossorigin="anonymous" data-clerk-publishable-key="pk_test_ZGVhci1saW9uZmlzaC00OS5jbGVyay5hY2NvdW50cy5kZXYk" src="https://dear-lionfish-49.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js" onload="
+    window.Clerk.load().then(function() {
+      window.__authReady = true;
+      window.__authUser = window.Clerk.user;
+      window.dispatchEvent(new CustomEvent('clerk-ready'));
+    });
+  "></script>
+
   <!-- Alpine.js -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
@@ -458,6 +473,14 @@ const resolvedFavicon = faviconEmoji || (isMealPrep ? '🥦' : '🍗');
   <!-- Noise Overlay -->
   <div class="noise-overlay"></div>
 
+  <!-- Clerk Sign-In Modal Container -->
+  <div id="clerk-sign-in-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); justify-content:center; align-items:center;">
+    <div style="position:relative; max-width:420px; width:100%; margin:1rem;">
+      <button onclick="document.getElementById('clerk-sign-in-modal').style.display='none'" style="position:absolute; top:-2.5rem; right:0; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">✕</button>
+      <div id="clerk-sign-in-mount"></div>
+    </div>
+  </div>
+
   <!-- Page Content -->
   <slot />
 
@@ -473,6 +496,107 @@ const resolvedFavicon = faviconEmoji || (isMealPrep ? '🥦' : '🍗');
           (btn as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
         });
       });
+    });
+  </script>
+
+  <!-- Global Auth Helper -->
+  <script is:inline>
+    window.authHelper = {
+      isSignedIn: function() {
+        return !!(window.Clerk && window.Clerk.user);
+      },
+      getUser: function() {
+        return window.Clerk ? window.Clerk.user : null;
+      },
+      requireAuth: function(callback) {
+        if (this.isSignedIn()) {
+          callback(this.getUser());
+        } else {
+          this.openSignIn();
+        }
+      },
+      openSignIn: function() {
+        var modal = document.getElementById('clerk-sign-in-modal');
+        var mount = document.getElementById('clerk-sign-in-mount');
+        if (window.Clerk && modal && mount) {
+          modal.style.display = 'flex';
+          mount.innerHTML = '';
+          window.Clerk.mountSignIn(mount, {
+            afterSignInUrl: window.location.href,
+            afterSignUpUrl: window.location.href,
+          });
+        }
+      },
+      signOut: function() {
+        if (window.Clerk) {
+          window.Clerk.signOut().then(function() {
+            window.location.reload();
+          });
+        }
+      },
+      // Saved recipes (localStorage)
+      getSavedRecipes: function() {
+        try { return JSON.parse(localStorage.getItem('savedRecipes') || '[]'); } catch(e) { return []; }
+      },
+      saveRecipe: function(recipe) {
+        var saved = this.getSavedRecipes();
+        if (!saved.find(function(r) { return r.slug === recipe.slug; })) {
+          saved.push(recipe);
+          localStorage.setItem('savedRecipes', JSON.stringify(saved));
+        }
+        return saved;
+      },
+      unsaveRecipe: function(slug) {
+        var saved = this.getSavedRecipes().filter(function(r) { return r.slug !== slug; });
+        localStorage.setItem('savedRecipes', JSON.stringify(saved));
+        return saved;
+      },
+      isRecipeSaved: function(slug) {
+        return this.getSavedRecipes().some(function(r) { return r.slug === slug; });
+      },
+      // Grocery list
+      getGroceryList: function() {
+        try { return JSON.parse(localStorage.getItem('groceryList') || '[]'); } catch(e) { return []; }
+      },
+      setGroceryList: function(list) {
+        localStorage.setItem('groceryList', JSON.stringify(list));
+      },
+      // Macro calculator
+      getMacroProfile: function() {
+        try { return JSON.parse(localStorage.getItem('macroProfile') || 'null'); } catch(e) { return null; }
+      },
+      setMacroProfile: function(profile) {
+        localStorage.setItem('macroProfile', JSON.stringify(profile));
+      }
+    };
+
+    // Close modal on backdrop click
+    document.addEventListener('click', function(e) {
+      var modal = document.getElementById('clerk-sign-in-modal');
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+
+    // Update auth UI when Clerk is ready
+    window.addEventListener('clerk-ready', function() {
+      document.querySelectorAll('[data-auth-show]').forEach(function(el) {
+        var condition = el.getAttribute('data-auth-show');
+        if (condition === 'signed-in') {
+          el.style.display = window.authHelper.isSignedIn() ? '' : 'none';
+        } else if (condition === 'signed-out') {
+          el.style.display = window.authHelper.isSignedIn() ? 'none' : '';
+        }
+      });
+      // Update avatar
+      var avatarEls = document.querySelectorAll('[data-clerk-avatar]');
+      var user = window.authHelper.getUser();
+      if (user) {
+        avatarEls.forEach(function(el) {
+          el.src = user.imageUrl;
+          el.alt = user.fullName || user.firstName || 'User';
+        });
+      }
     });
   </script>
 </body>

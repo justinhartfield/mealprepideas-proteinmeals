@@ -10,7 +10,7 @@ import BreadcrumbNav from './BreadcrumbNav.astro';
 import ExploreByBlock from './ExploreByBlock.astro';
 
 interface Recipe {
-  id: number; title: string; protein: string; cal: string; method: string; tag: string;
+  id: number; title: string; slug?: string; protein: string; cal: string; method: string; tag: string;
 }
 interface FAQ { question: string; answer: string; }
 
@@ -114,12 +114,12 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <template x-for="(recipe, index) in recipes.filter(r => filter === 'all' || r.method === filter)" x-bind:key="recipe.id">
-            <div class="hyper-border rounded-3xl p-6 group transition-all cursor-pointer">
+            <a x-bind:href={`recipe.slug ? '${hubPath}recipes/' + recipe.slug + '/' : '${hubPath}'`} class="hyper-border rounded-3xl p-6 group transition-all cursor-pointer block">
               <div class="flex justify-between items-start mb-6">
                 <span class="text-4xl font-black group-hover-accent-opacity transition-colors" style="color: var(--text-tertiary);" x-text="index + 1"></span>
                 <span class="text-[9px] font-black px-2 py-1 rounded uppercase" style="background-color: var(--bg-tertiary);" x-text="recipe.tag"></span>
               </div>
-              <h4 class="text-2xl font-bold mb-4" x-text="recipe.title"></h4>
+              <h4 class="text-2xl font-bold mb-4 group-hover-accent-text transition-colors" x-text="recipe.title"></h4>
               <div class="grid grid-cols-2 gap-4 mb-6">
                 <div class="rounded-xl p-3 border" style="background-color: var(--bg-primary); border-color: var(--border-default);">
                   <div class="text-[10px] font-black uppercase" style="color: var(--text-secondary);">Protein</div>
@@ -136,7 +136,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </div>
               </div>
-            </div>
+            </a>
           </template>
         </div>
       </div>

@@ -10,7 +10,7 @@ import BreadcrumbNav from './BreadcrumbNav.astro';
 import ExploreByBlock from './ExploreByBlock.astro';
 
 interface Recipe {
-  id: number; title: string; protein: string; cal: string; tags?: string[]; score?: number;
+  id: number; title: string; slug?: string; protein: string; cal: string; tags?: string[]; score?: number;
 }
 interface FAQ { question: string; answer: string; }
 
@@ -89,7 +89,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
 
       <!-- Rows -->
       <template x-for="(recipe, index) in recipes" x-bind:key="recipe.id">
-        <div class="data-row grid grid-cols-12 gap-4 px-6 py-5 border-b items-center transition-all group cursor-pointer" style="border-color: var(--border-default);">
+        <a x-bind:href={`recipe.slug ? '${hubPath}recipes/' + recipe.slug + '/' : '${hubPath}'`} class="data-row grid grid-cols-12 gap-4 px-6 py-5 border-b items-center transition-all group cursor-pointer block" style="border-color: var(--border-default);">
           <div class="col-span-1 text-2xl font-black group-hover-accent-text transition-colors" style="color: var(--text-tertiary);" x-text="index + 1"></div>
           <div class="col-span-5">
             <h4 class="font-black tracking-tight group-hover-accent-text transition-colors" x-text="recipe.title"></h4>
@@ -106,7 +106,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
               <div class="h-full" style="background-color: var(--accent-primary);" x-bind:style="'width: ' + ((recipe.score || 0) * 10) + '%; background-color: var(--accent-primary)'"></div>
             </div>
           </div>
-        </div>
+        </a>
       </template>
     </section>
 

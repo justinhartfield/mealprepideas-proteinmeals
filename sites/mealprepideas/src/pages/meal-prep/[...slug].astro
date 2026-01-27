@@ -182,6 +182,7 @@ const matrixId = generateMatrixId(facetA.type, facetA.value, facetB.type, facetB
 const legacyRecipes = displayRecipes.map((r, i) => ({
   id: r.id,
   title: r.title,
+  slug: (r as any).slug || '',
   protein: r.protein,
   cal: r.cal,
   method: facetA.type === 'method' ? facetA.value : facetB.type === 'method' ? facetB.value : 'batch-cook',

@@ -147,6 +147,7 @@ const displayRecipes = matchingRecipes.length > 0
   ? matchingRecipes.map((r, i) => ({
       id: i + 1,
       title: r.title,
+      slug: r.slug,
       protein: `${r.protein}g`,
       cal: `${r.calories}`,
       method: r.facets.method || (facetA.type === 'method' ? facetA.value : facetB.type === 'method' ? facetB.value : 'batch-cook'),
@@ -156,6 +157,7 @@ const displayRecipes = matchingRecipes.length > 0
   : Array.from({ length: 6 }, (_, i) => ({
       id: i + 1,
       title: `${displayA} ${displayB} Idea #${i + 1}`,
+      slug: '',
       protein: `${28 + i * 3}g`,
       cal: `${420 + i * 40}`,
       method: facetA.type === 'method' ? facetA.value : facetB.type === 'method' ? facetB.value : 'batch-cook',
