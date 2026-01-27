@@ -64,7 +64,9 @@ export const facets = {
     label: 'Ingredient',
     values: [
       'chicken', 'ground-beef', 'ground-turkey', 'salmon',
-      'shrimp', 'steak', 'salad',
+      'shrimp', 'steak', 'salad', 'eggs', 'tofu', 'rice',
+      'quinoa', 'broccoli', 'spinach', 'sweet-potato', 'lentils',
+      'pasta', 'beans',
     ],
   },
   store: {

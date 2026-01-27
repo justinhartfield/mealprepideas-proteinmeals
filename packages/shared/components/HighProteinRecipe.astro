@@ -104,11 +104,11 @@ const primaryMethod = recipe.facets.method;
 const primaryDiet = recipe.facets.diet;
 const primaryGoal = recipe.facets.goal;
 const primaryCategory = primaryMethod
-  ? { label: primaryMethod.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), slug: primaryMethod }
+  ? { label: primaryMethod.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), slug: primaryMethod, type: 'method' }
   : primaryGoal
-  ? { label: primaryGoal.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), slug: primaryGoal }
+  ? { label: primaryGoal.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), slug: primaryGoal, type: 'goal' }
   : primaryDiet
-  ? { label: primaryDiet.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), slug: primaryDiet }
+  ? { label: primaryDiet.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), slug: primaryDiet, type: 'diet' }
   : null;
 
 // Related ingredients from facets + ingredient text parsing
@@ -361,7 +361,7 @@ const structuredData = JSON.stringify({
         <div class="rp-bottom-col">
           <h3 class="rp-bottom__label">PRIMARY CATEGORY</h3>
           {primaryCategory && (
-            <a href={`/high-protein/${primaryCategory.slug}/`} class="rp-category-card">
+            <a href={`/high-protein/${primaryCategory.type}/${primaryCategory.slug}/`} class="rp-category-card">
               <span class="rp-category-card__eyebrow">EXPLORE MORE</span>
               <span class="rp-category-card__title">{primaryCategory.label} Protein</span>
             </a>
