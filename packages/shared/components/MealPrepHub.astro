@@ -238,21 +238,26 @@ const structuredData = JSON.stringify({
                constraint: '',
                generatePlan() {
                  // Build URL from selections — navigate to best matching facet page
-                 const facets = [];
-                 if (this.goal) facets.push({ type: 'goal', val: this.goal });
-                 if (this.method) facets.push({ type: 'method', val: this.method });
-                 if (this.diet) facets.push({ type: 'diet', val: this.diet });
-                 if (this.meal) facets.push({ type: 'meal', val: this.meal });
-                 if (this.constraint) facets.push({ type: 'constraint', val: this.constraint });
-
-                 if (facets.length === 0) {
-                   // No selections — scroll to recipe grid
+                 // Two-facet combos that exist for meal-prep: meal+constraint, diet+goal, persona+method
+                 if (!this.goal && !this.method && !this.diet && !this.meal && !this.constraint) {
                    document.getElementById('recipe-browser')?.scrollIntoView({ behavior: 'smooth' });
                    return;
                  }
-                 // Navigate to the first facet selected (most significant)
-                 const primary = facets[0];
-                 window.location.href = '/meal-prep/' + primary.type + '/' + primary.val + '/';
+                 // Try two-facet combos first (matching indexed combos)
+                 if (this.meal && this.constraint) {
+                   window.location.href = '/meal-prep/meal/' + this.meal + '/constraint/' + this.constraint + '/';
+                   return;
+                 }
+                 if (this.diet && this.goal) {
+                   window.location.href = '/meal-prep/diet/' + this.diet + '/goal/' + this.goal + '/';
+                   return;
+                 }
+                 // Fallback: canonical order single-facet (meal > method > diet > goal > constraint)
+                 if (this.meal) { window.location.href = '/meal-prep/meal/' + this.meal + '/'; return; }
+                 if (this.method) { window.location.href = '/meal-prep/method/' + this.method + '/'; return; }
+                 if (this.diet) { window.location.href = '/meal-prep/diet/' + this.diet + '/'; return; }
+                 if (this.goal) { window.location.href = '/meal-prep/goal/' + this.goal + '/'; return; }
+                 if (this.constraint) { window.location.href = '/meal-prep/constraint/' + this.constraint + '/'; return; }
                },
                resetWizard() {
                  this.goal = '';

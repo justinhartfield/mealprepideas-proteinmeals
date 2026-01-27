@@ -116,9 +116,11 @@ const exploreColumns = [
     conditionType="persona"
     definition={`High protein nutrition guide tailored for ${displayValue.toLowerCase()}. Browse curated recipes, macro breakdowns, and expert tips designed specifically for your goals.`}
     recipes={personaRecipes}
+    hub="high-protein"
   />
 ) : isStoreOrChain && storeData ? (
   <RetailerChainPage
+    site="proteinmeals"
     title={`${storeData.name} High Protein Guide | ProteinMeals.co`}
     description={storeData.description}
     canonicalUrl={`https://proteinmeals.co/high-protein/${facetType}/${facetValue}/`}

@@ -49,25 +49,29 @@ interface Props {
   site?: "mealprepideas" | "proteinmeals";
 }
 
-const { title, description } = Astro.props;
+const { title, description, site = 'mealprepideas' } = Astro.props;
+
+// Cross-site URL helpers: links to the other site's hub use absolute URLs
+const mpBase = site === 'mealprepideas' ? '' : 'https://mealprepideas.co';
+const hpBase = site === 'proteinmeals' ? '' : 'https://proteinmeals.co';
 
 const facetChips = [
-  { label: 'Crockpot', href: '/meal-prep/method/crockpot/' },
-  { label: 'Slow-Cooker', href: '/meal-prep/method/slow-cooker/' },
+  { label: 'Crockpot', href: `${mpBase}/meal-prep/method/crockpot/` },
+  { label: 'Slow-Cooker', href: `${mpBase}/meal-prep/method/slow-cooker/` },
   { label: 'Trader Joes', href: '/stores/trader-joes/' },
   { label: 'Costco', href: '/stores/costco/' },
-  { label: 'Weight-Loss', href: '/high-protein/goal/weight-loss/' },
-  { label: 'Postpartum', href: '/meal-prep/persona/postpartum/' },
-  { label: 'High Fiber', href: '/high-protein/constraint/high-fiber/' },
-  { label: 'Budget', href: '/meal-prep/constraint/budget/' },
-  { label: 'Chicken', href: '/meal-prep/ingredient/chicken/' },
-  { label: 'Salmon', href: '/high-protein/ingredient/salmon/' },
-  { label: 'Low-Sodium', href: '/high-protein/constraint/low-sodium/' },
-  { label: 'Air-Fryer', href: '/meal-prep/method/air-fryer/' },
+  { label: 'Weight-Loss', href: `${hpBase}/high-protein/goal/weight-loss/` },
+  { label: 'Postpartum', href: `${mpBase}/meal-prep/persona/postpartum/` },
+  { label: 'High Fiber', href: `${hpBase}/high-protein/constraint/high-fiber/` },
+  { label: 'Budget', href: `${mpBase}/meal-prep/constraint/budget/` },
+  { label: 'Chicken', href: `${mpBase}/meal-prep/ingredient/chicken/` },
+  { label: 'Salmon', href: `${hpBase}/high-protein/ingredient/salmon/` },
+  { label: 'Low-Sodium', href: `${hpBase}/high-protein/constraint/low-sodium/` },
+  { label: 'Air-Fryer', href: `${mpBase}/meal-prep/method/air-fryer/` },
   { label: 'Walmart', href: '/stores/walmart/' },
   { label: 'Chick-Fil-A', href: '/stores/chick-fil-a/' },
-  { label: 'Bariatric', href: '/high-protein/persona/bariatric/' },
-  { label: 'College', href: '/meal-prep/persona/college/' },
+  { label: 'Bariatric', href: `${hpBase}/high-protein/persona/bariatric/` },
+  { label: 'College', href: `${mpBase}/meal-prep/persona/college/` },
 ];
 ---
 
@@ -79,7 +83,7 @@ const facetChips = [
     <section class="relative min-h-[70vh] flex flex-col md:flex-row overflow-hidden"
              style="border-bottom: 1px solid var(--border-default);">
       <!-- PORTAL 1: MEAL PREP -->
-      <a href="/meal-prep/"
+      <a href={`${mpBase}/meal-prep/`}
          x-on:mouseenter="activeHub = 'meal-prep'"
          x-on:mouseleave="activeHub = 'all'"
          class="relative flex-1 group transition-all duration-700 ease-out flex flex-col justify-end p-12 overflow-hidden"
@@ -103,7 +107,7 @@ const facetChips = [
       </a>
 
       <!-- PORTAL 2: HIGH PROTEIN -->
-      <a href="/high-protein/"
+      <a href={`${hpBase}/high-protein/`}
          x-on:mouseenter="activeHub = 'high-protein'"
          x-on:mouseleave="activeHub = 'all'"
          class="relative flex-1 group transition-all duration-700 ease-out flex flex-col justify-end p-12 overflow-hidden"
@@ -127,23 +131,34 @@ const facetChips = [
     </section>
 
     <!-- SEARCH & SOLVE WIDGET -->
-    <section class="py-20 px-6 max-w-7xl mx-auto" x-data="{
-      goal: 'Weight Loss',
-      method: 'Air Fryer',
-      diet: 'Low Carb',
+    <section class="py-20 px-6 max-w-7xl mx-auto" x-data={`{
+      goal: '',
+      method: '',
+      diet: '',
+      mpBase: '${mpBase}',
+      hpBase: '${hpBase}',
       generateIndex() {
-        const goalMap = { 'Weight Loss': 'weight-loss', 'Muscle Gain': 'muscle-gain', 'Healthy (General)': 'healthy' };
-        const methodMap = { 'Air Fryer': 'air-fryer', 'Crockpot': 'crockpot', 'No-Cook': 'no-cook', 'Microwave': 'microwave', 'Instant Pot': 'instant-pot' };
-        const dietMap = { 'Low Carb': 'low-carb', 'Vegan': 'vegan', 'High Protein': 'keto', 'Gluten Free': 'gluten-free' };
-        const g = goalMap[this.goal];
-        const m = methodMap[this.method];
-        const d = dietMap[this.diet];
-        if (g) { window.location.href = '/high-protein/goal/' + g + '/'; }
-        else if (m) { window.location.href = '/meal-prep/method/' + m + '/'; }
-        else if (d) { window.location.href = '/high-protein/diet/' + d + '/'; }
-        else { window.location.href = '/meal-prep/'; }
+        const goalMap = { 'Weight Loss': 'weight-loss', 'Muscle Gain': 'muscle-gain', 'Healthy': 'healthy' };
+        const methodMap = { 'Air Fryer': 'air-fryer', 'Crockpot': 'crockpot', 'No-Cook': 'no-cook', 'Microwave': 'microwave', 'Instant Pot': 'instant-pot', 'Sheet Pan': 'sheet-pan', 'Slow Cooker': 'slow-cooker', 'Freezer': 'freezer', 'Oven': 'oven', 'Grill': 'grill', 'One Pan': 'one-pan' };
+        const dietMap = { 'Low Carb': 'low-carb', 'Vegan': 'vegan', 'Keto': 'keto', 'Gluten Free': 'gluten-free', 'Vegetarian': 'vegetarian', 'Dairy Free': 'dairy-free', 'Low Calorie': 'low-calorie' };
+        const g = this.goal ? goalMap[this.goal] : null;
+        const m = this.method ? methodMap[this.method] : null;
+        const d = this.diet ? dietMap[this.diet] : null;
+        const parts = [];
+        if (m) parts.push('method/' + m);
+        if (d) parts.push('diet/' + d);
+        if (g) parts.push('goal/' + g);
+        if (parts.length >= 2) {
+          window.location.href = this.mpBase + '/meal-prep/' + parts[0] + '/' + parts[1] + '/';
+        } else if (parts.length === 1) {
+          const facet = parts[0];
+          const isProtein = facet.startsWith('goal/') || facet.startsWith('diet/');
+          window.location.href = (isProtein ? this.hpBase + '/high-protein/' : this.mpBase + '/meal-prep/') + facet + '/';
+        } else {
+          window.location.href = this.mpBase + '/meal-prep/';
+        }
       }
-    }">
+    }`}>
       <div class="flex flex-col md:flex-row items-end justify-between mb-12 gap-8">
         <div class="max-w-xl">
           <div class="flex items-center gap-4 mb-4">
@@ -165,30 +180,42 @@ const facetChips = [
              style="background: var(--select-bg); border: 1px solid var(--select-border);">
           <label class="text-[10px] font-black uppercase tracking-widest mb-6 block" style="color: var(--text-tertiary);">01. Primary Goal</label>
           <select x-model="goal" class="bg-transparent text-xl font-bold tracking-tight outline-none w-full appearance-none cursor-pointer" style="color: var(--text-primary);">
+            <option value="">Any Goal</option>
             <option>Weight Loss</option>
             <option>Muscle Gain</option>
-            <option>Healthy (General)</option>
+            <option>Healthy</option>
           </select>
         </div>
         <div class="p-6 rounded-xl flex flex-col justify-between transition-all"
              style="background: var(--select-bg); border: 1px solid var(--select-border);">
           <label class="text-[10px] font-black uppercase tracking-widest mb-6 block" style="color: var(--text-tertiary);">02. Method</label>
           <select x-model="method" class="bg-transparent text-xl font-bold tracking-tight outline-none w-full appearance-none cursor-pointer" style="color: var(--text-primary);">
+            <option value="">Any Method</option>
             <option>Air Fryer</option>
             <option>Crockpot</option>
+            <option>Slow Cooker</option>
             <option>No-Cook</option>
             <option>Microwave</option>
             <option>Instant Pot</option>
+            <option>Sheet Pan</option>
+            <option>Freezer</option>
+            <option>Oven</option>
+            <option>Grill</option>
+            <option>One Pan</option>
           </select>
         </div>
         <div class="p-6 rounded-xl flex flex-col justify-between transition-all"
              style="background: var(--select-bg); border: 1px solid var(--select-border);">
           <label class="text-[10px] font-black uppercase tracking-widest mb-6 block" style="color: var(--text-tertiary);">03. Diet Type</label>
           <select x-model="diet" class="bg-transparent text-xl font-bold tracking-tight outline-none w-full appearance-none cursor-pointer" style="color: var(--text-primary);">
+            <option value="">Any Diet</option>
             <option>Low Carb</option>
             <option>Vegan</option>
-            <option>High Protein</option>
+            <option>Keto</option>
+            <option>Vegetarian</option>
             <option>Gluten Free</option>
+            <option>Dairy Free</option>
+            <option>Low Calorie</option>
           </select>
         </div>
         <button x-on:click="generateIndex()" class="theme-btn-cta rounded-xl p-6 flex flex-col items-center justify-center transition-all group overflow-hidden relative cursor-pointer">
@@ -210,7 +237,7 @@ const facetChips = [
           <h4 class="text-lg font-black tracking-tight mb-6 uppercase" style="color: var(--text-primary);">Meal Prep</h4>
           <div class="space-y-4">
             {featuredMealPrep.map(r => (
-              <a href={`/meal-prep/recipes/${r.slug}/`} class="flex gap-4 items-center group p-3 rounded-xl transition-all hover:shadow-md" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+              <a href={`${mpBase}/meal-prep/recipes/${r.slug}/`} class="flex gap-4 items-center group p-3 rounded-xl transition-all hover:shadow-md" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
                 <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
                   <img
                     src={`/images/recipes/${r.slug}.jpg`}
@@ -241,7 +268,7 @@ const facetChips = [
           <h4 class="text-lg font-black tracking-tight mb-6 uppercase" style="color: var(--text-primary);">High Protein</h4>
           <div class="space-y-4">
             {featuredProtein.map(r => (
-              <a href={`/high-protein/recipes/${r.slug}/`} class="flex gap-4 items-center group p-3 rounded-xl transition-all hover:shadow-md" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+              <a href={`${hpBase}/high-protein/recipes/${r.slug}/`} class="flex gap-4 items-center group p-3 rounded-xl transition-all hover:shadow-md" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
                 <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
                   <img
                     src={`/images/recipes/${r.slug}.jpg`}
@@ -314,7 +341,7 @@ const facetChips = [
             <p class="font-medium text-sm opacity-70">Targeted recovery nutrition for new mothers. High-fiber, anti-inflammatory protocols.</p>
           </div>
           <div class="mt-8">
-            <a href="/meal-prep/persona/postpartum/" class="w-full py-4 rounded-xl font-black uppercase text-xs tracking-widest flex items-center justify-center transition-colors"
+            <a href={`${mpBase}/meal-prep/persona/postpartum/`} class="w-full py-4 rounded-xl font-black uppercase text-xs tracking-widest flex items-center justify-center transition-colors"
                style="background: var(--text-primary); color: var(--bg-primary);">
               Explore Vault
             </a>
@@ -322,7 +349,7 @@ const facetChips = [
         </div>
 
         <!-- PACK C: NO MICROWAVE -->
-        <a href="/meal-prep/constraint/no-microwave/" class="md:col-span-4 hyper-border rounded-3xl p-8 flex flex-col justify-between group block">
+        <a href={`${mpBase}/meal-prep/constraint/no-microwave/`} class="md:col-span-4 hyper-border rounded-3xl p-8 flex flex-col justify-between group block">
           <div class="mb-8">
             <span class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-tertiary);">Persona: Office</span>
             <h5 class="text-3xl font-black tracking-tighter leading-tight" style="color: var(--text-primary);">No-Microwave Work Lunches</h5>
@@ -371,8 +398,8 @@ const facetChips = [
           <h2 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.8] mb-8" style="color: var(--text-primary);">THE 5-DAY<br/>PROTOCOL</h2>
           <p class="text-xl font-medium mb-8" style="color: var(--text-secondary);">Download the Sunday Prep Execution Plan. 90 minutes of work for 15 high-protein meals.</p>
           <div class="flex gap-4">
-            <a href="/meal-prep/plans/beginner-meal-prep-5-day/" class="theme-btn-primary px-8 py-4 rounded-full font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform inline-block">Get The Plan</a>
-            <a href="/high-protein/plans/high-protein-muscle-gain-5-day/" class="px-8 py-4 rounded-full font-black uppercase text-xs tracking-widest transition-all inline-block"
+            <a href={`${mpBase}/meal-prep/plans/beginner-meal-prep-5-day/`} class="theme-btn-primary px-8 py-4 rounded-full font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform inline-block">Get The Plan</a>
+            <a href={`${hpBase}/high-protein/plans/high-protein-muscle-gain-5-day/`} class="px-8 py-4 rounded-full font-black uppercase text-xs tracking-widest transition-all inline-block"
                     style="border: 2px solid var(--text-primary); color: var(--text-primary);">Preview Steps</a>
           </div>
         </div>
@@ -401,5 +428,5 @@ const facetChips = [
     </section>
   </main>
 
-  <FooterNav />
+  <FooterNav site={site} />
 </BaseLayout>

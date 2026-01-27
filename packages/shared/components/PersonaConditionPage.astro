@@ -23,6 +23,7 @@ interface Props {
   site?: "mealprepideas" | "proteinmeals";
   relatedConditions?: { label: string; href: string }[];
   exploreColumns?: { title: string; links: { label: string; href: string }[] }[];
+  hub?: string;
 }
 
 const {
@@ -30,7 +31,11 @@ const {
   definition = '', disclaimer = 'This content is for informational purposes only. Consult a healthcare professional before making dietary changes.',
   nutritionRules = [], recipes = [], faqs = [],
   relatedConditions = [], exploreColumns = [],
+  hub = 'meal-prep',
 } = Astro.props;
+
+const hubPath = hub === 'high-protein' ? '/high-protein/' : '/meal-prep/';
+const hubLabel = hub === 'high-protein' ? 'High Protein' : 'Meal Prep';
 
 const recipesJson = JSON.stringify(recipes);
 
@@ -53,7 +58,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
   <main class="flex-grow" x-data={`{ faqOpen: null, recipes: ${recipesJson} }`}>
     <BreadcrumbNav items={[
       { label: 'Home', href: '/' },
-      { label: 'Meal Prep Hub', href: '/meal-prep/' },
+      { label: `${hubLabel} Hub`, href: hubPath },
       { label: conditionName },
     ]} />
 

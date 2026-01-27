@@ -228,19 +228,26 @@ const structuredData = JSON.stringify({
                meal: '',
                constraint: '',
                generatePlan() {
-                 const facets = [];
-                 if (this.goal) facets.push({ type: 'goal', val: this.goal });
-                 if (this.method) facets.push({ type: 'method', val: this.method });
-                 if (this.diet) facets.push({ type: 'diet', val: this.diet });
-                 if (this.meal) facets.push({ type: 'meal', val: this.meal });
-                 if (this.constraint) facets.push({ type: 'constraint', val: this.constraint });
-
-                 if (facets.length === 0) {
+                 // Two-facet combos that exist for high-protein: method+goal, diet+constraint, store+constraint, chain+goal
+                 if (!this.goal && !this.method && !this.diet && !this.meal && !this.constraint) {
                    document.getElementById('recipe-browser')?.scrollIntoView({ behavior: 'smooth' });
                    return;
                  }
-                 const primary = facets[0];
-                 window.location.href = '/high-protein/' + primary.type + '/' + primary.val + '/';
+                 // Try two-facet combos first (matching indexed combos)
+                 if (this.method && this.goal) {
+                   window.location.href = '/high-protein/method/' + this.method + '/goal/' + this.goal + '/';
+                   return;
+                 }
+                 if (this.diet && this.constraint) {
+                   window.location.href = '/high-protein/diet/' + this.diet + '/constraint/' + this.constraint + '/';
+                   return;
+                 }
+                 // Fallback: canonical order single-facet
+                 if (this.meal) { window.location.href = '/high-protein/meal/' + this.meal + '/'; return; }
+                 if (this.method) { window.location.href = '/high-protein/method/' + this.method + '/'; return; }
+                 if (this.diet) { window.location.href = '/high-protein/diet/' + this.diet + '/'; return; }
+                 if (this.goal) { window.location.href = '/high-protein/goal/' + this.goal + '/'; return; }
+                 if (this.constraint) { window.location.href = '/high-protein/constraint/' + this.constraint + '/'; return; }
                },
                resetWizard() {
                  this.goal = '';

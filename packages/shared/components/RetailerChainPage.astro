@@ -34,13 +34,16 @@ const {
   tagline = '', entityDescription = '',
   totalSKUs = 0, avgPE = '0',
   skus = [], menuHacks = [], topPicks = [], relatedLinks = [],
+  site,
 } = Astro.props;
 
 const skusJson = JSON.stringify(skus);
 const isStore = entityType === 'store';
 
 // --- Schema.org Structured Data ---
-const hubPath = isStore ? '/meal-prep/' : '/high-protein/';
+// Determine hub path from site prop or canonicalUrl, not entity type
+const detectedSite = site || (canonicalUrl?.includes('proteinmeals') ? 'proteinmeals' : canonicalUrl?.includes('mealprepideas') ? 'mealprepideas' : undefined);
+const hubPath = detectedSite === 'proteinmeals' ? '/high-protein/' : detectedSite === 'mealprepideas' ? '/meal-prep/' : (isStore ? '/meal-prep/' : '/high-protein/');
 const siteUrl = canonicalUrl
   ? canonicalUrl.replace(/\/[^/]*\/[^/]*\/[^/]*\/$/, '')
   : (isStore ? 'https://mealprepideas.co' : 'https://proteinmeals.co');

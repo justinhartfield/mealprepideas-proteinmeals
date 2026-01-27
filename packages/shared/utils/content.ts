@@ -141,7 +141,7 @@ export function getRelatedRecipes(recipe: Recipe, limit: number = 4): Recipe[] {
   );
 
   const scored = recipes
-    .filter((r) => r.slug !== recipe.slug) // exclude self
+    .filter((r) => r.slug !== recipe.slug && r.hub === recipe.hub) // exclude self, same hub only
     .map((candidate) => {
       let score = 0;
 
