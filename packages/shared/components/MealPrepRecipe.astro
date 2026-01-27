@@ -242,7 +242,13 @@ const structuredData = JSON.stringify({
               <span class="rp-yield__count" x-text="servings">{servings}</span>
               <button x-on:click="servings++" class="rp-yield__btn">+</button>
             </div>
-            <button class="rp-save-btn">SAVE PROTOCOL</button>
+            <button class="rp-save-btn" id="save-recipe-btn" data-slug={recipe.slug} data-title={recipeName} data-protein={recipe.protein} data-calories={recipe.calories} data-image={heroImage}>
+              <span id="save-btn-text">SAVE PROTOCOL</span>
+            </button>
+            <button class="rp-grocery-btn" id="add-grocery-btn" title="Add ingredients to grocery list">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
+              <span>GROCERY LIST</span>
+            </button>
           </div>
         </div>
 
@@ -277,8 +283,11 @@ const structuredData = JSON.stringify({
           <div class="rp-inventory__header">
             <h2 class="rp-section-title">INVENTORY LIST</h2>
             <div class="rp-toggle-pills">
-              <span class="rp-pill rp-pill--active">ORIGINAL</span>
-              <span class="rp-pill">VEGAN SWAP</span>
+              <span class="rp-pill rp-pill--active" id="pill-original">ORIGINAL</span>
+              <span class="rp-pill" id="pill-vegan" onclick="window.authHelper ? window.authHelper.requireAuth(function() { document.getElementById('pill-vegan').classList.add('rp-pill--active'); document.getElementById('pill-original').classList.remove('rp-pill--active'); }) : void(0)">
+                <svg class="inline w-3 h-3 mr-1 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24" data-auth-show="signed-out"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                VEGAN SWAP
+              </span>
             </div>
           </div>
 
@@ -912,6 +921,28 @@ const structuredData = JSON.stringify({
     color: var(--accent-primary);
   }
 
+  /* Grocery List Button */
+  .rp-grocery-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: 999px;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .rp-grocery-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+  }
+
   /* ─── RESPONSIVE ────────────────────────────────── */
   @media (max-width: 768px) {
     .rp-stats {
@@ -925,3 +956,54 @@ const structuredData = JSON.stringify({
     }
   }
 </style>
+
+<script is:inline define:vars={{ recipeSlug: recipe.slug, recipeName, recipeProtein: recipe.protein, recipeCalories: recipe.calories, heroImage, ingredientTexts: recipe.ingredients }}>
+  document.addEventListener('DOMContentLoaded', function() {
+    var saveBtn = document.getElementById('save-recipe-btn');
+    var saveBtnText = document.getElementById('save-btn-text');
+    var groceryBtn = document.getElementById('add-grocery-btn');
+
+    function updateSaveState() {
+      if (window.authHelper && window.authHelper.isRecipeSaved(recipeSlug)) {
+        saveBtnText.textContent = '✓ SAVED';
+        saveBtn.style.opacity = '0.75';
+      }
+    }
+
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function() {
+        window.authHelper.requireAuth(function(user) {
+          var recipe = { slug: recipeSlug, title: recipeName, protein: recipeProtein, calories: recipeCalories, image: heroImage, savedAt: new Date().toISOString() };
+          if (window.authHelper.isRecipeSaved(recipeSlug)) {
+            window.authHelper.unsaveRecipe(recipeSlug);
+            saveBtnText.textContent = 'SAVE PROTOCOL';
+            saveBtn.style.opacity = '1';
+          } else {
+            window.authHelper.saveRecipe(recipe);
+            saveBtnText.textContent = '✓ SAVED';
+            saveBtn.style.opacity = '0.75';
+          }
+        });
+      });
+    }
+
+    if (groceryBtn) {
+      groceryBtn.addEventListener('click', function() {
+        window.authHelper.requireAuth(function(user) {
+          var list = window.authHelper.getGroceryList();
+          ingredientTexts.forEach(function(ing) {
+            if (!list.find(function(item) { return item.text === ing && item.recipe === recipeSlug; })) {
+              list.push({ text: ing, recipe: recipeSlug, recipeName: recipeName, checked: false });
+            }
+          });
+          window.authHelper.setGroceryList(list);
+          groceryBtn.querySelector('span').textContent = '✓ ADDED';
+          setTimeout(function() { groceryBtn.querySelector('span').textContent = 'GROCERY LIST'; }, 2000);
+        });
+      });
+    }
+
+    window.addEventListener('clerk-ready', updateSaveState);
+    if (window.__authReady) updateSaveState();
+  });
+</script>
