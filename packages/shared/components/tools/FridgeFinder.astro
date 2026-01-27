@@ -1,0 +1,232 @@
+---
+/**
+ * FridgeFinder — "What's In My Fridge?" Tool
+ * Select ingredients, get matching recipe suggestions
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HeaderNav from '../HeaderNav.astro';
+import FooterNav from '../FooterNav.astro';
+import { recipes } from '../../data/content/recipes';
+
+interface Props {
+  site?: 'mealprepideas' | 'proteinmeals';
+}
+
+const { site = 'mealprepideas' } = Astro.props;
+
+const siteTitle = site === 'proteinmeals' ? 'ProteinMeals.co' : 'MealPrepIdeas.co';
+const baseUrl = site === 'proteinmeals' ? 'https://proteinmeals.co' : 'https://mealprepideas.co';
+
+// Build a simplified recipe list for Alpine (keep payload small)
+const recipeData = recipes.map(r => ({
+  slug: r.slug,
+  title: r.title,
+  description: r.description,
+  hub: r.hub,
+  calories: r.calories,
+  protein: r.protein,
+  carbs: r.carbs,
+  fat: r.fat,
+  prepTime: r.prepTime,
+  cookTime: r.cookTime,
+  servings: r.servings,
+  ingredients: r.ingredients.map(i => i.toLowerCase()),
+  imageAlt: r.imageAlt,
+}));
+
+const structuredData = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": `What's In My Fridge? — ${siteTitle}`,
+  "description": "Select ingredients you have on hand and find matching meal prep recipes instantly.",
+  "url": `${baseUrl}/tools/fridge-finder/`,
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "All",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+});
+---
+
+<BaseLayout
+  title={`What's In My Fridge? — Find Recipes by Ingredient | ${siteTitle}`}
+  description="Select the ingredients you have on hand and instantly find matching meal prep recipes. No more wasted food!"
+  canonicalUrl={`${baseUrl}/tools/fridge-finder/`}
+  structuredData={structuredData}
+>
+  <HeaderNav site={site} />
+
+  <main class="flex-1 px-4 md:px-8 py-12 max-w-6xl mx-auto w-full"
+    x-data={`fridgeFinder(${JSON.stringify(recipeData)})`}>
+
+    <!-- Hero -->
+    <div class="text-center mb-12">
+      <span class="text-[10px] font-black uppercase tracking-[0.5em] mb-4 inline-block" style="color: var(--accent-primary);">Interactive Tool</span>
+      <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-4" style="color: var(--text-primary);">
+        What's In My Fridge?
+      </h1>
+      <p class="text-lg max-w-2xl mx-auto" style="color: var(--text-secondary);">
+        Select 3–5 ingredients you have on hand. We'll find matching recipes instantly.
+      </p>
+    </div>
+
+    <!-- Selected count badge -->
+    <div class="flex items-center justify-center gap-3 mb-8">
+      <div class="px-4 py-2 rounded-full text-sm font-bold"
+           style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-secondary);">
+        <span x-text="selected.length" class="font-black" style="color: var(--accent-primary);"></span>
+        <span> / 5 ingredients selected</span>
+      </div>
+      <button
+        x-show="selected.length > 0"
+        @click="selected = []"
+        class="px-3 py-2 rounded-full text-xs font-bold cursor-pointer transition-all"
+        style="background: var(--bg-tertiary); color: var(--text-secondary); border: none;">
+        Clear All
+      </button>
+    </div>
+
+    <!-- Ingredient Categories -->
+    <template x-for="cat in categories" :key="cat.name">
+      <div class="mb-8">
+        <h2 class="text-[10px] font-black uppercase tracking-[0.5em] mb-4" style="color: var(--text-tertiary);" x-text="cat.name"></h2>
+        <div class="flex flex-wrap gap-3">
+          <template x-for="item in cat.items" :key="item">
+            <button
+              @click="toggle(item)"
+              :class="selected.includes(item) ? 'ring-2' : ''"
+              class="px-4 py-2.5 rounded-2xl text-sm font-bold cursor-pointer transition-all"
+              :style="selected.includes(item)
+                ? 'background: var(--accent-primary); color: var(--text-inverse); border: 1px solid var(--accent-primary); ring-color: var(--accent-primary);'
+                : 'background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border-default);'"
+              x-text="item">
+            </button>
+          </template>
+        </div>
+      </div>
+    </template>
+
+    <!-- Results Section -->
+    <div class="mt-12" x-show="selected.length >= 1" x-transition>
+      <div class="flex items-center gap-3 mb-6">
+        <div class="h-px flex-1" style="background: var(--border-default);"></div>
+        <h2 class="text-[10px] font-black uppercase tracking-[0.5em]" style="color: var(--accent-primary);">
+          <span x-text="matches.length"></span> Matching Recipes
+        </h2>
+        <div class="h-px flex-1" style="background: var(--border-default);"></div>
+      </div>
+
+      <!-- No matches -->
+      <div x-show="matches.length === 0" class="text-center py-16 rounded-2xl" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+        <p class="text-4xl mb-4">🤔</p>
+        <p class="text-lg font-bold" style="color: var(--text-primary);">No exact matches found</p>
+        <p class="text-sm mt-2" style="color: var(--text-secondary);">Try selecting different ingredients or fewer items.</p>
+      </div>
+
+      <!-- Recipe cards -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <template x-for="recipe in matches" :key="recipe.slug">
+          <div class="rounded-2xl overflow-hidden transition-all hover:-translate-y-1"
+               style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+            <!-- Card header with match score -->
+            <div class="p-5">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] px-2 py-1 rounded-full"
+                      style="background: var(--accent-primary); color: var(--text-inverse);"
+                      x-text="recipe.matchCount + '/' + selected.length + ' match'">
+                </span>
+                <span class="text-[10px] font-bold" style="color: var(--text-tertiary);"
+                      x-text="recipe.hub === 'meal-prep' ? '🥦 Meal Prep' : '🍗 High Protein'">
+                </span>
+              </div>
+              <h3 class="text-lg font-black tracking-tight mb-2" style="color: var(--text-primary);" x-text="recipe.title"></h3>
+              <p class="text-sm line-clamp-2" style="color: var(--text-secondary);" x-text="recipe.description"></p>
+            </div>
+
+            <!-- Macros row -->
+            <div class="px-5 pb-4 flex gap-4">
+              <div class="flex flex-col items-center">
+                <span class="text-xs font-bold" style="color: var(--accent-primary);" x-text="recipe.calories"></span>
+                <span class="text-[9px] uppercase tracking-wider" style="color: var(--text-tertiary);">cal</span>
+              </div>
+              <div class="flex flex-col items-center">
+                <span class="text-xs font-bold" style="color: var(--text-primary);" x-text="recipe.protein + 'g'"></span>
+                <span class="text-[9px] uppercase tracking-wider" style="color: var(--text-tertiary);">protein</span>
+              </div>
+              <div class="flex flex-col items-center">
+                <span class="text-xs font-bold" style="color: var(--text-primary);" x-text="recipe.carbs + 'g'"></span>
+                <span class="text-[9px] uppercase tracking-wider" style="color: var(--text-tertiary);">carbs</span>
+              </div>
+              <div class="flex flex-col items-center">
+                <span class="text-xs font-bold" style="color: var(--text-primary);" x-text="recipe.fat + 'g'"></span>
+                <span class="text-[9px] uppercase tracking-wider" style="color: var(--text-tertiary);">fat</span>
+              </div>
+            </div>
+
+            <!-- Matched ingredients -->
+            <div class="px-5 pb-5">
+              <div class="flex flex-wrap gap-1">
+                <template x-for="ing in recipe.matchedIngredients" :key="ing">
+                  <span class="text-[10px] font-bold px-2 py-1 rounded-full"
+                        style="background: var(--accent-glow); color: var(--accent-primary); border: 1px solid var(--accent-primary);"
+                        x-text="ing"></span>
+                </template>
+              </div>
+            </div>
+
+            <!-- View recipe link -->
+            <a :href="(recipe.hub === 'meal-prep' ? '/meal-prep/recipes/' : '/high-protein/recipes/') + recipe.slug + '/'"
+               class="block px-5 py-3 text-center text-sm font-black uppercase tracking-wider transition-all"
+               style="border-top: 1px solid var(--border-default); color: var(--accent-primary); text-decoration: none;">
+              View Recipe →
+            </a>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Prompt to select more -->
+    <div x-show="selected.length === 0" class="text-center py-16 rounded-2xl mt-8"
+         style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+      <p class="text-5xl mb-4">🧊</p>
+      <p class="text-lg font-bold" style="color: var(--text-primary);">Open your fridge and start selecting!</p>
+      <p class="text-sm mt-2" style="color: var(--text-secondary);">Pick at least 1 ingredient above to see matching recipes.</p>
+    </div>
+  </main>
+
+  <FooterNav site={site} />
+</BaseLayout>
+
+<script is:inline>
+document.addEventListener('alpine:init', () => {
+  Alpine.data('fridgeFinder', (allRecipes) => ({
+    selected: [],
+    categories: [
+      { name: 'Proteins', items: ['chicken', 'beef', 'turkey', 'salmon', 'shrimp', 'tofu', 'eggs'] },
+      { name: 'Grains', items: ['rice', 'quinoa', 'pasta'] },
+      { name: 'Vegetables', items: ['broccoli', 'spinach', 'sweet potato'] },
+      { name: 'Pantry', items: ['beans', 'lentils'] },
+    ],
+    recipes: allRecipes,
+
+    toggle(item) {
+      if (this.selected.includes(item)) {
+        this.selected = this.selected.filter(i => i !== item);
+      } else if (this.selected.length < 5) {
+        this.selected.push(item);
+      }
+    },
+
+    get matches() {
+      if (this.selected.length === 0) return [];
+      const sel = this.selected.map(s => s.toLowerCase());
+      const scored = this.recipes.map(r => {
+        const matched = sel.filter(s =>
+          r.ingredients.some(ing => ing.includes(s))
+        );
+        return { ...r, matchCount: matched.length, matchedIngredients: matched };
+      }).filter(r => r.matchCount > 0);
+      scored.sort((a, b) => b.matchCount - a.matchCount);
+      return scored;
+    }
+  }));
+});
+</script>

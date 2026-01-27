@@ -1,0 +1,298 @@
+---
+/**
+ * RoiCalculator — Meal Prep ROI Calculator
+ * Calculate how much you save by meal prepping vs eating out
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HeaderNav from '../HeaderNav.astro';
+import FooterNav from '../FooterNav.astro';
+
+interface Props {
+  site?: 'mealprepideas' | 'proteinmeals';
+}
+
+const { site = 'mealprepideas' } = Astro.props;
+
+const siteTitle = site === 'proteinmeals' ? 'ProteinMeals.co' : 'MealPrepIdeas.co';
+const baseUrl = site === 'proteinmeals' ? 'https://proteinmeals.co' : 'https://mealprepideas.co';
+
+const structuredData = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": `Meal Prep ROI Calculator — ${siteTitle}`,
+  "description": "Calculate how much money you save by meal prepping instead of eating out. See weekly, monthly, and annual savings.",
+  "url": `${baseUrl}/tools/roi-calculator/`,
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+});
+---
+
+<BaseLayout
+  title={`Meal Prep ROI Calculator — See Your Savings | ${siteTitle}`}
+  description="Calculate how much money you save by meal prepping instead of eating out. See weekly, monthly, and annual savings instantly."
+  canonicalUrl={`${baseUrl}/tools/roi-calculator/`}
+  structuredData={structuredData}
+>
+  <HeaderNav site={site} />
+
+  <main class="flex-1 px-4 md:px-8 py-12 max-w-4xl mx-auto w-full"
+    x-data="roiCalc()">
+
+    <!-- Hero -->
+    <div class="text-center mb-12">
+      <span class="text-[10px] font-black uppercase tracking-[0.5em] mb-4 inline-block" style="color: var(--accent-primary);">Interactive Tool</span>
+      <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-4" style="color: var(--text-primary);">
+        Meal Prep ROI Calculator
+      </h1>
+      <p class="text-lg max-w-2xl mx-auto" style="color: var(--text-secondary);">
+        Find out exactly how much you save by prepping meals at home instead of eating out.
+      </p>
+    </div>
+
+    <!-- Input Form -->
+    <div class="rounded-2xl p-6 md:p-8 mb-8" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+      <h2 class="text-[10px] font-black uppercase tracking-[0.5em] mb-6" style="color: var(--text-tertiary);">Your Numbers</h2>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <!-- Meals out per week -->
+        <div>
+          <label class="block text-sm font-bold mb-2" style="color: var(--text-secondary);">
+            Meals eaten out / week
+          </label>
+          <input
+            type="number"
+            x-model.number="mealsOut"
+            min="0" max="50" step="1"
+            class="w-full px-4 py-3 rounded-xl text-lg font-bold focus:outline-none focus:ring-2 transition-all"
+            style="background: var(--bg-primary); border: 1px solid var(--border-default); color: var(--text-primary); --tw-ring-color: var(--accent-primary);"
+          />
+          <p class="text-[10px] mt-1 font-bold" style="color: var(--text-tertiary);">Lunch, dinner, takeout, delivery…</p>
+        </div>
+
+        <!-- Average meal cost -->
+        <div>
+          <label class="block text-sm font-bold mb-2" style="color: var(--text-secondary);">
+            Average cost per meal ($)
+          </label>
+          <input
+            type="number"
+            x-model.number="mealCost"
+            min="0" max="200" step="0.50"
+            class="w-full px-4 py-3 rounded-xl text-lg font-bold focus:outline-none focus:ring-2 transition-all"
+            style="background: var(--bg-primary); border: 1px solid var(--border-default); color: var(--text-primary); --tw-ring-color: var(--accent-primary);"
+          />
+          <p class="text-[10px] mt-1 font-bold" style="color: var(--text-tertiary);">Including tip & delivery fees</p>
+        </div>
+
+        <!-- Grocery budget -->
+        <div>
+          <label class="block text-sm font-bold mb-2" style="color: var(--text-secondary);">
+            Grocery budget / week ($)
+          </label>
+          <input
+            type="number"
+            x-model.number="groceryBudget"
+            min="0" max="1000" step="5"
+            class="w-full px-4 py-3 rounded-xl text-lg font-bold focus:outline-none focus:ring-2 transition-all"
+            style="background: var(--bg-primary); border: 1px solid var(--border-default); color: var(--text-primary); --tw-ring-color: var(--accent-primary);"
+          />
+          <p class="text-[10px] mt-1 font-bold" style="color: var(--text-tertiary);">What you'd spend on groceries instead</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Panel -->
+    <div x-show="weeklySavings > 0" x-transition class="space-y-6">
+      <!-- Big savings number -->
+      <div class="rounded-2xl p-8 md:p-12 text-center relative overflow-hidden"
+           style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+        <div class="scanner-line"></div>
+        <span class="text-[10px] font-black uppercase tracking-[0.5em] mb-2 block" style="color: var(--accent-primary);">
+          Annual Savings
+        </span>
+        <div class="text-5xl md:text-7xl font-black tracking-tighter my-4" style="color: var(--accent-primary);">
+          $<span x-text="animatedAnnual"></span>
+        </div>
+        <p class="text-sm" style="color: var(--text-secondary);">
+          That's <span class="font-bold" style="color: var(--text-primary);" x-text="'$' + weeklySavings.toFixed(2)"></span> per week
+          or <span class="font-bold" style="color: var(--text-primary);" x-text="'$' + monthlySavings.toFixed(2)"></span> per month
+        </p>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="rounded-2xl p-5 text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-[10px] font-black uppercase tracking-[0.3em] block mb-2" style="color: var(--text-tertiary);">Weekly</span>
+          <span class="text-2xl font-black tracking-tight" style="color: var(--text-primary);" x-text="'$' + weeklySavings.toFixed(0)"></span>
+        </div>
+        <div class="rounded-2xl p-5 text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-[10px] font-black uppercase tracking-[0.3em] block mb-2" style="color: var(--text-tertiary);">Monthly</span>
+          <span class="text-2xl font-black tracking-tight" style="color: var(--text-primary);" x-text="'$' + monthlySavings.toFixed(0)"></span>
+        </div>
+        <div class="rounded-2xl p-5 text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-[10px] font-black uppercase tracking-[0.3em] block mb-2" style="color: var(--text-tertiary);">Annual</span>
+          <span class="text-2xl font-black tracking-tight" style="color: var(--accent-primary);" x-text="'$' + annualSavings.toFixed(0)"></span>
+        </div>
+        <div class="rounded-2xl p-5 text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-[10px] font-black uppercase tracking-[0.3em] block mb-2" style="color: var(--text-tertiary);">Meals Prepped</span>
+          <span class="text-2xl font-black tracking-tight" style="color: var(--text-primary);" x-text="mealsPrepped"></span>
+        </div>
+      </div>
+
+      <!-- Comparison bar -->
+      <div class="rounded-2xl p-6" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+        <h3 class="text-[10px] font-black uppercase tracking-[0.5em] mb-4" style="color: var(--text-tertiary);">Weekly Cost Comparison</h3>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-bold" style="color: var(--text-secondary);">Eating Out</span>
+              <span class="text-sm font-black" style="color: var(--text-primary);" x-text="'$' + eatingOutCost.toFixed(2)"></span>
+            </div>
+            <div class="w-full h-3 rounded-full" style="background: var(--bg-tertiary);">
+              <div class="h-full rounded-full transition-all duration-700" style="background: #FF4444; width: 100%;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-bold" style="color: var(--text-secondary);">Meal Prepping</span>
+              <span class="text-sm font-black" style="color: var(--accent-primary);" x-text="'$' + groceryBudget.toFixed(2)"></span>
+            </div>
+            <div class="w-full h-3 rounded-full" style="background: var(--bg-tertiary);">
+              <div class="h-full rounded-full transition-all duration-700" style="background: var(--accent-primary);"
+                   :style="'width: ' + (eatingOutCost > 0 ? Math.round(groceryBudget / eatingOutCost * 100) : 0) + '%'"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- What could you buy -->
+      <div class="rounded-2xl p-6" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+        <h3 class="text-[10px] font-black uppercase tracking-[0.5em] mb-4" style="color: var(--text-tertiary);">What Your Savings Could Buy</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div>
+            <p class="text-3xl mb-1">✈️</p>
+            <p class="text-sm font-bold" style="color: var(--text-primary);" x-text="Math.floor(annualSavings / 500) + ' flights'"></p>
+            <p class="text-[10px]" style="color: var(--text-tertiary);">~$500 each</p>
+          </div>
+          <div>
+            <p class="text-3xl mb-1">📱</p>
+            <p class="text-sm font-bold" style="color: var(--text-primary);" x-text="Math.floor(annualSavings / 1000) + ' phones'"></p>
+            <p class="text-[10px]" style="color: var(--text-tertiary);">~$1,000 each</p>
+          </div>
+          <div>
+            <p class="text-3xl mb-1">☕</p>
+            <p class="text-sm font-bold" style="color: var(--text-primary);" x-text="Math.floor(annualSavings / 6) + ' coffees'"></p>
+            <p class="text-[10px]" style="color: var(--text-tertiary);">~$6 each</p>
+          </div>
+          <div>
+            <p class="text-3xl mb-1">🏋️</p>
+            <p class="text-sm font-bold" style="color: var(--text-primary);" x-text="Math.floor(annualSavings / 50) + ' months gym'"></p>
+            <p class="text-[10px]" style="color: var(--text-tertiary);">~$50/month</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Share button -->
+      <div class="flex justify-center">
+        <button
+          @click="shareResult()"
+          class="px-6 py-3 rounded-full text-sm font-black uppercase tracking-wider cursor-pointer transition-all flex items-center gap-2"
+          style="background: var(--accent-primary); color: var(--text-inverse); border: none;">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+          </svg>
+          <span x-text="copied ? '✓ Copied!' : 'Share Results'"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div x-show="weeklySavings <= 0" class="rounded-2xl p-12 text-center mt-4"
+         style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+      <p class="text-5xl mb-4">💰</p>
+      <p class="text-lg font-bold" style="color: var(--text-primary);">Enter your numbers above</p>
+      <p class="text-sm mt-2" style="color: var(--text-secondary);">We'll show you exactly how much meal prepping can save you.</p>
+    </div>
+  </main>
+
+  <FooterNav site={site} />
+</BaseLayout>
+
+<script is:inline>
+document.addEventListener('alpine:init', () => {
+  Alpine.data('roiCalc', () => ({
+    mealsOut: 10,
+    mealCost: 15,
+    groceryBudget: 75,
+    animatedAnnual: '0',
+    copied: false,
+    _prevAnnual: 0,
+
+    init() {
+      this.$watch('annualSavings', (val) => {
+        this.animateNumber(this._prevAnnual, val);
+        this._prevAnnual = val;
+      });
+      // Trigger initial animation
+      this.$nextTick(() => {
+        this.animateNumber(0, this.annualSavings);
+        this._prevAnnual = this.annualSavings;
+      });
+    },
+
+    get eatingOutCost() {
+      return this.mealsOut * this.mealCost;
+    },
+
+    get weeklySavings() {
+      return Math.max(0, this.eatingOutCost - this.groceryBudget);
+    },
+
+    get monthlySavings() {
+      return this.weeklySavings * 4.33;
+    },
+
+    get annualSavings() {
+      return this.weeklySavings * 52;
+    },
+
+    get mealsPrepped() {
+      // Assume $3 avg cost per home-prepped meal
+      const costPerPreppedMeal = 3;
+      return Math.floor((this.groceryBudget / costPerPreppedMeal) * 52);
+    },
+
+    animateNumber(from, to) {
+      const duration = 800;
+      const start = performance.now();
+      const step = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        const current = Math.round(from + (to - from) * eased);
+        this.animatedAnnual = current.toLocaleString();
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    },
+
+    shareResult() {
+      const text = `💰 Meal Prep ROI Calculator Results:\n\n` +
+        `• Weekly savings: $${this.weeklySavings.toFixed(0)}\n` +
+        `• Monthly savings: $${this.monthlySavings.toFixed(0)}\n` +
+        `• Annual savings: $${this.annualSavings.toFixed(0)}\n` +
+        `• Meals prepped/year: ${this.mealsPrepped}\n\n` +
+        `Calculate yours → ${window.location.href}`;
+
+      if (navigator.share) {
+        navigator.share({ title: 'Meal Prep ROI', text }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(text).then(() => {
+          this.copied = true;
+          setTimeout(() => this.copied = false, 2000);
+        });
+      }
+    }
+  }));
+});
+</script>

@@ -2030,6 +2030,20 @@ const highProteinRecipes: Recipe[] = [
   },
 ];
 
-export const recipes: Recipe[] = [...mealPrepRecipes, ...highProteinRecipes];
+import { generatedRecipes } from './recipes-generated';
+import { recipesBatchMP1 } from './recipes-batch-mp1';
+import { recipesBatchMP2 } from './recipes-batch-mp2';
+import { recipesBatchHP1 } from './recipes-batch-hp1';
+import { recipesBatchHP2 } from './recipes-batch-hp2';
+
+export const recipes: Recipe[] = [
+  ...mealPrepRecipes,
+  ...highProteinRecipes,
+  ...generatedRecipes,
+  ...recipesBatchMP1,
+  ...recipesBatchMP2,
+  ...recipesBatchHP1,
+  ...recipesBatchHP2,
+];
 
 export default recipes;
