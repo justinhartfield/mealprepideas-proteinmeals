@@ -18,30 +18,32 @@ const {
   brandDescription = 'The universal taxonomy for high-performance nutrition and logistical meal planning.',
   columns = [
     {
-      title: 'Taxonomy',
+      title: 'Hubs',
       links: [
-        { href: '/meal-prep/', label: 'Meal-Prep Hub' },
-        { href: '/high-protein/', label: 'High-Protein Hub' },
-        { href: '/stores/trader-joes/', label: 'Store Index' },
-        { href: '/stores/chick-fil-a/', label: 'Chain Guide' },
+        { href: '/meal-prep/', label: 'Meal Prep Hub' },
+        { href: '/high-protein/', label: 'High Protein Hub' },
+        { href: '/meal-prep/plans/beginner-meal-prep-5-day/', label: '5-Day Plans' },
+        { href: '/meal-prep/recipes/chicken-teriyaki-stir-fry/', label: 'Recipes' },
       ],
     },
     {
-      title: 'Personas',
+      title: 'Stores & Chains',
       links: [
-        { href: '/meal-prep/persona/pcos/', label: 'PCOS Protocol' },
-        { href: '/meal-prep/persona/bariatric/', label: 'Bariatric Rules' },
-        { href: '/meal-prep/persona/postpartum/', label: 'Postpartum Prep' },
-        { href: '/meal-prep/persona/cholesterol/', label: 'Cholesterol Low' },
+        { href: '/stores/trader-joes/', label: "Trader Joe's" },
+        { href: '/stores/costco/', label: 'Costco' },
+        { href: '/stores/walmart/', label: 'Walmart' },
+        { href: '/stores/chipotle/', label: 'Chipotle' },
+        { href: '/stores/chick-fil-a/', label: 'Chick-fil-A' },
       ],
     },
     {
-      title: 'Methods',
+      title: 'Popular',
       links: [
-        { href: '/meal-prep/method/slow-cooker/', label: 'Slow-Cooker' },
-        { href: '/meal-prep/method/air-fryer/', label: 'Air-Fryer' },
-        { href: '/meal-prep/method/microwave/', label: 'Microwave-Only' },
-        { href: '/meal-prep/method/one-pan/', label: 'One-Pan' },
+        { href: '/meal-prep/for/work/', label: 'Work Meal Prep' },
+        { href: '/meal-prep/for/college/', label: 'College Budget' },
+        { href: '/meal-prep/method/air-fryer/', label: 'Air Fryer Meals' },
+        { href: '/meal-prep/method/crockpot/', label: 'Crockpot Recipes' },
+        { href: '/high-protein/diet/keto/', label: 'Keto High Protein' },
       ],
     },
   ],
@@ -87,10 +89,14 @@ const {
 
   <div class="max-w-7xl mx-auto mt-20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
        style="border-top: 1px solid var(--border-default);">
-    <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-tertiary);">© 2024 {copyrightSuffix}</span>
+    <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-tertiary);">© 2026 {copyrightSuffix}</span>
     <div class="flex gap-8">
-      {['Privacy', 'Terms', 'API Access'].map(label => (
-        <a href="#" class="text-[10px] font-bold uppercase tracking-widest transition-colors" style="color: var(--text-tertiary);">{label}</a>
+      {[
+        { label: 'Privacy', href: '/privacy/' },
+        { label: 'Terms', href: '/terms/' },
+        { label: 'Sitemap', href: '/sitemap-index.xml' },
+      ].map(item => (
+        <a href={item.href} class="text-[10px] font-bold uppercase tracking-widest transition-colors" style="color: var(--text-tertiary);">{item.label}</a>
       ))}
     </div>
   </div>
