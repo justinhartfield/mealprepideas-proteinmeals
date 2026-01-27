@@ -1,7 +1,13 @@
 ---
 /**
- * PersonaMethodCombo — Persona + Method Combo (T3)
- * Theme-aware: uses CSS custom properties
+ * PersonaMethodCombo — Persona × Method Combo (T3)
+ * Theme-aware: uses CSS custom properties from themes.css
+ * 
+ * Renders the spec layout:
+ *  1. Hero with breadcrumb, giant title (stroke text), description block, operational capacity stat
+ *  2. Essentials Matrix — ranked list with filter pills, not card grid
+ *  3. Method Logistics — step-by-step protocol + storage stability matrix
+ *  4. Related Pages — sibling two-facet combo cards
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
@@ -9,143 +15,284 @@ import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
 
 interface Recipe {
-  id: number; title: string; protein: string; cal: string; method?: string; tag: string;
+  id: string;
+  title: string;
+  slug?: string;
+  protein: string;
+  fiber?: string;
+  focus?: string;
+  stability?: string;
+  reheat?: string;
 }
-interface FAQ { question: string; answer: string; }
 
 interface Props {
-  title: string; description?: string; canonicalUrl?: string;
-  site?: "mealprepideas" | "proteinmeals";
-  hub: string; facetA: { type: string; value: string }; facetB: { type: string; value: string };
-  headline: string; headlineAccent: string; subheadline: string;
-  recipes?: Recipe[]; faqs?: FAQ[];
-  siblings?: { href: string; label: string; sublabel?: string }[];
+  title: string;
+  description?: string;
+  canonicalUrl?: string;
+  hub: string;
+  personaSlug: string;
+  personaName: string;
+  methodSlug: string;
+  methodName: string;
+  heroDescription: string;
+  avgPrepTime?: string;
+  recipes: Recipe[];
+  logisticsTitle: string;
+  logisticsSteps: { title: string; description: string }[];
+  storageCards: { label: string; value: string }[];
+  siblingPages: { label: string; swapType: string; title: string; href: string; count?: string }[];
+  site?: 'mealprepideas' | 'proteinmeals';
 }
 
-const { title, description, canonicalUrl, hub, facetA, facetB, headline, headlineAccent, subheadline, recipes = [], faqs = [], siblings = [] } = Astro.props;
+const {
+  title,
+  description,
+  canonicalUrl,
+  hub,
+  personaSlug,
+  personaName,
+  methodSlug,
+  methodName,
+  heroDescription,
+  avgPrepTime = '00:30',
+  recipes = [],
+  logisticsTitle,
+  logisticsSteps = [],
+  storageCards = [],
+  siblingPages = [],
+} = Astro.props;
+
 const hubPath = hub === 'meal-prep' ? '/meal-prep/' : '/high-protein/';
+const hubLabel = hub === 'meal-prep' ? 'Meal Prep' : 'High Protein';
+
 const breadcrumbs = [
   { label: 'Home', href: '/' },
-  { label: hub === 'meal-prep' ? 'Meal Prep' : 'High Protein', href: hubPath },
-  { label: `${headline} × ${headlineAccent}` },
+  { label: hubLabel, href: hubPath },
+  { label: `Persona: ${personaName}`, href: `${hubPath}persona/${personaSlug}/` },
+  { label: `Method: ${methodName}` },
 ];
+
 const recipesJson = JSON.stringify(recipes);
 
-const faqStructuredData = faqs.length > 0 ? JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: faqs.map(faq => ({
-    '@type': 'Question',
-    name: faq.question,
-    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
-  })),
-}) : null;
+// Collect unique focus values for filter pills
+const focusValues = [...new Set(recipes.map(r => r.focus).filter(Boolean))];
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
-  <HeaderNav />
+  <HeaderNav statusText={`Ref: ${hubPath}persona/${personaSlug}/method/${methodSlug}/`} />
 
-  {faqStructuredData && <script type="application/ld+json" set:html={faqStructuredData} />}
+  <main class="flex-grow" x-data={`{ filter: 'all', recipes: ${recipesJson} }`}>
 
-  <main class="flex-grow" x-data={`{ filter: 'all', faqOpen: null, recipes: ${recipesJson} }`}>
-    <!-- HERO -->
-    <section class="relative pt-20 pb-20 px-6 border-b overflow-hidden" style="border-color: var(--border-default);">
+    <!-- ═══ SECTION 1: HERO ═══ -->
+    <section class="relative pt-20 pb-12 px-6 border-b overflow-hidden" style="border-color: var(--border-default);">
       <div class="max-w-7xl mx-auto relative z-10">
-        <BreadcrumbNav items={breadcrumbs} />
-        <div class="mt-8 grid md:grid-cols-12 gap-12">
-          <div class="md:col-span-8">
-            <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest inline-block mb-6" style="background-color: var(--accent-primary); color: var(--text-inverse);">T3: Persona × Method</span>
-            <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-6">
-              {headline} <span style="color: var(--accent-primary);">{headlineAccent}</span>
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div class="max-w-3xl">
+            <BreadcrumbNav items={breadcrumbs} />
+
+            <h1 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-6 mt-8">
+              {(personaName || '').toUpperCase()}<br/>
+              <span class="persona-method-stroke">{(methodName || '').toUpperCase()} STASH</span>
             </h1>
-            <p class="text-xl max-w-2xl leading-relaxed mb-8" style="color: var(--text-secondary);">{subheadline}</p>
-            <div class="flex flex-wrap gap-4">
-              <a href="#recipes" class="px-8 py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all theme-btn-primary">View Protocols</a>
-              <a href={`${hubPath}plans/beginner-meal-prep-5-day/`} class="border px-8 py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all hover-text-primary" style="border-color: var(--border-default);">Download Plan</a>
+
+            <!-- Description block with left border -->
+            <div class="p-6 mb-8 border-l-4 rounded-none" style="background-color: var(--bg-secondary); border-left-color: var(--accent-primary);">
+              <p class="font-medium leading-relaxed" style="color: var(--text-secondary);">
+                {heroDescription}
+              </p>
             </div>
           </div>
-          <div class="md:col-span-4">
-            <div class="hyper-border rounded-3xl p-8">
-              <div class="scanner-line"></div>
-              <h3 class="text-[10px] font-black tracking-widest uppercase mb-6" style="color: var(--text-secondary);">Persona Profile</h3>
-              <div class="space-y-4">
-                <div class="flex justify-between items-center border-b pb-3" style="border-color: var(--border-default);">
-                  <span class="text-xs font-bold" style="color: var(--text-secondary);">Persona</span>
-                  <span class="text-sm font-black">{headline}</span>
-                </div>
-                <div class="flex justify-between items-center border-b pb-3" style="border-color: var(--border-default);">
-                  <span class="text-xs font-bold" style="color: var(--text-secondary);">Method</span>
-                  <span class="text-sm font-black" style="color: var(--accent-primary);">{headlineAccent}</span>
-                </div>
-                <div class="flex justify-between items-center border-b pb-3" style="border-color: var(--border-default);">
-                  <span class="text-xs font-bold" style="color: var(--text-secondary);">Protocols</span>
-                  <span class="text-sm font-black">{recipes.length}+</span>
-                </div>
-              </div>
+
+          <!-- Operational Capacity stat -->
+          <div class="flex flex-col items-end gap-2">
+            <div class="text-right">
+              <span class="text-[10px] font-black uppercase tracking-widest block" style="color: var(--text-tertiary);">Operational Capacity</span>
+              <span class="text-5xl font-black tabular-nums tracking-tighter">{avgPrepTime}</span>
+              <span class="text-[10px] font-bold block" style="color: var(--text-tertiary);">Avg. Prep Time (Mins)</span>
             </div>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- RECIPE LIST -->
-    <section id="recipes" class="py-24 px-6">
-      <div class="max-w-7xl mx-auto">
-        <h2 class="text-4xl font-black tracking-tighter mb-12">Ranked Protocols</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <template x-for="(recipe, index) in recipes" x-bind:key="recipe.id">
-            <div class="hyper-border rounded-2xl p-6 group transition-all">
-              <div class="flex justify-between items-start mb-4">
-                <span class="text-3xl font-black group-hover-accent-opacity transition-colors" style="color: var(--text-tertiary);" x-text="index + 1"></span>
-                <span class="text-[9px] font-black px-2 py-1 rounded uppercase tracking-widest" style="background-color: var(--bg-tertiary);" x-text="recipe.tag"></span>
-              </div>
-              <h4 class="text-xl font-black tracking-tight mb-4 group-hover-accent-text transition-colors" x-text="recipe.title"></h4>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
-                  <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Protein</span>
-                  <span class="text-lg font-black" style="color: var(--accent-primary);" x-text="recipe.protein"></span>
-                </div>
-                <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
-                  <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Calories</span>
-                  <span class="text-lg font-black" x-text="recipe.cal"></span>
-                </div>
-              </div>
-            </div>
-          </template>
-        </div>
+      <!-- Background grid decoration -->
+      <div class="absolute top-0 right-0 w-1/3 h-full opacity-5 pointer-events-none">
+        <svg viewBox="0 0 100 100" class="w-full h-full" style="color: var(--accent-primary);" fill="currentColor">
+          <defs>
+            <pattern id="grid-pattern-pm" width="10" height="10" patternUnits="userSpaceOnUse">
+              <path d="M10 0v10M0 10h10" stroke="currentColor" stroke-width="0.5" fill="none"/>
+            </pattern>
+          </defs>
+          <rect width="100" height="100" fill="url(#grid-pattern-pm)" />
+        </svg>
       </div>
     </section>
 
-    <!-- SIBLINGS -->
-    {siblings.length > 0 && (
-      <section class="py-20 px-6 border-t" style="border-color: var(--border-default);">
-        <div class="max-w-7xl mx-auto">
-          <h3 class="text-3xl font-black tracking-tight mb-8">Related Nodes</h3>
-          <div class="grid md:grid-cols-4 gap-4">
-            {siblings.map(sib => (
-              <a href={sib.href} class="p-6 border rounded-2xl hover-accent-border transition-all group" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
-                <div class="text-[10px] font-black group-hover-accent-text mb-2" style="color: var(--text-tertiary);">{sib.sublabel || 'RELATED'}</div>
-                <div class="font-bold text-sm">{sib.label}</div>
-              </a>
+    <!-- ═══ SECTION 2: THE ESSENTIALS MATRIX ═══ -->
+    <section class="py-16 px-6 max-w-7xl mx-auto">
+      <div class="flex flex-wrap items-center justify-between gap-6 mb-12">
+        <div>
+          <h2 class="text-3xl font-black tracking-tighter uppercase">The Essentials Matrix</h2>
+          <p class="text-xs font-bold tracking-widest uppercase" style="color: var(--text-tertiary);">Ranked by nutrient density &amp; reheat stability</p>
+        </div>
+
+        <!-- Filter pills -->
+        <div class="flex flex-wrap gap-2 p-1.5 rounded-xl border" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
+          <button
+            @click="filter = 'all'"
+            :class="filter === 'all' ? 'pill-active' : 'theme-pill-inactive'"
+            class="px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all"
+          >All SKUs</button>
+          {focusValues.map(f => (
+            <button
+              x-on:click={`filter = '${f}'`}
+              x-bind:class={`filter === '${f}' ? 'pill-active' : 'theme-pill-inactive'`}
+              class="px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all"
+            >{f!.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Ranked list rows -->
+      <div class="grid grid-cols-1 gap-4">
+        <template x-for="(item, index) in recipes" :key="item.id">
+          <div
+            x-show="filter === 'all' || filter === item.focus"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform translate-y-4"
+            x-transition:enter-end="opacity-100 transform translate-y-0"
+            class="hyper-border flex flex-col md:flex-row items-center p-6 gap-8 group"
+          >
+            <!-- Rank + ID + Title -->
+            <div class="flex items-center gap-6 w-full md:w-1/4">
+              <span
+                class="text-3xl font-black tabular-nums group-hover-accent-opacity transition-colors"
+                style="color: var(--text-tertiary);"
+                x-text="(index + 1).toString().padStart(2, '0')"
+              ></span>
+              <div>
+                <span
+                  class="text-[10px] font-black tracking-widest block uppercase"
+                  style="color: var(--accent-primary);"
+                  x-text="item.id"
+                ></span>
+                <h3 class="text-lg font-bold leading-tight group-hover-accent-text cursor-pointer transition-colors" x-text="item.title"></h3>
+              </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="flex flex-1 items-center justify-between w-full">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-8 flex-1">
+                <!-- Protein -->
+                <div>
+                  <span class="text-[8px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">Protein/Serve</span>
+                  <span class="text-sm font-bold tabular-nums" x-text="item.protein"></span>
+                </div>
+                <!-- Fiber -->
+                <div>
+                  <span class="text-[8px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">Fiber/Serve</span>
+                  <span class="text-sm font-bold tabular-nums" x-text="item.fiber || '—'"></span>
+                </div>
+                <!-- Stability bar -->
+                <div>
+                  <span class="text-[8px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">Stability</span>
+                  <div class="flex items-center gap-2">
+                    <div class="h-1 w-12 rounded-full overflow-hidden" style="background-color: var(--bg-tertiary);">
+                      <div class="h-full" style="background-color: var(--accent-primary);" :style="`width: ${(parseInt(item.stability) || 7) * 10}%`"></div>
+                    </div>
+                    <span class="text-[10px] font-bold" x-text="item.stability || '7/10'"></span>
+                  </div>
+                </div>
+                <!-- Reheat -->
+                <div class="hidden md:block">
+                  <span class="text-[8px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">Optimal Reheat</span>
+                  <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--accent-primary);" x-text="item.reheat || 'Microwave'"></span>
+                </div>
+              </div>
+
+              <!-- Expand button -->
+              <template x-if="item.slug">
+                <a :href={`'${hubPath}recipes/' + item.slug + '/'`} class="ml-4 w-10 h-10 border rounded-full flex items-center justify-center transition-all hover-accent-bg hover-inverse-text" style="border-color: var(--border-default);">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                </a>
+              </template>
+              <template x-if="!item.slug">
+                <button class="ml-4 w-10 h-10 border rounded-full flex items-center justify-center transition-all hover-accent-bg hover-inverse-text" style="border-color: var(--border-default);">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                </button>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION 3: METHOD LOGISTICS ═══ -->
+    <section class="py-24 px-6 overflow-hidden relative border-y" style="background-color: var(--bg-primary); border-color: var(--border-default);">
+      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20 items-center">
+        <!-- Protocol steps -->
+        <div class="lg:w-1/2 relative">
+          <div class="hyper-border p-10 rounded-3xl relative z-10" style="background-color: color-mix(in srgb, var(--bg-secondary) 80%, transparent);">
+            <div class="scanner-line"></div>
+            <div class="flex items-center gap-4 mb-10">
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background-color: var(--accent-primary); color: var(--text-inverse);">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+              </div>
+              <h2 class="text-4xl font-black tracking-tighter uppercase">{logisticsTitle}</h2>
+            </div>
+
+            <div class="space-y-8">
+              {logisticsSteps.map((step, i) => (
+                <div class="flex gap-6">
+                  <div class="flex flex-col items-center">
+                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px] font-bold" style="border-color: var(--accent-primary);">{i + 1}</div>
+                    {i < logisticsSteps.length - 1 && (
+                      <div class="flex-grow w-[1px] my-2" style="background-color: var(--border-default);"></div>
+                    )}
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-black uppercase tracking-widest mb-2">{step.title}</h4>
+                    <p class="text-sm leading-relaxed font-medium" style="color: var(--text-tertiary);">{step.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- Storage stability matrix -->
+        <div class="lg:w-1/2">
+          <span class="text-[10px] font-black tracking-[0.4em] uppercase mb-4 block" style="color: var(--accent-primary);">Stability Matrix</span>
+          <h3 class="text-5xl font-black tracking-tighter leading-none mb-10 uppercase">Maximum Storage Life</h3>
+
+          <div class="grid grid-cols-2 gap-4">
+            {storageCards.map(card => (
+              <div class="p-6 border-l-4" style="background-color: var(--bg-secondary); border-left-color: var(--accent-primary);">
+                <span class="text-[10px] font-black uppercase mb-4 block" style="color: var(--text-tertiary);">{card.label}</span>
+                <span class="text-3xl md:text-4xl font-black tracking-tighter uppercase">{card.value}</span>
+              </div>
             ))}
           </div>
         </div>
-      </section>
-    )}
+      </div>
+    </section>
 
-    <!-- FAQ -->
-    {faqs.length > 0 && (
-      <section class="py-24 px-6 max-w-4xl mx-auto">
-        <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">FAQ</h4>
-        <div class="space-y-4">
-          {faqs.map((faq, i) => (
-            <div class="border rounded-2xl overflow-hidden" style="border-color: var(--border-default);">
-              <button x-on:click={`faqOpen === ${i} ? faqOpen = null : faqOpen = ${i}`} class="w-full flex justify-between items-center p-6 text-left hover-bg-secondary transition-colors">
-                <span class="text-sm font-black">{faq.question}</span>
-                <span class="text-2xl font-black" style="color: var(--accent-primary);" x-text={`faqOpen === ${i} ? '−' : '+'`}></span>
-              </button>
-              <div x-show={`faqOpen === ${i}`} x-cloak class="p-6 border-t text-sm leading-relaxed" style="background-color: color-mix(in srgb, var(--bg-secondary) 50%, transparent); border-color: var(--border-default); color: var(--text-secondary);">{faq.answer}</div>
-            </div>
+    <!-- ═══ SECTION 4: RELATED PAGES (SIBLING NAVIGATION) ═══ -->
+    {siblingPages.length > 0 && (
+      <section class="py-24 px-6 max-w-7xl mx-auto">
+        <div class="flex items-center justify-between mb-12">
+          <h4 class="text-xs font-black tracking-[0.3em] uppercase" style="color: var(--text-tertiary);">Explore {personaName} Variations</h4>
+          <div class="h-[1px] flex-grow mx-8" style="background-color: var(--border-default);"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {siblingPages.map(page => (
+            <a href={page.href} class="hyper-border p-8 rounded-2xl group flex flex-col justify-between min-h-[200px]">
+              <div>
+                <span class="text-[10px] font-black uppercase mb-4 block" style="color: var(--text-tertiary);">{page.swapType}</span>
+                <h5 class="text-2xl font-black tracking-tight group-hover-accent-text transition-colors">{page.title}</h5>
+              </div>
+              <p class="text-xs font-bold uppercase tracking-widest mt-4" style="color: var(--text-tertiary);">{page.count || 'Explore'} →</p>
+            </a>
           ))}
         </div>
       </section>
@@ -154,3 +301,10 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
 
   <FooterNav copyrightSuffix="Index Authority Network. T3: Persona × Method." />
 </BaseLayout>
+
+<style>
+  .persona-method-stroke {
+    -webkit-text-stroke: 2px var(--text-tertiary);
+    color: transparent;
+  }
+</style>

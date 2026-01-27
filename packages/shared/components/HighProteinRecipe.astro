@@ -1,15 +1,16 @@
 ---
 /**
- * HighProteinRecipe — High Protein Recipe Page (T4)
+ * HighProteinRecipe — High Protein Recipe Page (T4) — Redesigned
+ * Split hero, inventory grid, execution steps, bottom 3-column
  * Theme-aware: uses CSS custom properties
  * Includes Schema.org Recipe structured data
- * Accepts a `recipe` object from the recipe data layer
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
 import type { Recipe } from '../data/content/recipes';
+import { plans } from '../data/content/plans';
 
 interface Props {
   recipe: Recipe;
@@ -26,45 +27,121 @@ const isProteinmeals = detectedSite === 'proteinmeals';
 const mpBase = isProteinmeals ? 'https://mealprepideas.co' : '';
 const hpBase = isProteinmeals ? '' : 'https://proteinmeals.co';
 
-// Build image path — local image for this recipe slug
+// Build image path
 const localImagePath = `/images/recipes/${recipe.slug}.jpg`;
 const heroImage = localImagePath;
 const fallbackImage = '/images/placeholder.svg';
 
-// Map recipe data to template values
+// Map recipe data
 const recipeName = recipe.title;
 const recipeId = `HP-${recipe.slug.split('-').map(w => w[0]?.toUpperCase()).join('').slice(0, 4)}`;
-const prepTime = `${recipe.prepTime}m`;
-const cookTime = `${recipe.cookTime}m`;
-const totalTime = `${recipe.prepTime + recipe.cookTime}m`;
+const totalTimeMin = recipe.prepTime + recipe.cookTime;
 const servings = recipe.servings;
-const proteinPerServing = `${recipe.protein}g`;
-const caloriesPerServing = `${recipe.calories}`;
-const peRatio = (recipe.protein * 4 / Math.max(1, recipe.calories - recipe.protein * 4)).toFixed(1);
 
-const macros = [
-  { label: 'Protein', value: `${recipe.protein}g`, percent: Math.min(100, Math.round((recipe.protein / 50) * 100)) },
-  { label: 'Carbs', value: `${recipe.carbs}g`, percent: Math.min(100, Math.round((recipe.carbs / 100) * 100)) },
-  { label: 'Fat', value: `${recipe.fat}g`, percent: Math.min(100, Math.round((recipe.fat / 65) * 100)) },
-  { label: 'Fiber', value: `${recipe.fiber || 0}g`, percent: Math.min(100, Math.round(((recipe.fiber || 0) / 30) * 100)) },
-];
+// P:E Ratio = protein / (calories / 100), format to 1 decimal
+const peRatio = (recipe.protein / (recipe.calories / 100)).toFixed(1);
 
-const ingredients = recipe.ingredients.map((text, i) => ({ id: `ing-${i}`, text }));
+// Ingredient role assignment
+function getIngredientRole(text: string, protein: number): string {
+  const lower = text.toLowerCase();
+  if (/chicken|beef|turkey|salmon|shrimp|tofu|egg/.test(lower)) return `${protein}G PROTEIN`;
+  if (/garlic|onion|spice|sauce|oil|lemon|lime|oregano|dill|parsley|herb|pepper|salt|vinegar|cumin|paprika|chili|ginger|soy|sesame|mustard|mayo/.test(lower)) return 'FLAVOR';
+  if (/broccoli|spinach|beans|lentil|kale|cabbage|cauliflower|zucchini|asparagus/.test(lower)) return 'HIGH FIBER';
+  if (/rice|quinoa|pasta|bread|oat|potato|tortilla|wrap|noodle|couscous/.test(lower)) return 'CARB BASE';
+  if (/cheese|cream|butter|milk|yogurt|feta/.test(lower)) return 'DAIRY';
+  if (/tomato|cucumber|pepper|carrot|celery|avocado|olive|corn/.test(lower)) return 'PRODUCE';
+  return 'FLAVOR';
+}
+
+const ingredients = recipe.ingredients.map((text, i) => ({
+  id: `ing-${i}`,
+  text,
+  role: getIngredientRole(text, recipe.protein),
+}));
+
+// Step title generation
+const stepTitles = ['THE MACRO PREP', 'HIGH HEAT SEAR', 'VEGGIE STEAM-SAUTÉ', 'THE ASSEMBLY'];
+const altTitles = ['PREP & SEASON', 'COOK PROTEIN', 'ADD VEGETABLES', 'PLATE & STORE'];
+
+function generateStepTitle(detail: string, index: number): string {
+  const lower = detail.toLowerCase();
+  if (index < stepTitles.length) {
+    if (lower.includes('preheat') || lower.includes('prep') || lower.includes('dice') || lower.includes('chop') || lower.includes('mix') || lower.includes('toss') || lower.includes('marinate') || lower.includes('season')) return stepTitles[0] || altTitles[0];
+    if (lower.includes('cook') || lower.includes('sear') || lower.includes('bake') || lower.includes('grill') || lower.includes('roast') || lower.includes('heat') || lower.includes('fry') || lower.includes('sauté')) return stepTitles[1] || altTitles[1];
+    if (lower.includes('vegetable') || lower.includes('broccoli') || lower.includes('steam') || lower.includes('spinach') || lower.includes('add')) return stepTitles[2] || altTitles[2];
+    if (lower.includes('assemble') || lower.includes('divide') || lower.includes('portion') || lower.includes('plate') || lower.includes('container') || lower.includes('serve') || lower.includes('garnish') || lower.includes('top')) return stepTitles[3] || altTitles[3];
+    return stepTitles[index] || `STEP ${index + 1}`;
+  }
+  return `STEP ${index + 1}`;
+}
+
 const steps = recipe.instructions.map((detail, i) => ({
   number: String(i + 1).padStart(2, '0'),
-  title: `Step ${i + 1}`,
+  title: generateStepTitle(detail, i),
   detail,
 }));
 
+// Community preps seeded from slug
+function hashCode(s: string): number {
+  let hash = 0;
+  for (let i = 0; i < s.length; i++) {
+    const char = s.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+const communityPreps = 800 + (hashCode(recipe.slug) % 2201);
+const communityPrepsFormatted = communityPreps.toLocaleString('en-US');
+
+// Storage & logistics
+const storageText = recipe.storageInstructions || 'Store in airtight containers for up to 5 days.';
+const batchingText = recipe.tips?.[0] || `Double the recipe for ${servings * 2} portions.`;
+const reheatText = recipe.reheatingInstructions || 'Microwave for 90s at 70% power.';
+
+// Primary category
+const primaryMethod = recipe.facets.method;
+const primaryDiet = recipe.facets.diet;
+const primaryGoal = recipe.facets.goal;
+const primaryCategory = primaryMethod
+  ? { label: primaryMethod.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), slug: primaryMethod }
+  : primaryGoal
+  ? { label: primaryGoal.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), slug: primaryGoal }
+  : primaryDiet
+  ? { label: primaryDiet.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), slug: primaryDiet }
+  : null;
+
+// Related ingredients from facets + ingredient text parsing
+const mainIngredientSlugs: { label: string; slug: string }[] = [];
+if (recipe.facets.ingredient) {
+  mainIngredientSlugs.push({
+    label: recipe.facets.ingredient.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+    slug: recipe.facets.ingredient,
+  });
+}
+const ingredientKeywords = ['chicken', 'beef', 'turkey', 'salmon', 'shrimp', 'tofu', 'rice', 'quinoa', 'broccoli', 'spinach', 'eggs', 'sweet-potato', 'lentils', 'pasta', 'beans'];
+for (const kw of ingredientKeywords) {
+  const kwClean = kw.replace(/-/g, ' ');
+  if (recipe.ingredients.some(ing => ing.toLowerCase().includes(kwClean)) && !mainIngredientSlugs.find(s => s.slug === kw)) {
+    mainIngredientSlugs.push({
+      label: kwClean.replace(/\b\w/g, c => c.toUpperCase()),
+      slug: kw,
+    });
+  }
+}
+const relatedIngredients = mainIngredientSlugs.slice(0, 5);
+
+// Find matching plans
+const matchingPlans = plans.filter(p => p.hub === 'high-protein' && p.days.some(d => d.meals.some(m => m.recipeSlug === recipe.slug))).slice(0, 1);
+const fallbackPlan = matchingPlans.length === 0
+  ? plans.filter(p => p.hub === 'high-protein').slice(0, 1)
+  : [];
+const displayPlans = matchingPlans.length > 0 ? matchingPlans : fallbackPlan;
+
+// Tags
 const tags = Object.values(recipe.facets).filter(Boolean).slice(0, 4) as string[];
 
-// Construct diet variants from facets
-const dietVariants = [
-  recipe.facets.diet && { name: `${recipe.facets.diet} Variation`, adjustments: `This recipe is optimized for ${recipe.facets.diet} dietary requirements.` },
-  recipe.facets.goal && { name: `${recipe.facets.goal} Focus`, adjustments: `Portion and macro-adjusted for ${recipe.facets.goal} goals.` },
-].filter(Boolean) as { name: string; adjustments: string }[];
-
-// Parse time to ISO8601 Duration
+// ISO8601 Duration
 function toISO8601Duration(minutes: number): string {
   if (minutes >= 60) {
     const h = Math.floor(minutes / 60);
@@ -85,13 +162,13 @@ const structuredData = JSON.stringify({
   image: heroImage,
   prepTime: toISO8601Duration(recipe.prepTime),
   cookTime: toISO8601Duration(recipe.cookTime),
-  totalTime: toISO8601Duration(recipe.prepTime + recipe.cookTime),
+  totalTime: toISO8601Duration(totalTimeMin),
   recipeYield: `${servings} servings`,
   recipeCategory: 'High Protein',
   nutrition: {
     '@type': 'NutritionInformation',
-    proteinContent: proteinPerServing,
-    calories: `${caloriesPerServing} cal`,
+    proteinContent: `${recipe.protein}g`,
+    calories: `${recipe.calories} cal`,
   },
   recipeIngredient: recipe.ingredients,
   recipeInstructions: steps.map(s => ({
@@ -104,15 +181,14 @@ const structuredData = JSON.stringify({
 
 <BaseLayout title={pageTitle} description={pageDescription} canonicalUrl={`/high-protein/recipes/${recipe.slug}/`} structuredData={structuredData}>
   <HeaderNav
-    statusText="Schema: Recipe + HowTo"
+    statusText={`Recipe: ${recipeId}`}
     navLinks={[
       { href: `${mpBase}/meal-prep/`, label: 'Meal Prep' },
       { href: `${hpBase}/high-protein/`, label: 'High Protein' },
     ]}
   />
 
-  <main class="flex-grow" x-data={`{
-    dietView: 'original',
+  <main class="recipe-page flex-grow" x-data={`{
     servings: ${servings},
     baseServings: ${servings},
     baseMacros: { calories: ${recipe.calories}, protein: ${recipe.protein}, carbs: ${recipe.carbs}, fat: ${recipe.fat}, fiber: ${recipe.fiber || 0} },
@@ -138,200 +214,722 @@ const structuredData = JSON.stringify({
       { label: recipeName },
     ]} />
 
-    <!-- HERO -->
-    <section class="px-6 max-w-7xl mx-auto mb-16">
-      <div class="grid md:grid-cols-12 gap-12">
-        <div class="md:col-span-7">
-          <div class="flex flex-wrap items-center gap-3 mb-6">
-            <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--accent-primary); color: var(--text-inverse);">{recipeId}</span>
-            {tags.map(tag => (
-              <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--bg-tertiary);">{tag}</span>
-            ))}
-          </div>
-          <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-4">{recipeName}</h1>
-          <p class="text-base mb-8 leading-relaxed" style="color: var(--text-secondary);">{recipe.description}</p>
+    <!-- ═══ HERO SECTION (Split Layout) ═══ -->
+    <section class="rp-hero px-6 max-w-7xl mx-auto mb-16">
+      <div class="grid md:grid-cols-2 gap-12 items-start">
+        <!-- LEFT: Title, Description, Stats -->
+        <div class="rp-hero__left">
+          <h1 class="rp-hero__title">{recipeName}</h1>
+          <p class="rp-hero__desc">{recipe.description}</p>
 
-          <!-- Key Metrics -->
-          <div class="grid grid-cols-4 gap-3 mb-8">
-            <div class="macro-card p-4 rounded-xl">
-              <span class="text-[10px] font-black uppercase block mb-1" style="color: var(--text-secondary);">Protein</span>
-              <span class="text-2xl font-black" style="color: var(--accent-primary);" x-text="scaledProtein + 'g'"></span>
+          <!-- Macro Stat Boxes -->
+          <div class="rp-stats">
+            <div class="rp-stat">
+              <span class="rp-stat__label">PROTEIN</span>
+              <span class="rp-stat__value" x-text="scaledProtein + 'g'">{recipe.protein}g</span>
             </div>
-            <div class="macro-card p-4 rounded-xl">
-              <span class="text-[10px] font-black uppercase block mb-1" style="color: var(--text-secondary);">Calories</span>
-              <span class="text-2xl font-black" x-text="scaledCalories"></span>
+            <div class="rp-stat">
+              <span class="rp-stat__label">CALORIES</span>
+              <span class="rp-stat__value" x-text="scaledCalories">{recipe.calories}</span>
             </div>
-            <div class="macro-card p-4 rounded-xl">
-              <span class="text-[10px] font-black uppercase block mb-1" style="color: var(--text-secondary);">P:E Ratio</span>
-              <span class="text-2xl font-black" style="color: var(--accent-primary);">{peRatio}</span>
+            <div class="rp-stat">
+              <span class="rp-stat__label">P:E RATIO</span>
+              <span class="rp-stat__value rp-stat__value--accent">{peRatio}</span>
             </div>
-            <div class="macro-card p-4 rounded-xl">
-              <span class="text-[10px] font-black uppercase block mb-1" style="color: var(--text-secondary);">Servings</span>
-              <div class="flex items-center gap-2">
-                <button x-on:click="servings = Math.max(1, servings - 1)" class="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" style="background: var(--bg-tertiary);">−</button>
-                <span class="text-2xl font-black" x-text="servings"></span>
-                <button x-on:click="servings++" class="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" style="background: var(--bg-tertiary);">+</button>
-              </div>
+            <div class="rp-stat">
+              <span class="rp-stat__label">TIME</span>
+              <span class="rp-stat__value">{totalTimeMin}m</span>
             </div>
           </div>
 
-          <!-- Full Macros -->
-          <div class="border rounded-2xl p-6" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
-            <h3 class="text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-secondary);">
-              Full Macro Breakdown (<span x-text="servings === baseServings ? 'Per Serving' : 'Scaled ×' + servings"></span>)
-            </h3>
-            <div class="space-y-4">
-              <div>
-                <div class="flex justify-between text-[10px] font-black mb-1">
-                  <span class="uppercase" style="color: var(--text-secondary);">Protein</span>
-                  <span x-text="scaledProtein + 'g'"></span>
-                </div>
-                <div class="macro-bar"><div class="macro-fill" x-bind:style="'width: ' + Math.min(100, Math.round(scaledProtein / 50 * 100)) + '%'"></div></div>
-              </div>
-              <div>
-                <div class="flex justify-between text-[10px] font-black mb-1">
-                  <span class="uppercase" style="color: var(--text-secondary);">Carbs</span>
-                  <span x-text="scaledCarbs + 'g'"></span>
-                </div>
-                <div class="macro-bar"><div class="macro-fill" x-bind:style="'width: ' + Math.min(100, Math.round(scaledCarbs / 100 * 100)) + '%'"></div></div>
-              </div>
-              <div>
-                <div class="flex justify-between text-[10px] font-black mb-1">
-                  <span class="uppercase" style="color: var(--text-secondary);">Fat</span>
-                  <span x-text="scaledFat + 'g'"></span>
-                </div>
-                <div class="macro-bar"><div class="macro-fill" x-bind:style="'width: ' + Math.min(100, Math.round(scaledFat / 65 * 100)) + '%'"></div></div>
-              </div>
-              <div>
-                <div class="flex justify-between text-[10px] font-black mb-1">
-                  <span class="uppercase" style="color: var(--text-secondary);">Fiber</span>
-                  <span x-text="scaledFiber + 'g'"></span>
-                </div>
-                <div class="macro-bar"><div class="macro-fill" x-bind:style="'width: ' + Math.min(100, Math.round(scaledFiber / 30 * 100)) + '%'"></div></div>
-              </div>
+          <!-- Yield + Save -->
+          <div class="rp-yield-row">
+            <div class="rp-yield">
+              <span class="rp-yield__label">YIELD</span>
+              <button x-on:click="servings = Math.max(1, servings - 1)" class="rp-yield__btn">−</button>
+              <span class="rp-yield__count" x-text="servings">{servings}</span>
+              <button x-on:click="servings++" class="rp-yield__btn">+</button>
             </div>
+            <button class="rp-save-btn">SAVE PROTOCOL</button>
           </div>
         </div>
-        <div class="md:col-span-5">
-          <div class="aspect-[4/5] rounded-3xl overflow-hidden border relative group" style="border-color: var(--border-default);">
+
+        <!-- RIGHT: Hero Image with P:E Badge -->
+        <div class="rp-hero__right">
+          <div class="rp-hero-image">
             <img
               src={heroImage}
               onerror={`this.onerror=null;this.src='${fallbackImage}'`}
-              class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000"
+              class="rp-hero-image__img"
               alt={recipe.imageAlt || recipeName}
-              width="600"
-              height="750"
+              width="700"
+              height="470"
               loading="eager"
             />
-            <div class="recipe-gradient absolute inset-0"></div>
-            <div class="scanner-line"></div>
-            <div class="absolute bottom-6 left-6 right-6 backdrop-blur-md p-4 rounded-xl border" style="background-color: color-mix(in srgb, var(--bg-primary) 90%, transparent); border-color: var(--border-default);">
-              <div class="flex justify-between items-center">
-                <span class="text-[10px] font-black uppercase" style="color: var(--accent-primary);">High Protein Verified</span>
-                <span class="text-[10px] font-black" style="color: var(--text-secondary);">{totalTime} Total</span>
-              </div>
+            <div class="rp-hero-image__line"></div>
+            <div class="rp-pe-badge">
+              <span class="rp-pe-badge__label">P:E</span>
+              <span class="rp-pe-badge__value">{peRatio}</span>
             </div>
+            <span class="rp-pe-badge__sublabel">ELITE DENSITY</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- INGREDIENTS + STEPS -->
-    <section class="py-16 px-6 border-y" style="background-color: var(--bg-primary); border-color: var(--border-default);">
-      <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-16">
-        {ingredients.length > 0 && (
-          <div>
-            <h2 class="text-3xl font-black tracking-tighter mb-4">Ingredients</h2>
-            <div class="flex items-center gap-4 mb-6">
-              <span class="text-[10px] font-black uppercase" style="color: var(--text-secondary);">Servings:</span>
-              <div class="flex items-center gap-2">
-                <button x-on:click="servings = Math.max(1, servings - 1)" class="w-8 h-8 rounded-lg flex items-center justify-center hover-bg-tertiary transition-colors" style="background-color: var(--bg-tertiary);">−</button>
-                <span class="text-xl font-black w-8 text-center" x-text="servings"></span>
-                <button x-on:click="servings++" class="w-8 h-8 rounded-lg flex items-center justify-center hover-bg-tertiary transition-colors" style="background-color: var(--bg-tertiary);">+</button>
+    <!-- ═══ TWO-COLUMN BODY (Inventory + Steps) ═══ -->
+    <section class="rp-body px-6 max-w-7xl mx-auto mb-16">
+      <div class="grid md:grid-cols-2 gap-16">
+        <!-- LEFT COLUMN: Inventory List -->
+        <div class="rp-inventory">
+          <div class="rp-inventory__header">
+            <h2 class="rp-section-title">INVENTORY LIST</h2>
+            <div class="rp-toggle-pills">
+              <span class="rp-pill rp-pill--active">ORIGINAL</span>
+              <span class="rp-pill">VEGAN SWAP</span>
+            </div>
+          </div>
+
+          <!-- Ingredient Grid (2 columns) -->
+          <div class="rp-ingredients-grid">
+            {ingredients.map(ing => (
+              <div class="rp-ingredient">
+                <span class="rp-ingredient__text" x-text={`scaleIngredient('${ing.text.replace(/'/g, "\\'")}')`}>{ing.text}</span>
+                <span class="rp-ingredient__role">{ing.role}</span>
               </div>
-              <span x-show="servings !== baseServings" x-cloak class="text-[10px] font-bold" style="color: var(--accent-primary);" x-text="'(scaled from ' + baseServings + ')'"></span>
-            </div>
-            <div class="space-y-3">
-              {ingredients.map(ing => (
-                <div class="flex items-center gap-4 p-3 rounded-xl hover-bg-secondary transition-colors">
-                  <div class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-primary);"></div>
-                  <span class="text-sm font-bold" x-text={`scaleIngredient('${ing.text.replace(/'/g, "\\'")}')`}>{ing.text}</span>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
-        )}
-        {steps.length > 0 && (
-          <div>
-            <h2 class="text-3xl font-black tracking-tighter mb-8">Method</h2>
-            <div class="space-y-6">
-              {steps.map(step => (
-                <div class="flex gap-4">
-                  <span class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-black text-xs" style="background-color: var(--accent-primary); color: var(--text-inverse);">{step.number}</span>
-                  <div>
-                    <h4 class="font-black mb-1">{step.title}</h4>
-                    <p class="text-sm" style="color: var(--text-secondary);">{step.detail}</p>
-                  </div>
-                </div>
-              ))}
+
+          <!-- Meal Prep Logistics Box -->
+          <div class="rp-logistics">
+            <div class="rp-logistics__header">
+              <h3 class="rp-logistics__title">MEAL PREP LOGISTICS</h3>
+              <div class="rp-logistics__icon">
+                <span></span><span></span><span></span>
+              </div>
             </div>
+            <ul class="rp-logistics__list">
+              <li>
+                <span class="rp-logistics__dot"></span>
+                <span><strong>Storage:</strong> {storageText}</span>
+              </li>
+              <li>
+                <span class="rp-logistics__dot"></span>
+                <span><strong>Batching:</strong> {batchingText}</span>
+              </li>
+              <li>
+                <span class="rp-logistics__dot"></span>
+                <span><strong>Reheat:</strong> {reheatText}</span>
+              </li>
+            </ul>
           </div>
-        )}
+        </div>
+
+        <!-- RIGHT COLUMN: Execution Steps -->
+        <div class="rp-steps">
+          <h2 class="rp-section-title">EXECUTION STEPS</h2>
+
+          <div class="rp-steps__list">
+            {steps.map(step => (
+              <div class="rp-step">
+                <span class="rp-step__number">{step.number}</span>
+                <div class="rp-step__content">
+                  <h4 class="rp-step__title">{step.title}</h4>
+                  <p class="rp-step__detail">{step.detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <!-- Community Counter -->
+          <div class="rp-community">
+            <div class="rp-community__dots">
+              <span class="rp-community__dot rp-community__dot--light"></span>
+              <span class="rp-community__dot rp-community__dot--light"></span>
+              <span class="rp-community__dot rp-community__dot--dark"></span>
+            </div>
+            <span class="rp-community__text">{communityPrepsFormatted} COMMUNITY PREPS THIS WEEK</span>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- DIET VARIANTS -->
-    {dietVariants.length > 0 && (
-      <section class="py-16 px-6 max-w-7xl mx-auto">
-        <h2 class="text-3xl font-black tracking-tighter mb-8">Diet Variants</h2>
-        <div class="grid md:grid-cols-3 gap-4">
-          {dietVariants.map(v => (
-            <div class="hyper-border rounded-2xl p-6">
-              <h4 class="font-black mb-3" style="color: var(--accent-primary);">{v.name}</h4>
-              <p class="text-sm" style="color: var(--text-secondary);">{v.adjustments}</p>
-            </div>
-          ))}
+    <!-- ═══ BOTTOM SECTION (3 columns) ═══ -->
+    <section class="rp-bottom px-6 max-w-7xl mx-auto mb-16">
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Primary Category -->
+        <div class="rp-bottom-col">
+          <h3 class="rp-bottom__label">PRIMARY CATEGORY</h3>
+          {primaryCategory && (
+            <a href={`/high-protein/${primaryCategory.slug}/`} class="rp-category-card">
+              <span class="rp-category-card__eyebrow">EXPLORE MORE</span>
+              <span class="rp-category-card__title">{primaryCategory.label} Protein</span>
+            </a>
+          )}
         </div>
-      </section>
-    )}
 
-    <!-- RELATED RECIPES -->
-    {relatedRecipes.length > 0 && (
-      <section class="py-16 px-6 border-t" style="border-color: var(--border-default); background: var(--bg-tertiary);">
-        <div class="max-w-7xl mx-auto">
-          <h2 class="text-3xl font-black tracking-tighter mb-8">More High Protein Recipes</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedRecipes.map(r => (
-              <a href={`/high-protein/recipes/${r.slug}/`} class="group rounded-2xl overflow-hidden border transition-all hover:shadow-lg" style="border-color: var(--border-default); background: var(--bg-secondary);">
-                <div class="aspect-video overflow-hidden relative">
-                  <img
-                    src={`/images/recipes/${r.slug}.jpg`}
-                    onerror={`this.onerror=null;this.src='${fallbackImage}'`}
-                    alt={r.imageAlt || r.title}
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    width="400"
-                    height="225"
-                    loading="lazy"
-                  />
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                </div>
-                <div class="p-4">
-                  <h3 class="font-black text-sm mb-2 group-hover:opacity-80 transition-opacity">{r.title}</h3>
-                  <div class="flex gap-3 text-[10px] font-bold" style="color: var(--text-tertiary);">
-                    <span>{r.protein}g protein</span>
-                    <span>·</span>
-                    <span>{r.calories} cal</span>
-                    <span>·</span>
-                    <span>{r.prepTime + r.cookTime}m</span>
-                  </div>
-                </div>
-              </a>
+        <!-- Related Ingredients -->
+        <div class="rp-bottom-col">
+          <h3 class="rp-bottom__label">RELATED INGREDIENTS</h3>
+          <div class="rp-ingredient-pills">
+            {relatedIngredients.map(ing => (
+              <a href={`/high-protein/ingredient/${ing.slug}/`} class="rp-ing-pill">{ing.label}</a>
             ))}
           </div>
         </div>
-      </section>
-    )}
+
+        <!-- Full Execution Plans -->
+        <div class="rp-bottom-col">
+          <h3 class="rp-bottom__label">FULL EXECUTION PLANS</h3>
+          {displayPlans.map(plan => (
+            <a href={`/high-protein/plans/${plan.slug}/`} class="rp-plan-link">
+              <span class="rp-plan-link__title">{plan.title.toUpperCase()}</span>
+              <span class="rp-plan-link__arrow">›</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
   </main>
 
   <FooterNav site="proteinmeals" copyrightSuffix={`Index Authority Network. Recipe ${recipeId}.`} />
 </BaseLayout>
+
+<style>
+  /* ═══════════════════════════════════════════════════════
+     RECIPE PAGE STYLES (High Protein variant)
+     All colors use CSS custom properties from the theme
+     ═══════════════════════════════════════════════════════ */
+
+  /* ─── HERO SECTION ──────────────────────────────── */
+  .rp-hero__title {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+
+  .rp-hero__desc {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    max-width: 380px;
+  }
+
+  /* Stat Boxes Row */
+  .rp-stats {
+    display: flex;
+    gap: 0;
+    margin-bottom: 2rem;
+  }
+
+  .rp-stat {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid var(--accent-primary);
+  }
+
+  .rp-stat__label {
+    display: block;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+  }
+
+  .rp-stat__value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .rp-stat__value--accent {
+    color: var(--accent-primary);
+  }
+
+  /* Yield + Save Row */
+  .rp-yield-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .rp-yield {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--bg-tertiary);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+  }
+
+  .rp-yield__label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin-right: 0.25rem;
+  }
+
+  .rp-yield__btn {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .rp-yield__btn:hover {
+    background: var(--bg-secondary);
+  }
+
+  .rp-yield__count {
+    font-size: 1rem;
+    font-weight: 900;
+    min-width: 1.25rem;
+    text-align: center;
+  }
+
+  .rp-save-btn {
+    background-color: var(--accent-primary);
+    color: var(--text-inverse);
+    border: none;
+    border-radius: 999px;
+    padding: 0.65rem 1.5rem;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .rp-save-btn:hover {
+    opacity: 0.9;
+  }
+
+  /* Hero Image */
+  .rp-hero-image {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  .rp-hero-image__img {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+
+  .rp-hero-image__line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: var(--accent-primary);
+  }
+
+  /* P:E Badge */
+  .rp-pe-badge {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background-color: var(--accent-primary);
+    color: var(--text-inverse);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  .rp-pe-badge__label {
+    font-size: 0.5rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+
+  .rp-pe-badge__value {
+    font-size: 1.25rem;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  .rp-pe-badge__sublabel {
+    position: absolute;
+    bottom: -0.25rem;
+    right: 1rem;
+    font-size: 0.5rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    text-align: right;
+    z-index: 2;
+  }
+
+  /* ─── SECTION TITLES ────────────────────────────── */
+  .rp-section-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ─── INVENTORY LIST ────────────────────────────── */
+  .rp-inventory__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .rp-inventory__header .rp-section-title {
+    margin-bottom: 0;
+  }
+
+  .rp-toggle-pills {
+    display: flex;
+    gap: 0;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--border-default);
+  }
+
+  .rp-pill {
+    padding: 0.4rem 1rem;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .rp-pill--active {
+    background-color: var(--accent-primary);
+    color: var(--text-inverse);
+  }
+
+  /* Ingredients Grid */
+  .rp-ingredients-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 2rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 640px) {
+    .rp-ingredients-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .rp-ingredient {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--border-default) 40%, transparent);
+  }
+
+  .rp-ingredient__text {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .rp-ingredient__role {
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Meal Prep Logistics */
+  .rp-logistics {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: 1rem;
+    padding: 1.5rem;
+  }
+
+  .rp-logistics__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .rp-logistics__title {
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: var(--accent-primary);
+  }
+
+  .rp-logistics__icon {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .rp-logistics__icon span {
+    display: block;
+    width: 1.25rem;
+    height: 2px;
+    background-color: var(--text-tertiary);
+    border-radius: 1px;
+  }
+
+  .rp-logistics__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .rp-logistics__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+
+  .rp-logistics__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--accent-primary);
+    flex-shrink: 0;
+    margin-top: 0.4rem;
+  }
+
+  .rp-logistics__list strong {
+    color: var(--text-primary);
+  }
+
+  /* ─── EXECUTION STEPS ───────────────────────────── */
+  .rp-steps__list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .rp-step {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+  }
+
+  .rp-step__number {
+    font-size: 2.5rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--text-tertiary);
+    opacity: 0.3;
+    flex-shrink: 0;
+    min-width: 2.5rem;
+  }
+
+  .rp-step__content {
+    flex: 1;
+    padding-top: 0.25rem;
+  }
+
+  .rp-step__title {
+    font-size: 0.95rem;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  .rp-step__detail {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  /* Community Counter */
+  .rp-community {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 1.5rem;
+  }
+
+  .rp-community__dots {
+    display: flex;
+    gap: 4px;
+  }
+
+  .rp-community__dot {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+  }
+
+  .rp-community__dot--light {
+    background-color: var(--bg-tertiary);
+  }
+
+  .rp-community__dot--dark {
+    background-color: var(--text-tertiary);
+  }
+
+  .rp-community__text {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+  }
+
+  /* ─── BOTTOM SECTION ────────────────────────────── */
+  .rp-bottom {
+    padding-top: 3rem;
+    border-top: 1px solid var(--border-default);
+  }
+
+  .rp-bottom-col {
+    min-height: 120px;
+  }
+
+  .rp-bottom__label {
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+
+  .rp-category-card {
+    display: block;
+    background-color: var(--bg-secondary);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: opacity 0.2s;
+  }
+
+  .rp-category-card:hover {
+    opacity: 0.85;
+  }
+
+  .rp-category-card__eyebrow {
+    display: block;
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+    margin-bottom: 0.5rem;
+  }
+
+  .rp-category-card__title {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 900;
+  }
+
+  /* Ingredient Pills */
+  .rp-ingredient-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .rp-ing-pill {
+    display: inline-block;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-default);
+    transition: all 0.2s;
+  }
+
+  .rp-ing-pill:hover {
+    background-color: var(--accent-primary);
+    color: var(--text-inverse);
+    border-color: var(--accent-primary);
+  }
+
+  /* Plan Link */
+  .rp-plan-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-default);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.2s;
+  }
+
+  .rp-plan-link:hover {
+    border-color: var(--accent-primary);
+  }
+
+  .rp-plan-link__title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+  }
+
+  .rp-plan-link__arrow {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+  }
+
+  /* ─── RESPONSIVE ────────────────────────────────── */
+  @media (max-width: 768px) {
+    .rp-stats {
+      flex-wrap: wrap;
+    }
+    .rp-stat {
+      flex: 1 1 45%;
+    }
+    .rp-hero__title {
+      font-size: 2.5rem;
+    }
+  }
+</style>
