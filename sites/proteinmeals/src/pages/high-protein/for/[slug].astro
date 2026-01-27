@@ -1,5 +1,4 @@
 ---
-import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
 import PersonaConditionPage from '@mealprepideas/shared/components/PersonaConditionPage.astro';
 import { facets } from '@mealprepideas/shared/data/taxonomy';
 import { getRecipesMatchingAnyFacet } from '@mealprepideas/shared/utils/content';
@@ -15,14 +14,17 @@ const { persona } = Astro.props;
 const label = persona.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
 const matchingRecipes = getRecipesMatchingAnyFacet('high-protein', 'persona', persona);
 ---
-<BaseLayout 
-  title={`High Protein for ${label} | ProteinMeals.co`} 
+<PersonaConditionPage
+  title={`High Protein for ${label} | ProteinMeals.co`}
   description={`High protein meal guide for ${label.toLowerCase()}. Recipes, macros, and nutrition tips tailored to your needs.`}
->
-  <PersonaConditionPage 
-    persona={persona}
-    label={label}
-    hub="high-protein"
-    recipes={matchingRecipes}
-  />
-</BaseLayout>
+  conditionName={label}
+  conditionType="persona"
+  definition={`High protein nutrition guide tailored for ${label.toLowerCase()}. Browse curated recipes, macro breakdowns, and expert tips designed specifically for your goals.`}
+  recipes={matchingRecipes.map((r, i) => ({
+    id: i + 1,
+    title: r.title,
+    protein: `${r.protein}g`,
+    cal: `${r.calories}`,
+    tags: Object.values(r.facets).filter(Boolean) as string[],
+  }))}
+/>

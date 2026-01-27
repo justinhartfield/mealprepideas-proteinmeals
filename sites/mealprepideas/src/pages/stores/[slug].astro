@@ -1,5 +1,4 @@
 ---
-import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
 import RetailerChainPage from '@mealprepideas/shared/components/RetailerChainPage.astro';
 import { stores } from '@mealprepideas/shared/data/content/stores';
 
@@ -11,7 +10,35 @@ export function getStaticPaths() {
 }
 
 const { store } = Astro.props;
+
+function calculateAvgPE(topPicks: typeof store.topPicks): string {
+  const valid = topPicks.filter(p => p.protein && p.calories && p.calories > 0);
+  if (valid.length === 0) return '—';
+  const avg = valid.reduce((sum, p) => sum + (p.protein! / (p.calories! / 100)), 0) / valid.length;
+  return avg.toFixed(1);
+}
 ---
-<BaseLayout title={`${store.name} Meal Prep Guide | MealPrepIdeas.co`} description={store.description}>
-  <RetailerChainPage store={store} />
-</BaseLayout>
+<RetailerChainPage
+  title={`${store.name} Meal Prep Guide | MealPrepIdeas.co`}
+  description={store.description}
+  entityName={store.name}
+  entityType={store.type === 'grocery' ? 'store' : 'chain'}
+  tagline={store.tagline}
+  entityDescription={store.description}
+  totalSKUs={store.topPicks.length}
+  avgPE={calculateAvgPE(store.topPicks)}
+  skus={store.topPicks.map((pick, i) => ({
+    id: `SKU-${String(i + 1).padStart(3, '0')}`,
+    name: pick.name,
+    category: pick.category,
+    protein: pick.protein ? `${pick.protein}g` : '—',
+    cals: pick.calories ? `${pick.calories}` : '—',
+    price: pick.price || '—',
+    peScore: pick.protein && pick.calories ? (pick.protein / (pick.calories / 100)).toFixed(1) : '—',
+  }))}
+  topPicks={store.topPicks.slice(0, 3).map(p => ({
+    name: p.name,
+    protein: p.protein ? `${p.protein}g` : '—',
+    reason: p.tip,
+  }))}
+/>

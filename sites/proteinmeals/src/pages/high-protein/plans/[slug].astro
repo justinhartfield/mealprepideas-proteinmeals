@@ -1,5 +1,4 @@
 ---
-import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
 import BatchPrepPlan from '@mealprepideas/shared/components/BatchPrepPlan.astro';
 import { plans } from '@mealprepideas/shared/data/content/plans';
 
@@ -13,7 +12,64 @@ export function getStaticPaths() {
 }
 
 const { plan } = Astro.props;
+
+// Map days to the shape BatchPrepPlan expects
+function mapDays(planDays: typeof plan.days) {
+  return planDays.map((d, i) => {
+    const breakfast = d.meals.find(m => m.type === 'breakfast');
+    const lunch = d.meals.find(m => m.type === 'lunch');
+    const dinner = d.meals.find(m => m.type === 'dinner');
+    return {
+      day: d.day,
+      dayNumber: i + 1,
+      breakfast: {
+        name: breakfast?.title || '—',
+        protein: breakfast ? `${breakfast.protein}g` : '—',
+        cals: breakfast ? `${breakfast.calories}` : '—',
+      },
+      lunch: {
+        name: lunch?.title || '—',
+        protein: lunch ? `${lunch.protein}g` : '—',
+        cals: lunch ? `${lunch.calories}` : '—',
+      },
+      dinner: {
+        name: dinner?.title || '—',
+        protein: dinner ? `${dinner.protein}g` : '—',
+        cals: dinner ? `${dinner.calories}` : '—',
+      },
+    };
+  });
+}
+
+// Flatten shopping list categories into flat items
+function mapShoppingList(list: typeof plan.shoppingList) {
+  return list.flatMap(cat =>
+    cat.items.map(item => ({ text: `${item}`, checked: false }))
+  );
+}
+
+// Map prep schedule to prepSteps shape
+function mapPrepSteps(schedule: typeof plan.prepSchedule) {
+  return schedule.map(s => ({
+    step: String(s.step),
+    title: s.task.split('—')[0].split('(')[0].trim().slice(0, 60),
+    detail: s.task,
+    time: s.duration,
+  }));
+}
+
+const totalMeals = plan.days.reduce((sum, d) => sum + d.meals.filter(m => m.type !== 'snack').length, 0);
 ---
-<BaseLayout title={`${plan.title} | ProteinMeals.co`} description={plan.description}>
-  <BatchPrepPlan plan={plan} />
-</BaseLayout>
+<BatchPrepPlan
+  title={`${plan.title} | ProteinMeals.co`}
+  description={plan.description}
+  planName={plan.title}
+  planId={plan.slug}
+  totalMeals={totalMeals}
+  prepTime={`${plan.totalPrepTime} min`}
+  weeklyBudget={plan.groceryBudget}
+  avgProtein={`${plan.dailyProtein}g`}
+  days={mapDays(plan.days)}
+  shoppingList={mapShoppingList(plan.shoppingList)}
+  prepSteps={mapPrepSteps(plan.prepSchedule)}
+/>

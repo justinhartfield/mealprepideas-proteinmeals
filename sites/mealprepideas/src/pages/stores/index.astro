@@ -1,0 +1,102 @@
+---
+import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
+import HeaderNav from '@mealprepideas/shared/components/HeaderNav.astro';
+import FooterNav from '@mealprepideas/shared/components/FooterNav.astro';
+import BreadcrumbNav from '@mealprepideas/shared/components/BreadcrumbNav.astro';
+import { stores } from '@mealprepideas/shared/data/content/stores';
+
+const groceryStores = stores.filter(s => s.type === 'grocery');
+const fastFoodChains = stores.filter(s => s.type === 'fast-food');
+---
+<BaseLayout
+  title="Store & Chain Guides | MealPrepIdeas.co"
+  description="Meal prep and high-protein guides for every major grocery store and fast-food chain. Find the best deals, top picks, and macro-friendly options."
+>
+  <HeaderNav statusText="Store Index" />
+
+  <main class="flex-grow">
+    <BreadcrumbNav items={[
+      { label: 'Home', href: '/' },
+      { label: 'Stores' },
+    ]} />
+
+    <!-- HERO -->
+    <section class="px-6 max-w-7xl mx-auto mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--accent-primary); color: var(--text-inverse);">Store Index</span>
+      </div>
+      <h1 class="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-6">Store &<br/>Chain Guides</h1>
+      <p class="text-lg max-w-2xl leading-relaxed" style="color: var(--text-secondary);">
+        The best protein picks, budget tips, and meal prep strategies for every major grocery store and fast-food chain. Click any store to see our full guide.
+      </p>
+    </section>
+
+    <!-- GROCERY STORES -->
+    {groceryStores.length > 0 && (
+      <section class="py-16 px-6 border-t" style="border-color: var(--border-default);">
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-3xl font-black tracking-tighter mb-8">Grocery Stores</h2>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {groceryStores.map(store => (
+              <a href={`/stores/${store.slug}/`} class="hyper-border rounded-2xl p-6 group block">
+                <div class="flex items-center gap-3 mb-4">
+                  <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--bg-tertiary);">
+                    {store.type}
+                  </span>
+                  <span class="text-[10px] font-bold" style="color: var(--text-tertiary);">
+                    {store.topPicks.length} products
+                  </span>
+                </div>
+                <h3 class="text-2xl font-black mb-2 group-hover-accent-text transition-colors">{store.name}</h3>
+                <p class="text-sm mb-4" style="color: var(--accent-primary);">{store.tagline}</p>
+                <p class="text-sm line-clamp-2" style="color: var(--text-secondary);">{store.description}</p>
+                <div class="mt-4 flex gap-2 flex-wrap">
+                  {store.topPicks.slice(0, 2).map(pick => (
+                    <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--bg-tertiary);">
+                      {pick.name}
+                    </span>
+                  ))}
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- FAST-FOOD CHAINS -->
+    {fastFoodChains.length > 0 && (
+      <section class="py-16 px-6 border-t" style="border-color: var(--border-default);">
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-3xl font-black tracking-tighter mb-8">Fast-Food Chains</h2>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {fastFoodChains.map(store => (
+              <a href={`/stores/${store.slug}/`} class="hyper-border rounded-2xl p-6 group block">
+                <div class="flex items-center gap-3 mb-4">
+                  <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--bg-tertiary);">
+                    {store.type}
+                  </span>
+                  <span class="text-[10px] font-bold" style="color: var(--text-tertiary);">
+                    {store.topPicks.length} items
+                  </span>
+                </div>
+                <h3 class="text-2xl font-black mb-2 group-hover-accent-text transition-colors">{store.name}</h3>
+                <p class="text-sm mb-4" style="color: var(--accent-primary);">{store.tagline}</p>
+                <p class="text-sm line-clamp-2" style="color: var(--text-secondary);">{store.description}</p>
+                <div class="mt-4 flex gap-2 flex-wrap">
+                  {store.topPicks.slice(0, 2).map(pick => (
+                    <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--bg-tertiary);">
+                      {pick.name}
+                    </span>
+                  ))}
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+  </main>
+
+  <FooterNav copyrightSuffix="Index Authority Network. Store & Chain Directory." />
+</BaseLayout>
