@@ -5,6 +5,7 @@
  */
 interface LinkColumn {
   title: string;
+  titleHref?: string;
   number?: string;
   links: { label: string; href: string }[];
 }
@@ -35,10 +36,17 @@ const {
       <div class:list={['grid grid-cols-1 gap-12', columns.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-4']}>
         {columns.map((col) => (
           <div class="space-y-6">
-            <h4 class="text-xs font-black uppercase tracking-widest pb-2 flex justify-between" style="border-bottom: 2px solid var(--text-primary);">
-              <span>{col.title}</span>
-              {col.number && <span style="color: var(--text-secondary);">{col.number}</span>}
-            </h4>
+            {col.titleHref ? (
+              <a href={col.titleHref} class="text-xs font-black uppercase tracking-widest pb-2 flex justify-between group transition-colors" style="border-bottom: 2px solid var(--text-primary); color: var(--text-primary);">
+                <span class="group-hover-accent-text transition-colors">{col.title} →</span>
+                {col.number && <span style="color: var(--text-secondary);">{col.number}</span>}
+              </a>
+            ) : (
+              <h4 class="text-xs font-black uppercase tracking-widest pb-2 flex justify-between" style="border-bottom: 2px solid var(--text-primary);">
+                <span>{col.title}</span>
+                {col.number && <span style="color: var(--text-secondary);">{col.number}</span>}
+              </h4>
+            )}
             <ul class="space-y-4">
               {col.links.map((link) => (
                 <li>
@@ -65,7 +73,11 @@ const {
     <div class:list={['grid grid-cols-1 gap-8', columns.length <= 3 ? 'md:grid-cols-3' : 'md:grid-cols-4']}>
       {columns.map((col) => (
         <div>
-          <h5 class="text-3xl font-black tracking-tighter mb-6">{col.title}</h5>
+          {col.titleHref ? (
+            <a href={col.titleHref} class="text-3xl font-black tracking-tighter mb-6 block hover-accent-text transition-colors">{col.title} →</a>
+          ) : (
+            <h5 class="text-3xl font-black tracking-tighter mb-6">{col.title}</h5>
+          )}
           <ul class="space-y-3">
             {col.links.map((link) => (
               <li>

@@ -1,13 +1,13 @@
 ---
 /**
- * mealprepideas.co — Homepage
- * Redirects to the Meal Prep Hub (the site IS the hub)
+ * mealprepideas.co — Homepage (Entry Portal)
+ * Uses GlobalDiscoveryLanding for a site-wide overview
  */
-import BaseLayout from '@mealprepideas/shared/layouts/BaseLayout.astro';
-import MealPrepHub from '@mealprepideas/shared/components/MealPrepHub.astro';
+import GlobalDiscoveryLanding from '@mealprepideas/shared/components/GlobalDiscoveryLanding.astro';
 ---
 
-<MealPrepHub
+<GlobalDiscoveryLanding
   title="MealPrepIdeas.co | Meal Prep Recipes, Plans & Store Guides"
   description="Master the Sunday batch. Crockpot, air fryer, sheet pan, and freezer meal prep ideas with 5-day plans, store guides, and real macros."
+  site="mealprepideas"
 />

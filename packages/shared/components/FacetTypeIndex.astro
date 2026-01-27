@@ -1,0 +1,213 @@
+---
+/**
+ * FacetTypeIndex — Facet Type Landing Page (e.g. /meal-prep/method/, /high-protein/diet/)
+ * Lists all values for a given facet type with recipe counts and links.
+ * Theme-aware: uses CSS custom properties
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeaderNav from './HeaderNav.astro';
+import FooterNav from './FooterNav.astro';
+import BreadcrumbNav from './BreadcrumbNav.astro';
+import ExploreByBlock from './ExploreByBlock.astro';
+import { facets, FACET_ORDER, type FacetKey } from '../data/taxonomy';
+import { slugToDisplay } from '../utils/urls';
+import { getRecipesMatchingAnyFacet } from '../utils/content';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonicalUrl?: string;
+  hub: 'meal-prep' | 'high-protein';
+  facetType: FacetKey;
+  site?: 'mealprepideas' | 'proteinmeals';
+}
+
+const { title, description, canonicalUrl, hub, facetType, site } = Astro.props;
+
+const hubPath = hub === 'meal-prep' ? '/meal-prep/' : '/high-protein/';
+const hubLabel = hub === 'meal-prep' ? 'Meal Prep Hub' : 'High Protein Hub';
+const facetLabel = facets[facetType]?.label || slugToDisplay(facetType);
+const facetValues = facets[facetType]?.values || [];
+
+// Build value cards with recipe counts
+const valueCards = facetValues.map(value => {
+  const displayName = slugToDisplay(value);
+  const matchingRecipes = getRecipesMatchingAnyFacet(hub, facetType, value);
+  return {
+    slug: value,
+    displayName,
+    href: `${hubPath}${facetType}/${value}/`,
+    recipeCount: matchingRecipes.length,
+    topRecipe: matchingRecipes[0] || null,
+  };
+});
+
+// Sort: values with recipes first, then alphabetically
+const sortedCards = [...valueCards].sort((a, b) => {
+  if (a.recipeCount !== b.recipeCount) return b.recipeCount - a.recipeCount;
+  return a.displayName.localeCompare(b.displayName);
+});
+
+const totalValues = valueCards.length;
+const totalRecipes = valueCards.reduce((sum, v) => sum + v.recipeCount, 0);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: hubLabel, href: hubPath },
+  { label: `By ${facetLabel}` },
+];
+
+// Structured data
+const structuredData = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: title,
+  description: description,
+  url: canonicalUrl,
+  numberOfItems: totalValues,
+  hasPart: sortedCards.slice(0, 20).map(card => ({
+    '@type': 'WebPage',
+    name: card.displayName,
+    url: canonicalUrl ? new URL(card.href, canonicalUrl).toString() : card.href,
+  })),
+});
+
+// Build explore columns for other facet types
+const otherFacetTypes = FACET_ORDER.filter(ft => ft !== facetType && facets[ft]);
+const exploreColumns = otherFacetTypes.slice(0, 4).map(ft => ({
+  title: `By ${facets[ft].label}`,
+  titleHref: `${hubPath}${ft}/`,
+  links: facets[ft].values.slice(0, 5).map(v => ({
+    label: slugToDisplay(v),
+    href: `${hubPath}${ft}/${v}/`,
+  })),
+}));
+
+const resolvedSite = site || (hub === 'meal-prep' ? 'mealprepideas' : 'proteinmeals');
+---
+
+<BaseLayout title={title} description={description} canonicalUrl={canonicalUrl} structuredData={structuredData}>
+  <HeaderNav
+    site={resolvedSite}
+    activeLink={hubPath}
+  />
+
+  <main class="flex-grow">
+    <BreadcrumbNav items={breadcrumbs} />
+
+    <!-- HERO -->
+    <section class="px-6 max-w-7xl mx-auto mb-16">
+      <div class="grid md:grid-cols-12 gap-12">
+        <div class="md:col-span-8">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase"
+                  style="background-color: var(--accent-primary); color: var(--text-inverse);">
+              Facet Index
+            </span>
+            <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">
+              {totalValues} Categories
+            </span>
+          </div>
+          <h1 class="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-6">
+            Browse by<br/><span style="color: var(--accent-primary);">{facetLabel}</span>
+          </h1>
+          <p class="text-xl font-bold mb-4" style="color: var(--accent-primary);">
+            {totalValues} {facetLabel.toLowerCase()} categories to explore.
+          </p>
+          <p class="text-lg max-w-2xl leading-relaxed" style="color: var(--text-secondary);">
+            Every {facetLabel.toLowerCase()} in our {hub === 'meal-prep' ? 'meal prep' : 'high protein'} system, sorted by content depth. Pick a category to see curated recipes, plans, and guides.
+          </p>
+        </div>
+        <div class="md:col-span-4">
+          <div class="hyper-border rounded-3xl p-8">
+            <div class="scanner-line"></div>
+            <h3 class="text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-secondary);">
+              {facetLabel} Overview
+            </h3>
+            <div class="space-y-6">
+              <div class="flex justify-between items-end">
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">Total Categories</span>
+                <span class="text-3xl font-black" style="color: var(--accent-primary);">{totalValues}</span>
+              </div>
+              <div class="flex justify-between items-end">
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">Total Recipes</span>
+                <span class="text-3xl font-black">{totalRecipes}</span>
+              </div>
+              <div class="flex justify-between items-end">
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">Facet Type</span>
+                <span class="text-sm font-black uppercase tracking-widest" style="color: var(--accent-primary);">{facetLabel}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ALL VALUES GRID -->
+    <section class="py-16 px-6" style="border-top: 1px solid var(--border-default); border-bottom: 1px solid var(--border-default); background: var(--bg-secondary);">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex items-center gap-4 mb-12">
+          <div class="h-[2px] w-16" style="background-color: var(--accent-primary);"></div>
+          <h2 class="text-xs font-black tracking-[0.5em] uppercase" style="color: var(--text-tertiary);">
+            All {facetLabel} Categories
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sortedCards.map((card, index) => (
+            <a href={card.href}
+               class="hyper-border rounded-2xl p-6 group flex flex-col justify-between transition-all hover:-translate-y-1">
+              <div>
+                <div class="flex justify-between items-start mb-4">
+                  <span class="text-4xl font-black group-hover-accent-opacity transition-colors"
+                        style="color: var(--text-tertiary);">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <div class="flex items-center gap-2">
+                    {card.recipeCount > 0 && (
+                      <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase"
+                            style="background-color: var(--accent-primary); color: var(--text-inverse);">
+                        {card.recipeCount} {card.recipeCount === 1 ? 'recipe' : 'recipes'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <h3 class="text-xl font-black mb-2 group-hover-accent-text transition-colors">
+                  {card.displayName}
+                </h3>
+                {card.topRecipe && (
+                  <p class="text-sm" style="color: var(--text-secondary);">
+                    Top pick: {card.topRecipe.title}
+                  </p>
+                )}
+                {!card.topRecipe && (
+                  <p class="text-sm" style="color: var(--text-tertiary);">
+                    Explore {card.displayName.toLowerCase()} {hub === 'meal-prep' ? 'meal prep' : 'high protein'} strategies
+                  </p>
+                )}
+              </div>
+              <div class="mt-4 pt-4 flex items-center justify-between" style="border-top: 1px solid var(--border-default);">
+                <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">
+                  View All →
+                </span>
+                <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" style="color: var(--accent-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPLORE OTHER FACET TYPES -->
+    <ExploreByBlock
+      headline={`EXPLORE OTHER CATEGORIES`}
+      subtitle="Cross-Reference Navigation"
+      columns={exploreColumns}
+      variant="light"
+    />
+
+  </main>
+
+  <FooterNav site={resolvedSite} />
+</BaseLayout>
