@@ -6,6 +6,7 @@ import DietGoalCombo from '@mealprepideas/shared/components/DietGoalCombo.astro'
 import PersonaMethodCombo from '@mealprepideas/shared/components/PersonaMethodCombo.astro';
 import MethodMealCombo from '@mealprepideas/shared/components/MethodMealCombo.astro';
 import { generateTwoFacetPaths, slugToDisplay } from '@mealprepideas/shared/utils/urls';
+import { getRecipesForFacets, getFacetContent, buildComboFacetKey } from '@mealprepideas/shared/utils/content';
 import type { FacetKey } from '@mealprepideas/shared/data/taxonomy';
 
 export function getStaticPaths() {
