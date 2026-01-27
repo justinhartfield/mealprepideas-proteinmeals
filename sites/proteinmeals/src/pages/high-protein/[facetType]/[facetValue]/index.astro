@@ -12,6 +12,8 @@ import { generateSingleFacetPaths, slugToDisplay } from '@mealprepideas/shared/u
 import { getRecipesMatchingAnyFacet, getFacetContent, buildFacetKey } from '@mealprepideas/shared/utils/content';
 import { stores } from '@mealprepideas/shared/data/content/stores';
 import { personaContent } from '@mealprepideas/shared/data/content/personas';
+import { getMethodLogistics } from '@mealprepideas/shared/data/content/methodLogistics';
+import { facets } from '@mealprepideas/shared/data/taxonomy';
 import type { FacetKey } from '@mealprepideas/shared/data/taxonomy';
 
 export function getStaticPaths() {
@@ -203,6 +205,16 @@ const pe = peData[facetType!] || peData['diet'];
     recipes={displayRecipes as any}
     faqs={displayFaqs}
     exploreColumns={exploreColumns}
+    executionNotes={(() => {
+      const ml = getMethodLogistics(facetValue!);
+      if (!ml || ml.steps.length < 2) return undefined;
+      return { batchingRule: ml.steps[0].description, storageLogic: ml.steps[1].description };
+    })()}
+    relatedMethods={(() => {
+      const methods = (facets.method?.values || []).filter(m => m !== facetValue).slice(0, 2);
+      return methods.map(m => ({ label: `${slugToDisplay(m)} ${displayValue}`, href: `/high-protein/method/${m}/` }));
+    })()}
+    planCard={{ title: `5-Day ${displayValue} Plan`, description: `Download the Sunday prep-sheet for this exact category.`, href: `/high-protein/plans/` }}
   />
 ) : (
   <DietCategory
