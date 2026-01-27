@@ -69,13 +69,21 @@ export const facets = {
   },
   store: {
     label: 'Store',
-    values: ['trader-joes', 'costco', 'walmart', 'aldi', 'whole-foods'],
+    values: [
+      'trader-joes', 'costco', 'walmart', 'aldi', 'whole-foods',
+      'kroger', 'publix', 'target', 'sams-club', 'heb',
+      'safeway', 'sprouts', 'winco',
+      'loblaws', 'no-frills', 'superstore', 'metro',
+      'sobeys', 'save-on-foods', 'freshco',
+    ],
   },
   chain: {
     label: 'Chain',
     values: [
       'chick-fil-a', 'mcdonalds', 'taco-bell', 'panera',
       'chipotle', 'panda-express', 'wendys', 'subway',
+      'wingstop', 'raising-canes', 'popeyes', 'five-guys',
+      'shake-shack', 'sweetgreen', 'cava', 'pokeworks',
     ],
   },
 } as const;
@@ -115,6 +123,18 @@ export const synonyms: Record<string, string> = {
   'chick fil a': 'chick-fil-a',
   'taco bell': 'taco-bell',
   'panda express': 'panda-express',
+  "sam's club": 'sams-club',
+  'sams club': 'sams-club',
+  'h-e-b': 'heb',
+  'sprouts farmers market': 'sprouts',
+  'winco foods': 'winco',
+  'no frills': 'no-frills',
+  'real canadian superstore': 'superstore',
+  'save on foods': 'save-on-foods',
+  "raising cane's": 'raising-canes',
+  'raising canes': 'raising-canes',
+  'five guys': 'five-guys',
+  'shake shack': 'shake-shack',
 };
 
 /** Two-facet combos that should be indexed (by hub) */
