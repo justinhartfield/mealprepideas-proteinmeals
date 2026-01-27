@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HeaderNav from '../HeaderNav.astro';
+import FooterNav from '../FooterNav.astro';
+import { recipes } from '../../data/content/recipes';
+
+interface Props { site?: 'mealprepideas' | 'proteinmeals'; }
+const { site = 'mealprepideas' } = Astro.props;
+const hub = site === 'proteinmeals' ? 'high-protein' : 'meal-prep';
+
+const recipeData = JSON.stringify(recipes.map(r => ({
+  slug: r.slug, title: r.title, hub: r.hub, meal: r.facets.meal || '', diet: r.facets.diet || '',
+  protein: r.protein, calories: r.calories, carbs: r.carbs, fat: r.fat,
+  prepTime: r.prepTime, cookTime: r.cookTime,
+  ingredients: r.ingredients.map(i => i.toLowerCase()),
+  imageAlt: r.imageAlt || r.title,
+})));
+---
+
+<BaseLayout title="Allergen & Dietary Filter | Find Safe Recipes" description="Filter all recipes by allergens and dietary restrictions. Gluten-free, dairy-free, nut-free, egg-free, soy-free, and more.">
+  <HeaderNav site={site} />
+
+  <main class="flex-grow py-16 px-6">
+    <div class="max-w-7xl mx-auto" x-data={`{
+      recipes: ${recipeData},
+      filters: {
+        'gluten-free': false, 'dairy-free': false, 'nut-free': false,
+        'egg-free': false, 'soy-free': false, 'shellfish-free': false,
+        'vegan': false, 'vegetarian': false, 'keto': false, 'low-sodium': false
+      },
+      init() {
+        const saved = localStorage.getItem('allergenFilters');
+        if (saved) { try { this.filters = { ...this.filters, ...JSON.parse(saved) }; } catch(e) {} }
+      },
+      saveFilters() { localStorage.setItem('allergenFilters', JSON.stringify(this.filters)); },
+      toggle(key) { this.filters[key] = !this.filters[key]; this.saveFilters(); },
+      get activeCount() { return Object.values(this.filters).filter(Boolean).length; },
+      get filtered() {
+        return this.recipes.filter(r => {
+          const ings = r.ingredients.join(' ');
+          if (this.filters['gluten-free'] && (r.diet !== 'gluten-free' && /flour|bread|pasta|wheat|barley|rye|soy sauce|tortilla|panko|breadcrumb|crouton/.test(ings))) return false;
+          if (this.filters['dairy-free'] && (r.diet !== 'dairy-free' && /milk|cheese|yogurt|cream|butter|whey|casein|mozzarella|parmesan|feta|cheddar|ricotta|sour cream/.test(ings))) return false;
+          if (this.filters['nut-free'] && /peanut|almond|walnut|cashew|pecan|pistachio|hazelnut|macadamia|nut butter/.test(ings)) return false;
+          if (this.filters['egg-free'] && /\begg\b|\beggs\b/.test(ings)) return false;
+          if (this.filters['soy-free'] && /soy|tofu|tempeh|edamame|miso/.test(ings)) return false;
+          if (this.filters['shellfish-free'] && /shrimp|crab|lobster|clam|mussel|oyster|scallop/.test(ings)) return false;
+          if (this.filters['vegan'] && (r.diet !== 'vegan' && /chicken|beef|turkey|salmon|shrimp|steak|pork|bacon|sausage|fish|tuna|egg|milk|cheese|yogurt|cream|butter|whey|honey/.test(ings))) return false;
+          if (this.filters['vegetarian'] && (r.diet !== 'vegetarian' && /chicken|beef|turkey|salmon|shrimp|steak|pork|bacon|sausage|fish|tuna/.test(ings))) return false;
+          if (this.filters['keto'] && r.diet !== 'keto' && r.carbs > 20) return false;
+          if (this.filters['low-sodium'] && /soy sauce|salt|broth|stock|canned/.test(ings) && !/low.sodium/.test(ings)) return false;
+          return true;
+        });
+      },
+      clearAll() { Object.keys(this.filters).forEach(k => this.filters[k] = false); this.saveFilters(); }
+    }`}>
+
+      <!-- Header -->
+      <div class="mb-10">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="h-[2px] w-12" style="background-color: var(--accent-primary);"></div>
+          <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">Safety Filter</span>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-4" style="color: var(--text-primary);">ALLERGEN &<br/>DIETARY FILTER</h1>
+        <p class="text-lg" style="color: var(--text-secondary);">Toggle restrictions below. We scan every ingredient list to find safe recipes for you.</p>
+      </div>
+
+      <!-- Filter Toggles -->
+      <div class="flex flex-wrap gap-3 mb-4">
+        <template x-for="(active, key) in filters" :key="key">
+          <button x-on:click="toggle(key)" class="px-5 py-2.5 rounded-full text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer" x-bind:style="active ? 'background: var(--accent-primary); color: var(--text-inverse); border: 2px solid var(--accent-primary);' : 'color: var(--text-secondary); border: 2px solid var(--border-default); background: transparent;'" x-text="key.replace(/-/g, ' ')"></button>
+        </template>
+      </div>
+      <div class="flex items-center justify-between mb-10">
+        <span class="text-sm font-bold" style="color: var(--text-tertiary);">
+          <span style="color: var(--accent-primary);" x-text="filtered.length"></span> recipes match
+          <span x-show="activeCount > 0"> · <span x-text="activeCount"></span> filter<span x-show="activeCount > 1">s</span> active</span>
+        </span>
+        <button x-show="activeCount > 0" x-on:click="clearAll()" class="text-xs font-bold underline cursor-pointer" style="color: var(--text-tertiary); background: none; border: none;">Clear all</button>
+      </div>
+
+      <!-- Results Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <template x-for="r in filtered.slice(0, 40)" :key="r.slug">
+          <a x-bind:href="'/' + r.hub + '/recipes/' + r.slug + '/'" class="group rounded-2xl overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1" style="border: 1px solid var(--border-default); background: var(--bg-primary);">
+            <div class="aspect-video overflow-hidden relative">
+              <img x-bind:src="'/images/recipes/' + r.slug + '.jpg'" x-on:error="$el.src='/images/placeholder.svg'" x-bind:alt="r.imageAlt" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" width="400" height="225" loading="lazy" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div class="absolute bottom-3 left-3 flex gap-2">
+                <span class="px-2 py-1 rounded text-[9px] font-black uppercase" style="background-color: var(--accent-primary); color: var(--text-inverse);" x-text="r.protein + 'g protein'"></span>
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-black text-sm mb-2 group-hover:opacity-80 transition-opacity line-clamp-2" style="color: var(--text-primary);" x-text="r.title"></h3>
+              <div class="flex gap-3 text-[10px] font-bold" style="color: var(--text-tertiary);">
+                <span x-text="r.calories + ' cal'"></span>
+                <span>·</span>
+                <span x-text="(r.prepTime + r.cookTime) + ' min'"></span>
+              </div>
+            </div>
+          </a>
+        </template>
+      </div>
+
+      <!-- Empty State -->
+      <div x-show="filtered.length === 0" class="text-center py-16 rounded-2xl" style="background: var(--bg-secondary); border: 1px dashed var(--border-default);">
+        <span class="text-4xl block mb-4">🚫</span>
+        <h3 class="text-xl font-black mb-2" style="color: var(--text-primary);">No Matching Recipes</h3>
+        <p class="text-sm" style="color: var(--text-secondary);">Try removing some filters to see more results.</p>
+      </div>
+    </div>
+  </main>
+
+  <FooterNav site={site} />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Allergen & Dietary Filter",
+    "description": "Filter recipes by allergens and dietary restrictions including gluten-free, dairy-free, nut-free, and more.",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  })} />
+</BaseLayout>

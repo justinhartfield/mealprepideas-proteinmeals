@@ -1,0 +1,229 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HeaderNav from '../HeaderNav.astro';
+import FooterNav from '../FooterNav.astro';
+import { recipes } from '../../data/content/recipes';
+
+interface Props { site?: 'mealprepideas' | 'proteinmeals'; }
+const { site = 'mealprepideas' } = Astro.props;
+
+const recipeData = JSON.stringify(recipes.map(r => ({
+  slug: r.slug, title: r.title, hub: r.hub, meal: r.facets.meal || '',
+  method: r.facets.method || '', diet: r.facets.diet || '',
+  calories: r.calories, protein: r.protein, carbs: r.carbs, fat: r.fat,
+  servings: r.servings, ingredients: r.ingredients, prepTime: r.prepTime, cookTime: r.cookTime,
+})));
+---
+
+<BaseLayout title="Weekly Meal Plan Builder | Plan Your Week" description="Build your perfect weekly meal plan. Drag-and-drop recipes into a 7-day calendar, track macros, and generate a shopping list.">
+  <HeaderNav site={site} />
+
+  <main class="flex-grow py-16 px-6">
+    <div class="max-w-7xl mx-auto" x-data={`{
+      recipes: ${recipeData},
+      days: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+      slots: ['breakfast','lunch','dinner','snack'],
+      plan: {},
+      showPicker: false,
+      pickerDay: '',
+      pickerSlot: '',
+      filterMeal: '',
+      filterMethod: '',
+      searchQuery: '',
+      showList: false,
+      init() {
+        const saved = localStorage.getItem('weeklyPlan');
+        if (saved) { try { this.plan = JSON.parse(saved); } catch(e) {} }
+        if (!Object.keys(this.plan).length) {
+          this.days.forEach(d => { this.plan[d] = {}; this.slots.forEach(s => { this.plan[d][s] = null; }); });
+        }
+      },
+      savePlan() { localStorage.setItem('weeklyPlan', JSON.stringify(this.plan)); },
+      openPicker(day, slot) { this.pickerDay = day; this.pickerSlot = slot; this.showPicker = true; this.filterMeal = slot === 'snack' ? 'snacks' : slot; },
+      selectRecipe(r) {
+        this.plan[this.pickerDay][this.pickerSlot] = r;
+        this.showPicker = false;
+        this.savePlan();
+      },
+      clearSlot(day, slot) { this.plan[day][slot] = null; this.savePlan(); },
+      clearAll() { this.days.forEach(d => { this.slots.forEach(s => { this.plan[d][s] = null; }); }); this.savePlan(); },
+      get filteredRecipes() {
+        return this.recipes.filter(r => {
+          if (this.filterMeal && r.meal !== this.filterMeal && !(this.filterMeal === 'snack' && r.meal === 'snacks')) return false;
+          if (this.filterMethod && r.method !== this.filterMethod) return false;
+          if (this.searchQuery && !r.title.toLowerCase().includes(this.searchQuery.toLowerCase())) return false;
+          return true;
+        }).slice(0, 30);
+      },
+      get weeklyTotals() {
+        let cal = 0, pro = 0, carb = 0, fat = 0, count = 0;
+        this.days.forEach(d => { this.slots.forEach(s => {
+          const r = this.plan[d] && this.plan[d][s];
+          if (r) { cal += r.calories; pro += r.protein; carb += r.carbs; fat += r.fat; count++; }
+        }); });
+        return { calories: cal, protein: pro, carbs: carb, fat: fat, meals: count };
+      },
+      get groceryList() {
+        const items = {};
+        this.days.forEach(d => { this.slots.forEach(s => {
+          const r = this.plan[d] && this.plan[d][s];
+          if (r && r.ingredients) { r.ingredients.forEach(ing => {
+            const key = ing.toLowerCase().trim();
+            if (!items[key]) items[key] = ing;
+          }); }
+        }); });
+        return Object.values(items).sort();
+      }
+    }`}>
+
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="h-[2px] w-12" style="background-color: var(--accent-primary);"></div>
+          <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">Plan Builder</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter" style="color: var(--text-primary);">WEEKLY MEAL<br/>PLAN BUILDER</h1>
+          </div>
+          <div class="flex gap-3">
+            <button x-on:click="showList = !showList" class="px-6 py-3 rounded-full font-black uppercase text-xs tracking-widest cursor-pointer transition-all" style="background: var(--accent-primary); color: var(--text-inverse);">
+              🛒 Shopping List
+            </button>
+            <button x-on:click="clearAll()" class="px-6 py-3 rounded-full font-black uppercase text-xs tracking-widest cursor-pointer transition-all" style="border: 1px solid var(--border-default); color: var(--text-secondary); background: transparent;">
+              Clear All
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Macro Summary -->
+      <div class="grid grid-cols-5 gap-3 mb-8">
+        <div class="p-4 rounded-xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-[10px] font-black uppercase tracking-widest block" style="color: var(--text-tertiary);">Meals</span>
+          <span class="text-2xl font-black" style="color: var(--accent-primary);" x-text="weeklyTotals.meals"></span>
+        </div>
+        <div class="p-4 rounded-xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-[10px] font-black uppercase tracking-widest block" style="color: var(--text-tertiary);">Calories</span>
+          <span class="text-2xl font-black" style="color: var(--text-primary);" x-text="weeklyTotals.calories.toLocaleString()"></span>
+        </div>
+        <div class="p-4 rounded-xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-[10px] font-black uppercase tracking-widest block" style="color: var(--text-tertiary);">Protein</span>
+          <span class="text-2xl font-black" style="color: var(--text-primary);" x-text="weeklyTotals.protein + 'g'"></span>
+        </div>
+        <div class="p-4 rounded-xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-[10px] font-black uppercase tracking-widest block" style="color: var(--text-tertiary);">Carbs</span>
+          <span class="text-2xl font-black" style="color: var(--text-primary);" x-text="weeklyTotals.carbs + 'g'"></span>
+        </div>
+        <div class="p-4 rounded-xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-[10px] font-black uppercase tracking-widest block" style="color: var(--text-tertiary);">Fat</span>
+          <span class="text-2xl font-black" style="color: var(--text-primary);" x-text="weeklyTotals.fat + 'g'"></span>
+        </div>
+      </div>
+
+      <!-- Calendar Grid -->
+      <div class="overflow-x-auto mb-8">
+        <div class="grid grid-cols-8 gap-2 min-w-[900px]">
+          <!-- Header Row -->
+          <div class="p-3"></div>
+          <template x-for="day in days" :key="day">
+            <div class="p-3 rounded-xl text-center" style="background: var(--bg-tertiary);">
+              <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);" x-text="day.slice(0,3)"></span>
+            </div>
+          </template>
+          
+          <!-- Slot Rows -->
+          <template x-for="slot in slots" :key="slot">
+            <template x-for="(item, idx) in [slot, ...days]" :key="slot+'-'+idx">
+              <div>
+                <template x-if="idx === 0">
+                  <div class="p-3 flex items-center">
+                    <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--accent-primary);" x-text="slot"></span>
+                  </div>
+                </template>
+                <template x-if="idx > 0">
+                  <div class="min-h-[80px]">
+                    <template x-if="plan[item] && plan[item][slot]">
+                      <div class="p-3 rounded-xl h-full relative group cursor-pointer" style="background: var(--bg-secondary); border: 1px solid var(--border-default);" x-on:click="openPicker(item, slot)">
+                        <button x-on:click.stop="clearSlot(item, slot)" class="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" style="background: var(--bg-tertiary); color: var(--text-tertiary); border: none; font-size: 10px;">✕</button>
+                        <span class="text-[11px] font-bold block leading-tight" style="color: var(--text-primary);" x-text="plan[item][slot].title"></span>
+                        <span class="text-[9px] font-bold mt-1 block" style="color: var(--accent-primary);" x-text="plan[item][slot].protein + 'g P · ' + plan[item][slot].calories + ' cal'"></span>
+                      </div>
+                    </template>
+                    <template x-if="!plan[item] || !plan[item][slot]">
+                      <button x-on:click="openPicker(item, slot)" class="w-full h-full min-h-[80px] rounded-xl flex items-center justify-center cursor-pointer transition-all hover:opacity-80" style="border: 1px dashed var(--border-default); background: transparent; color: var(--text-tertiary);">
+                        <span class="text-lg">+</span>
+                      </button>
+                    </template>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </template>
+        </div>
+      </div>
+
+      <!-- Recipe Picker Modal -->
+      <div x-show="showPicker" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.7);">
+        <div class="w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl p-6" style="background: var(--bg-primary); border: 1px solid var(--border-default);" x-on:click.outside="showPicker = false">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <span class="text-[10px] font-black uppercase tracking-widest block" style="color: var(--accent-primary);" x-text="pickerDay + ' · ' + pickerSlot"></span>
+              <h3 class="text-2xl font-black" style="color: var(--text-primary);">Pick a Recipe</h3>
+            </div>
+            <button x-on:click="showPicker = false" class="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-secondary);">✕</button>
+          </div>
+          <input x-model="searchQuery" type="text" placeholder="Search recipes..." class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none mb-4" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+          <div class="space-y-2 max-h-[50vh] overflow-y-auto">
+            <template x-for="r in filteredRecipes" :key="r.slug">
+              <button x-on:click="selectRecipe(r)" class="w-full p-4 rounded-xl text-left transition-all hover:scale-[1.01] cursor-pointer" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+                <span class="font-bold text-sm block" style="color: var(--text-primary);" x-text="r.title"></span>
+                <div class="flex gap-3 mt-1">
+                  <span class="text-[10px] font-bold" style="color: var(--accent-primary);" x-text="r.protein + 'g protein'"></span>
+                  <span class="text-[10px] font-bold" style="color: var(--text-tertiary);" x-text="r.calories + ' cal'"></span>
+                  <span class="text-[10px] font-bold" style="color: var(--text-tertiary);" x-text="(r.prepTime + r.cookTime) + ' min'"></span>
+                </div>
+              </button>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grocery List Modal -->
+      <div x-show="showList" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.7);">
+        <div class="w-full max-w-lg max-h-[80vh] overflow-y-auto rounded-2xl p-6" style="background: var(--bg-primary); border: 1px solid var(--border-default);" x-on:click.outside="showList = false">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-black" style="color: var(--text-primary);">🛒 Shopping List</h3>
+            <button x-on:click="showList = false" class="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-secondary);">✕</button>
+          </div>
+          <div class="space-y-2">
+            <template x-for="item in groceryList" :key="item">
+              <div class="flex items-center gap-3 p-3 rounded-xl" style="background: var(--bg-secondary);">
+                <input type="checkbox" class="w-4 h-4" />
+                <span class="text-sm font-bold" style="color: var(--text-primary);" x-text="item"></span>
+              </div>
+            </template>
+            <div x-show="groceryList.length === 0" class="text-center py-8">
+              <span class="text-sm" style="color: var(--text-tertiary);">Add recipes to your plan to generate a shopping list.</span>
+            </div>
+          </div>
+          <button x-on:click="window.print()" class="w-full mt-6 px-6 py-3 rounded-full font-black uppercase text-xs tracking-widest cursor-pointer" style="background: var(--accent-primary); color: var(--text-inverse);">
+            🖨️ Print List
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <FooterNav site={site} />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Weekly Meal Plan Builder",
+    "description": "Build a weekly meal plan with recipes, track macros, and generate shopping lists.",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  })} />
+</BaseLayout>

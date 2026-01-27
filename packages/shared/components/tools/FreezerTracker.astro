@@ -1,0 +1,207 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HeaderNav from '../HeaderNav.astro';
+import FooterNav from '../FooterNav.astro';
+
+interface Props { site?: 'mealprepideas' | 'proteinmeals'; }
+const { site = 'mealprepideas' } = Astro.props;
+---
+
+<BaseLayout title="Freezer Inventory Tracker | Track Your Frozen Meals" description="Track everything in your freezer. Get use-by reminders, organize by category, and never waste frozen food again.">
+  <HeaderNav site={site} />
+
+  <main class="flex-grow py-16 px-6">
+    <div class="max-w-5xl mx-auto" x-data={`{
+      items: [],
+      showAdd: false,
+      newName: '',
+      newQty: 1,
+      newCategory: 'Meals',
+      newNotes: '',
+      categories: ['Protein','Grains','Meals','Vegetables','Fruit','Sauces','Other'],
+      shelfLife: { 'Protein': 180, 'Grains': 180, 'Meals': 90, 'Vegetables': 240, 'Fruit': 240, 'Sauces': 120, 'Other': 90 },
+      init() {
+        const saved = localStorage.getItem('freezerInventory');
+        if (saved) { try { this.items = JSON.parse(saved); } catch(e) {} }
+      },
+      save() { localStorage.setItem('freezerInventory', JSON.stringify(this.items)); },
+      addItem() {
+        if (!this.newName.trim()) return;
+        this.items.push({
+          id: Date.now(),
+          name: this.newName.trim(),
+          qty: this.newQty,
+          category: this.newCategory,
+          notes: this.newNotes.trim(),
+          frozenDate: new Date().toISOString().split('T')[0],
+        });
+        this.newName = ''; this.newQty = 1; this.newNotes = '';
+        this.showAdd = false;
+        this.save();
+      },
+      useItem(id) {
+        const item = this.items.find(i => i.id === id);
+        if (item) {
+          item.qty--;
+          if (item.qty <= 0) this.items = this.items.filter(i => i.id !== id);
+          this.save();
+        }
+      },
+      removeItem(id) { this.items = this.items.filter(i => i.id !== id); this.save(); },
+      daysLeft(item) {
+        const frozen = new Date(item.frozenDate);
+        const shelf = this.shelfLife[item.category] || 90;
+        const expiry = new Date(frozen.getTime() + shelf * 86400000);
+        const now = new Date();
+        return Math.ceil((expiry - now) / 86400000);
+      },
+      statusColor(item) {
+        const d = this.daysLeft(item);
+        if (d < 0) return 'var(--text-primary)';
+        if (d < 14) return '#ef4444';
+        if (d < 30) return '#f59e0b';
+        return '#22c55e';
+      },
+      statusLabel(item) {
+        const d = this.daysLeft(item);
+        if (d < 0) return 'EXPIRED';
+        if (d < 14) return 'USE NOW';
+        if (d < 30) return 'USE SOON';
+        return 'FRESH';
+      },
+      get sortedItems() {
+        return [...this.items].sort((a, b) => this.daysLeft(a) - this.daysLeft(b));
+      },
+      get totalItems() { return this.items.reduce((sum, i) => sum + i.qty, 0); },
+      get expiringCount() { return this.items.filter(i => this.daysLeft(i) < 30).length; },
+      get categoryBreakdown() {
+        const counts = {};
+        this.items.forEach(i => { counts[i.category] = (counts[i.category] || 0) + i.qty; });
+        return counts;
+      }
+    }`}>
+
+      <!-- Header -->
+      <div class="mb-10">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="h-[2px] w-12" style="background-color: var(--accent-primary);"></div>
+          <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">Freezer Intel</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter" style="color: var(--text-primary);">FREEZER<br/>TRACKER</h1>
+            <p class="text-lg mt-2" style="color: var(--text-secondary);">Track your frozen inventory. Never waste food again.</p>
+          </div>
+          <button x-on:click="showAdd = true" class="px-6 py-3 rounded-full font-black uppercase text-xs tracking-widest cursor-pointer transition-all self-start" style="background: var(--accent-primary); color: var(--text-inverse);">
+            + Add Item
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        <div class="p-5 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-3xl font-black block" style="color: var(--accent-primary);" x-text="totalItems"></span>
+          <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">Total Items</span>
+        </div>
+        <div class="p-5 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-3xl font-black block" style="color: #f59e0b;" x-text="expiringCount"></span>
+          <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">Expiring Soon</span>
+        </div>
+        <div class="p-5 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-3xl font-black block" style="color: var(--text-primary);" x-text="items.length"></span>
+          <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">Unique Items</span>
+        </div>
+        <div class="p-5 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-3xl font-black block" style="color: var(--text-primary);" x-text="Object.keys(categoryBreakdown).length"></span>
+          <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">Categories</span>
+        </div>
+      </div>
+
+      <!-- Category Badges -->
+      <div class="flex flex-wrap gap-2 mb-8" x-show="items.length > 0">
+        <template x-for="(count, cat) in categoryBreakdown" :key="cat">
+          <span class="px-3 py-1.5 rounded-full text-[10px] font-black uppercase" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" x-text="cat + ' (' + count + ')'"></span>
+        </template>
+      </div>
+
+      <!-- Items List -->
+      <div class="space-y-3">
+        <template x-for="item in sortedItems" :key="item.id">
+          <div class="p-5 rounded-2xl flex flex-col md:flex-row md:items-center gap-4 transition-all" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+            <div class="flex items-center gap-4 flex-1">
+              <div class="w-3 h-12 rounded-full flex-shrink-0" x-bind:style="'background:' + statusColor(item)"></div>
+              <div class="flex-1">
+                <div class="flex items-center gap-3">
+                  <h3 class="font-black text-lg" style="color: var(--text-primary);" x-text="item.name"></h3>
+                  <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase" x-bind:style="'background:' + statusColor(item) + '; color: white;'" x-text="statusLabel(item)"></span>
+                </div>
+                <div class="flex gap-4 mt-1 text-[10px] font-bold" style="color: var(--text-tertiary);">
+                  <span x-text="item.category"></span>
+                  <span x-text="'Qty: ' + item.qty"></span>
+                  <span x-text="'Frozen: ' + item.frozenDate"></span>
+                  <span x-text="daysLeft(item) > 0 ? daysLeft(item) + ' days left' : 'Expired ' + Math.abs(daysLeft(item)) + ' days ago'"></span>
+                </div>
+                <p x-show="item.notes" class="text-xs mt-1" style="color: var(--text-secondary);" x-text="item.notes"></p>
+              </div>
+            </div>
+            <div class="flex gap-2 flex-shrink-0">
+              <button x-on:click="useItem(item.id)" class="px-4 py-2 rounded-lg font-black uppercase text-[10px] tracking-widest cursor-pointer" style="background: var(--accent-primary); color: var(--text-inverse);">Use 1</button>
+              <button x-on:click="removeItem(item.id)" class="px-4 py-2 rounded-lg font-bold uppercase text-[10px] tracking-widest cursor-pointer" style="border: 1px solid var(--border-default); color: var(--text-tertiary); background: transparent;">Remove</button>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Empty State -->
+      <div x-show="items.length === 0" class="text-center py-16 rounded-2xl" style="background: var(--bg-secondary); border: 1px dashed var(--border-default);">
+        <span class="text-5xl block mb-4">🧊</span>
+        <h3 class="text-xl font-black mb-2" style="color: var(--text-primary);">Your Freezer Is Empty</h3>
+        <p class="text-sm mb-6" style="color: var(--text-secondary);">Add items to start tracking your frozen inventory.</p>
+        <button x-on:click="showAdd = true" class="px-6 py-3 rounded-full font-black uppercase text-xs tracking-widest cursor-pointer" style="background: var(--accent-primary); color: var(--text-inverse);">+ Add Your First Item</button>
+      </div>
+
+      <!-- Add Item Modal -->
+      <div x-show="showAdd" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.7);">
+        <div class="w-full max-w-md rounded-2xl p-6" style="background: var(--bg-primary); border: 1px solid var(--border-default);" x-on:click.outside="showAdd = false">
+          <h3 class="text-2xl font-black mb-6" style="color: var(--text-primary);">Add to Freezer</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Item Name</label>
+              <input x-model="newName" type="text" placeholder="e.g. Chicken breast" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" x-on:keydown.enter="addItem()" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Quantity</label>
+                <input x-model.number="newQty" type="number" min="1" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Category</label>
+                <select x-model="newCategory" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none appearance-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);">
+                  <template x-for="cat in categories" :key="cat"><option x-text="cat" x-bind:value="cat"></option></template>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Notes (optional)</label>
+              <input x-model="newNotes" type="text" placeholder="e.g. Marinated in teriyaki" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+            </div>
+            <button x-on:click="addItem()" class="w-full px-6 py-3 rounded-full font-black uppercase text-xs tracking-widest cursor-pointer" style="background: var(--accent-primary); color: var(--text-inverse);">Add to Freezer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <FooterNav site={site} />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Freezer Inventory Tracker",
+    "description": "Track your freezer inventory with expiry date tracking, categories, and use-by reminders.",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  })} />
+</BaseLayout>

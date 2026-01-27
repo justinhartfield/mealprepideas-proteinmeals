@@ -192,19 +192,22 @@ const structuredData = JSON.stringify({
     servings: ${servings},
     baseServings: ${servings},
     baseMacros: { calories: ${recipe.calories}, protein: ${recipe.protein}, carbs: ${recipe.carbs}, fat: ${recipe.fat}, fiber: ${recipe.fiber || 0} },
-    get scaledCalories() { return Math.round(this.baseMacros.calories * this.servings / this.baseServings); },
-    get scaledProtein() { return Math.round(this.baseMacros.protein * this.servings / this.baseServings); },
-    get scaledCarbs() { return Math.round(this.baseMacros.carbs * this.servings / this.baseServings); },
-    get scaledFat() { return Math.round(this.baseMacros.fat * this.servings / this.baseServings); },
-    get scaledFiber() { return Math.round(this.baseMacros.fiber * this.servings / this.baseServings); },
+    get multiplier() { return this.servings / this.baseServings; },
+    get scaledCalories() { return Math.round(this.baseMacros.calories * this.multiplier); },
+    get scaledProtein() { return Math.round(this.baseMacros.protein * this.multiplier); },
+    get scaledCarbs() { return Math.round(this.baseMacros.carbs * this.multiplier); },
+    get scaledFat() { return Math.round(this.baseMacros.fat * this.multiplier); },
+    get scaledFiber() { return Math.round(this.baseMacros.fiber * this.multiplier); },
+    increment() { this.servings = Math.min(12, this.servings + 1); },
+    decrement() { this.servings = Math.max(1, this.servings - 1); },
     scaleIngredient(text) {
-      const ratio = this.servings / this.baseServings;
-      return text.replace(/^([\\d]+\\.?[\\d]*)/, (m, n) => {
-        const scaled = parseFloat(n) * ratio;
-        return scaled % 1 === 0 ? String(scaled) : scaled.toFixed(1);
-      }).replace(/^(\\d+)\\/(\\d+)/, (m, a, b) => {
+      const ratio = this.multiplier;
+      return text.replace(/^(\\d+)\\/(\\d+)/, (m, a, b) => {
         const scaled = (parseInt(a) / parseInt(b)) * ratio;
         return scaled % 1 === 0 ? String(scaled) : scaled.toFixed(2);
+      }).replace(/^([\\d]+\\.?[\\d]*)/, (m, n) => {
+        const scaled = parseFloat(n) * ratio;
+        return scaled % 1 === 0 ? String(scaled) : scaled.toFixed(1);
       });
     }
   }`}>
@@ -246,9 +249,9 @@ const structuredData = JSON.stringify({
           <div class="rp-yield-row">
             <div class="rp-yield">
               <span class="rp-yield__label">YIELD</span>
-              <button x-on:click="servings = Math.max(1, servings - 1)" class="rp-yield__btn">−</button>
+              <button x-on:click="decrement()" class="rp-yield__btn" x-bind:disabled="servings <= 1" x-bind:style="servings <= 1 ? 'opacity:0.3;cursor:not-allowed' : ''">−</button>
               <span class="rp-yield__count" x-text="servings">{servings}</span>
-              <button x-on:click="servings++" class="rp-yield__btn">+</button>
+              <button x-on:click="increment()" class="rp-yield__btn" x-bind:disabled="servings >= 12" x-bind:style="servings >= 12 ? 'opacity:0.3;cursor:not-allowed' : ''">+</button>
             </div>
             <button class="rp-save-btn" id="save-recipe-btn" data-slug={recipe.slug} data-title={recipeName} data-protein={recipe.protein} data-calories={recipe.calories} data-image={heroImage}>
               <span id="save-btn-text">SAVE PROTOCOL</span>
@@ -256,6 +259,10 @@ const structuredData = JSON.stringify({
             <button class="rp-grocery-btn" id="add-grocery-btn" title="Add ingredients to grocery list">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
               <span>GROCERY LIST</span>
+            </button>
+            <button class="rp-print-btn" onclick="window.print()" title="Print prep sheet">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+              <span>PRINT PREP SHEET</span>
             </button>
           </div>
         </div>
@@ -951,6 +958,28 @@ const structuredData = JSON.stringify({
     color: var(--accent-primary);
   }
 
+  /* Print Prep Sheet Button */
+  .rp-print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: 999px;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .rp-print-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+  }
+
   /* ─── RESPONSIVE ────────────────────────────────── */
   @media (max-width: 768px) {
     .rp-stats {
@@ -961,6 +990,171 @@ const structuredData = JSON.stringify({
     }
     .rp-hero__title {
       font-size: 2.5rem;
+    }
+  }
+
+  /* ─── PRINT STYLES ─────────────────────────────── */
+  @media print {
+    /* Hide non-essential elements */
+    .glass-nav,
+    header,
+    footer,
+    .rp-hero__right,
+    .rp-hero-image,
+    .rp-pe-badge,
+    .rp-pe-badge__sublabel,
+    .rp-toggle-pills,
+    .rp-community,
+    .rp-bottom,
+    .rp-yield-row,
+    .rp-save-btn,
+    .rp-grocery-btn,
+    .rp-print-btn,
+    .rp-pill,
+    .scanner-line,
+    nav,
+    [data-auth-show],
+    .breadcrumb-nav {
+      display: none !important;
+    }
+
+    /* Reset backgrounds and colors for print */
+    * {
+      color: #000 !important;
+      background: #fff !important;
+      border-color: #ccc !important;
+      box-shadow: none !important;
+    }
+
+    body, html {
+      background: #fff !important;
+      margin: 0;
+      padding: 0;
+    }
+
+    .recipe-page {
+      padding: 0 !important;
+    }
+
+    /* Single column layout */
+    .rp-hero {
+      margin-bottom: 1rem !important;
+      padding: 0 !important;
+    }
+
+    .rp-hero .grid {
+      display: block !important;
+    }
+
+    .rp-hero__title {
+      font-size: 1.8rem !important;
+      margin-bottom: 0.5rem !important;
+      color: #000 !important;
+    }
+
+    .rp-hero__desc {
+      font-size: 0.85rem !important;
+      margin-bottom: 0.75rem !important;
+      max-width: none !important;
+      color: #333 !important;
+    }
+
+    /* Compact stats row */
+    .rp-stats {
+      margin-bottom: 1rem !important;
+      border: 1px solid #ccc !important;
+      border-radius: 4px !important;
+      padding: 0.25rem !important;
+    }
+
+    .rp-stat {
+      border-left: 2px solid #000 !important;
+      padding: 0.3rem 0.5rem !important;
+    }
+
+    .rp-stat__label {
+      font-size: 0.5rem !important;
+    }
+
+    .rp-stat__value {
+      font-size: 1rem !important;
+    }
+
+    /* Body section: single column */
+    .rp-body {
+      padding: 0 !important;
+      margin-bottom: 0 !important;
+    }
+
+    .rp-body .grid {
+      display: block !important;
+    }
+
+    .rp-section-title {
+      font-size: 1rem !important;
+      margin-bottom: 0.5rem !important;
+      border-bottom: 2px solid #000 !important;
+      padding-bottom: 0.25rem !important;
+    }
+
+    /* Ingredients compact */
+    .rp-ingredients-grid {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 0.25rem 1rem !important;
+      margin-bottom: 1rem !important;
+    }
+
+    .rp-ingredient {
+      padding: 0.15rem 0 !important;
+      font-size: 0.75rem !important;
+    }
+
+    .rp-ingredient__role {
+      display: none !important;
+    }
+
+    /* Logistics box */
+    .rp-logistics {
+      border-radius: 4px !important;
+      padding: 0.75rem !important;
+      margin-bottom: 1rem !important;
+      page-break-inside: avoid;
+    }
+
+    .rp-logistics__title {
+      font-size: 0.6rem !important;
+    }
+
+    .rp-logistics__list li {
+      font-size: 0.7rem !important;
+    }
+
+    /* Steps compact */
+    .rp-steps__list {
+      gap: 0.75rem !important;
+    }
+
+    .rp-step__number {
+      font-size: 1.2rem !important;
+      min-width: 1.5rem !important;
+    }
+
+    .rp-step__title {
+      font-size: 0.75rem !important;
+      margin-bottom: 0.15rem !important;
+    }
+
+    .rp-step__detail {
+      font-size: 0.7rem !important;
+    }
+
+    /* Page break control */
+    .rp-inventory {
+      page-break-after: auto;
+    }
+
+    .rp-steps {
+      page-break-before: auto;
     }
   }
 </style>

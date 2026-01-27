@@ -1,0 +1,274 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HeaderNav from '../HeaderNav.astro';
+import FooterNav from '../FooterNav.astro';
+
+interface Props {
+  site?: 'mealprepideas' | 'proteinmeals';
+}
+const { site = 'mealprepideas' } = Astro.props;
+const mpBase = site === 'mealprepideas' ? '' : 'https://mealprepideas.co';
+const hpBase = site === 'proteinmeals' ? '' : 'https://proteinmeals.co';
+---
+
+<BaseLayout title="Find Your Prep Style — Meal Prep Quiz" description="Answer 5 quick questions to discover your ideal meal prep style, cooking method, and get personalized recipe recommendations.">
+  <HeaderNav site={site} />
+
+  <main class="flex-grow py-16 px-6">
+    <div class="max-w-4xl mx-auto" x-data={`{
+      step: 0,
+      answers: { time: '', skill: '', diet: '', budget: '', audience: '' },
+      get progress() { return (this.step / 5) * 100; },
+      get result() {
+        if (this.step < 5) return null;
+        const t = this.answers.time;
+        const s = this.answers.skill;
+        const d = this.answers.diet;
+        const b = this.answers.budget;
+        const a = this.answers.audience;
+        
+        let method = 'sheet-pan';
+        let constraint = 'simple';
+        let persona = 'work';
+        let goal = 'healthy';
+        let title = '';
+        let desc = '';
+        
+        // Method from time + skill
+        if (t === '30min') method = s === 'beginner' ? 'microwave' : 'air-fryer';
+        else if (t === '1hour') method = s === 'advanced' ? 'one-pan' : 'sheet-pan';
+        else if (t === '2hours') method = 'oven';
+        else method = s === 'beginner' ? 'crockpot' : 'freezer';
+        
+        // Constraint from budget
+        if (b === 'tight') constraint = 'budget';
+        else if (b === 'moderate') constraint = 'simple';
+        else constraint = 'for-the-week';
+        
+        // Persona from audience
+        if (a === 'just-me') persona = t === '30min' ? 'college' : 'work';
+        else if (a === 'partner') persona = 'work';
+        else if (a === 'family') persona = 'kids';
+        else persona = 'college';
+        
+        // Goal from diet
+        if (d === 'keto' || d === 'low-carb') goal = 'weight-loss';
+        else if (d === 'high-protein') goal = 'muscle-gain';
+        else goal = 'healthy';
+        
+        // Title
+        const titles = {
+          'microwave': 'The Quick Zapper',
+          'air-fryer': 'The Crispy Speedster',
+          'sheet-pan': 'The Sheet Pan Hero',
+          'one-pan': 'The One-Pan Wonder',
+          'oven': 'The Sunday Baker',
+          'crockpot': 'The Set-It-Forgetter',
+          'freezer': 'The Freezer Architect'
+        };
+        title = titles[method] || 'The Prep Master';
+        
+        const descriptions = {
+          'microwave': 'Speed is your superpower. You need meals ready in minutes, not hours.',
+          'air-fryer': 'You want crispy, fast results without the cleanup headache.',
+          'sheet-pan': 'Efficient and reliable. Throw it on a pan, set a timer, done.',
+          'one-pan': 'You have the skills to make magic happen in a single pan.',
+          'oven': 'You enjoy the weekend ritual of batch cooking big, satisfying meals.',
+          'crockpot': 'Low and slow is your mantra. Set it before work, eat when you get home.',
+          'freezer': 'You are a meal prep architect — building weeks of food in one session.'
+        };
+        desc = descriptions[method] || '';
+        
+        const dietSlug = d === 'no-preference' ? '' : d === 'high-protein' ? '' : d;
+        const mpLink = '${mpBase}/meal-prep/method/' + method + '/';
+        const hpLink = '${hpBase}/high-protein/goal/' + goal + '/';
+        const comboLink = dietSlug ? '${mpBase}/meal-prep/method/' + method + '/diet/' + dietSlug + '/' : mpLink;
+        
+        return { title, desc, method, constraint, persona, goal, diet: d, mpLink, hpLink, comboLink };
+      },
+      next(key, val) {
+        this.answers[key] = val;
+        this.step++;
+      },
+      reset() { this.step = 0; this.answers = { time: '', skill: '', diet: '', budget: '', audience: '' }; }
+    }`}>
+      
+      <!-- Progress Bar -->
+      <div class="mb-12">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-[10px] font-black uppercase tracking-[0.5em]" style="color: var(--accent-primary);">Prep Style Quiz</span>
+          <span class="text-sm font-bold" style="color: var(--text-tertiary);" x-text="step < 5 ? 'Question ' + (step + 1) + ' of 5' : 'Results'"></span>
+        </div>
+        <div class="h-2 rounded-full overflow-hidden" style="background: var(--bg-tertiary);">
+          <div class="h-full rounded-full transition-all duration-500" style="background: var(--accent-primary);" x-bind:style="'background: var(--accent-primary); width: ' + progress + '%'"></div>
+        </div>
+      </div>
+
+      <!-- Question 1: Time -->
+      <div x-show="step === 0" x-transition>
+        <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-4" style="color: var(--text-primary);">HOW MUCH TIME<br/>DO YOU HAVE?</h1>
+        <p class="text-lg mb-10" style="color: var(--text-secondary);">For a typical meal prep session.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { val: '30min', label: '30 Minutes', sub: 'Quick hits only' },
+            { val: '1hour', label: '1 Hour', sub: 'A focused session' },
+            { val: '2hours', label: '2 Hours', sub: 'Proper batch cooking' },
+            { val: 'sunday', label: 'Full Sunday Batch', sub: '3-4 hours, go all out' },
+          ].map(opt => (
+            <button x-on:click={`next('time', '${opt.val}')`}
+                    class="p-6 rounded-2xl text-left transition-all hover:-translate-y-1 cursor-pointer group"
+                    style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+              <span class="text-xl font-black block mb-1 group-hover:opacity-80" style="color: var(--text-primary);">{opt.label}</span>
+              <span class="text-sm" style="color: var(--text-tertiary);">{opt.sub}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Question 2: Skill -->
+      <div x-show="step === 1" x-transition>
+        <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-4" style="color: var(--text-primary);">COOKING<br/>SKILL LEVEL?</h1>
+        <p class="text-lg mb-10" style="color: var(--text-secondary);">Be honest — no judgement.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { val: 'beginner', label: 'Beginner', sub: 'I can boil water' },
+            { val: 'intermediate', label: 'Intermediate', sub: 'I follow recipes well' },
+            { val: 'advanced', label: 'Advanced', sub: 'I improvise freely' },
+          ].map(opt => (
+            <button x-on:click={`next('skill', '${opt.val}')`}
+                    class="p-6 rounded-2xl text-left transition-all hover:-translate-y-1 cursor-pointer group"
+                    style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+              <span class="text-xl font-black block mb-1" style="color: var(--text-primary);">{opt.label}</span>
+              <span class="text-sm" style="color: var(--text-tertiary);">{opt.sub}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Question 3: Diet -->
+      <div x-show="step === 2" x-transition>
+        <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-4" style="color: var(--text-primary);">DIET<br/>PREFERENCE?</h1>
+        <p class="text-lg mb-10" style="color: var(--text-secondary);">Pick what matters most.</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {[
+            { val: 'no-preference', label: 'No Preference' },
+            { val: 'high-protein', label: 'High Protein' },
+            { val: 'keto', label: 'Keto' },
+            { val: 'vegan', label: 'Vegan' },
+            { val: 'gluten-free', label: 'Gluten-Free' },
+            { val: 'vegetarian', label: 'Vegetarian' },
+          ].map(opt => (
+            <button x-on:click={`next('diet', '${opt.val}')`}
+                    class="p-6 rounded-2xl text-center transition-all hover:-translate-y-1 cursor-pointer"
+                    style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+              <span class="text-lg font-black" style="color: var(--text-primary);">{opt.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Question 4: Budget -->
+      <div x-show="step === 3" x-transition>
+        <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-4" style="color: var(--text-primary);">WEEKLY<br/>BUDGET?</h1>
+        <p class="text-lg mb-10" style="color: var(--text-secondary);">For groceries, roughly.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { val: 'tight', label: 'Tight Budget', sub: 'Under $50/week' },
+            { val: 'moderate', label: 'Moderate', sub: '$50–$100/week' },
+            { val: 'nolimit', label: 'No Limit', sub: 'Quality over cost' },
+          ].map(opt => (
+            <button x-on:click={`next('budget', '${opt.val}')`}
+                    class="p-6 rounded-2xl text-left transition-all hover:-translate-y-1 cursor-pointer group"
+                    style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+              <span class="text-xl font-black block mb-1" style="color: var(--text-primary);">{opt.label}</span>
+              <span class="text-sm" style="color: var(--text-tertiary);">{opt.sub}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Question 5: Audience -->
+      <div x-show="step === 4" x-transition>
+        <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-4" style="color: var(--text-primary);">WHO ARE YOU<br/>COOKING FOR?</h1>
+        <p class="text-lg mb-10" style="color: var(--text-secondary);">This affects portions and recipe complexity.</p>
+        <div class="grid grid-cols-2 gap-4">
+          {[
+            { val: 'just-me', label: 'Just Me', sub: 'Solo prepper' },
+            { val: 'partner', label: 'Me + Partner', sub: 'Cooking for two' },
+            { val: 'family', label: 'Family with Kids', sub: 'Picky eaters welcome' },
+            { val: 'roommates', label: 'Roommates', sub: 'Shared kitchen vibes' },
+          ].map(opt => (
+            <button x-on:click={`next('audience', '${opt.val}')`}
+                    class="p-6 rounded-2xl text-left transition-all hover:-translate-y-1 cursor-pointer group"
+                    style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+              <span class="text-xl font-black block mb-1" style="color: var(--text-primary);">{opt.label}</span>
+              <span class="text-sm" style="color: var(--text-tertiary);">{opt.sub}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div x-show="step >= 5" x-transition>
+        <template x-if="result">
+          <div>
+            <div class="text-center mb-12">
+              <span class="text-[10px] font-black uppercase tracking-[0.5em] block mb-4" style="color: var(--accent-primary);">Your Prep Profile</span>
+              <h1 class="text-5xl md:text-8xl font-black tracking-tighter mb-4" style="color: var(--text-primary);" x-text="result.title"></h1>
+              <p class="text-xl max-w-xl mx-auto" style="color: var(--text-secondary);" x-text="result.desc"></p>
+            </div>
+
+            <!-- Result Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+              <div class="p-6 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+                <span class="text-[10px] font-black uppercase tracking-widest block mb-2" style="color: var(--text-tertiary);">Method</span>
+                <span class="text-lg font-black capitalize" style="color: var(--accent-primary);" x-text="result.method.replace(/-/g, ' ')"></span>
+              </div>
+              <div class="p-6 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+                <span class="text-[10px] font-black uppercase tracking-widest block mb-2" style="color: var(--text-tertiary);">Style</span>
+                <span class="text-lg font-black capitalize" style="color: var(--text-primary);" x-text="result.constraint.replace(/-/g, ' ')"></span>
+              </div>
+              <div class="p-6 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+                <span class="text-[10px] font-black uppercase tracking-widest block mb-2" style="color: var(--text-tertiary);">Goal</span>
+                <span class="text-lg font-black capitalize" style="color: var(--text-primary);" x-text="result.goal.replace(/-/g, ' ')"></span>
+              </div>
+              <div class="p-6 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+                <span class="text-[10px] font-black uppercase tracking-widest block mb-2" style="color: var(--text-tertiary);">Persona</span>
+                <span class="text-lg font-black capitalize" style="color: var(--text-primary);" x-text="result.persona.replace(/-/g, ' ')"></span>
+              </div>
+            </div>
+
+            <!-- CTAs -->
+            <div class="flex flex-col md:flex-row gap-4 justify-center mb-12">
+              <a x-bind:href="result.comboLink" class="px-8 py-4 rounded-full font-black uppercase text-xs tracking-widest text-center transition-all hover:scale-105 inline-block" style="background: var(--accent-primary); color: var(--text-inverse);">
+                Browse Your Recipes →
+              </a>
+              <a x-bind:href="result.hpLink" class="px-8 py-4 rounded-full font-black uppercase text-xs tracking-widest text-center transition-all inline-block" style="border: 2px solid var(--text-primary); color: var(--text-primary);">
+                High Protein Picks →
+              </a>
+            </div>
+
+            <!-- Retake -->
+            <div class="text-center">
+              <button x-on:click="reset()" class="text-sm font-bold cursor-pointer underline" style="color: var(--text-tertiary); background: none; border: none;">
+                Retake Quiz
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </main>
+
+  <FooterNav site={site} />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Find Your Prep Style Quiz",
+    "description": "Answer 5 questions to discover your ideal meal prep method and get personalized recipe recommendations.",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  })} />
+</BaseLayout>

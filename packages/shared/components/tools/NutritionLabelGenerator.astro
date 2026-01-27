@@ -1,0 +1,260 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HeaderNav from '../HeaderNav.astro';
+import FooterNav from '../FooterNav.astro';
+
+interface Props {
+  site?: 'mealprepideas' | 'proteinmeals';
+}
+const { site = 'mealprepideas' } = Astro.props;
+---
+
+<BaseLayout title="Nutrition Label Generator | Create FDA-Style Labels" description="Generate FDA-style nutrition facts labels instantly. Enter your recipe macros and get a printable nutrition label.">
+  <HeaderNav site={site} />
+
+  <main class="flex-grow py-16 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="mb-12">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="h-[2px] w-12" style="background-color: var(--accent-primary);"></div>
+          <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">Label Generator</span>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-black tracking-tighter mb-4" style="color: var(--text-primary);">NUTRITION<br/>LABEL GENERATOR</h1>
+        <p class="text-lg max-w-2xl" style="color: var(--text-secondary);">Enter your recipe's nutritional data and generate an FDA-style Nutrition Facts label. Print it or save for your records.</p>
+      </div>
+
+      <div x-data=`{
+        servingSize: '1 cup (240g)',
+        servingsPerContainer: 4,
+        calories: 250,
+        totalFat: 12,
+        saturatedFat: 3,
+        transFat: 0,
+        cholesterol: 30,
+        sodium: 470,
+        totalCarbs: 31,
+        fiber: 4,
+        totalSugars: 5,
+        addedSugars: 2,
+        protein: 8,
+        vitaminD: 2,
+        calcium: 260,
+        iron: 8,
+        potassium: 235,
+        get dvFat() { return Math.round((this.totalFat / 78) * 100); },
+        get dvSatFat() { return Math.round((this.saturatedFat / 20) * 100); },
+        get dvCholesterol() { return Math.round((this.cholesterol / 300) * 100); },
+        get dvSodium() { return Math.round((this.sodium / 2300) * 100); },
+        get dvCarbs() { return Math.round((this.totalCarbs / 275) * 100); },
+        get dvFiber() { return Math.round((this.fiber / 28) * 100); },
+        get dvAddedSugars() { return Math.round((this.addedSugars / 50) * 100); },
+        get dvProtein() { return Math.round((this.protein / 50) * 100); },
+        get dvVitD() { return Math.round((this.vitaminD / 20) * 100); },
+        get dvCalcium() { return Math.round((this.calcium / 1300) * 100); },
+        get dvIron() { return Math.round((this.iron / 18) * 100); },
+        get dvPotassium() { return Math.round((this.potassium / 4700) * 100); },
+        printLabel() { window.print(); }
+      }` class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Input Form -->
+        <div>
+          <h2 class="text-2xl font-black tracking-tight mb-6" style="color: var(--text-primary);">ENTER NUTRITION DATA</h2>
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Serving Size</label>
+                <input x-model="servingSize" type="text" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Servings Per Container</label>
+                <input x-model.number="servingsPerContainer" type="number" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--accent-primary);">Calories</label>
+              <input x-model.number="calories" type="number" class="w-full px-4 py-3 rounded-xl font-black text-lg outline-none" style="background: var(--bg-secondary); border: 2px solid var(--accent-primary); color: var(--text-primary);" />
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Total Fat (g)</label>
+                <input x-model.number="totalFat" type="number" step="0.1" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Sat. Fat (g)</label>
+                <input x-model.number="saturatedFat" type="number" step="0.1" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Trans Fat (g)</label>
+                <input x-model.number="transFat" type="number" step="0.1" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Cholesterol (mg)</label>
+                <input x-model.number="cholesterol" type="number" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Sodium (mg)</label>
+                <input x-model.number="sodium" type="number" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Total Carbs (g)</label>
+                <input x-model.number="totalCarbs" type="number" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Dietary Fiber (g)</label>
+                <input x-model.number="fiber" type="number" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Total Sugars (g)</label>
+                <input x-model.number="totalSugars" type="number" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Added Sugars (g)</label>
+                <input x-model.number="addedSugars" type="number" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--accent-primary);">Protein (g)</label>
+              <input x-model.number="protein" type="number" class="w-full px-4 py-3 rounded-xl font-black text-lg outline-none" style="background: var(--bg-secondary); border: 2px solid var(--accent-primary); color: var(--text-primary);" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Vitamin D (mcg)</label>
+                <input x-model.number="vitaminD" type="number" step="0.1" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Calcium (mg)</label>
+                <input x-model.number="calcium" type="number" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Iron (mg)</label>
+                <input x-model.number="iron" type="number" step="0.1" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black uppercase tracking-widest mb-2 block" style="color: var(--text-tertiary);">Potassium (mg)</label>
+                <input x-model.number="potassium" type="number" class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FDA Label Preview -->
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-black tracking-tight" style="color: var(--text-primary);">LABEL PREVIEW</h2>
+            <button x-on:click="printLabel()" class="px-6 py-3 rounded-full font-black uppercase text-xs tracking-widest transition-all cursor-pointer" style="background: var(--accent-primary); color: var(--text-inverse);">
+              🖨️ Print Label
+            </button>
+          </div>
+          
+          <!-- FDA Nutrition Facts Label -->
+          <div id="nutrition-label" class="mx-auto p-4 max-w-[350px]" style="background: white; color: black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; border: 2px solid black;">
+            <div style="font-size: 32px; font-weight: 900; font-family: 'Franklin Gothic Heavy', 'Arial Black', sans-serif;">Nutrition Facts</div>
+            <div style="border-bottom: 1px solid black; padding-bottom: 2px; margin-bottom: 4px;">
+              <span style="font-size: 11px;" x-text="servingsPerContainer + ' servings per container'"></span><br/>
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-size: 13px; font-weight: bold;">Serving size</span>
+                <span style="font-size: 13px; font-weight: bold;" x-text="servingSize"></span>
+              </div>
+            </div>
+            <div style="border-bottom: 10px solid black; padding-bottom: 4px;">
+              <div style="font-size: 11px; font-weight: bold;">Amount per serving</div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-size: 28px; font-weight: 900;">Calories</span>
+                <span style="font-size: 28px; font-weight: 900;" x-text="calories"></span>
+              </div>
+            </div>
+            <div style="text-align: right; font-size: 11px; font-weight: bold; border-bottom: 1px solid black; padding: 3px 0;">% Daily Value*</div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid black; padding: 3px 0; font-size: 13px;">
+              <span><strong>Total Fat</strong> <span x-text="totalFat + 'g'"></span></span>
+              <strong x-text="dvFat + '%'"></strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid black; padding: 3px 0 3px 20px; font-size: 13px;">
+              <span>Saturated Fat <span x-text="saturatedFat + 'g'"></span></span>
+              <strong x-text="dvSatFat + '%'"></strong>
+            </div>
+            <div style="border-bottom: 1px solid black; padding: 3px 0 3px 20px; font-size: 13px;">
+              <em>Trans</em> Fat <span x-text="transFat + 'g'"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid black; padding: 3px 0; font-size: 13px;">
+              <span><strong>Cholesterol</strong> <span x-text="cholesterol + 'mg'"></span></span>
+              <strong x-text="dvCholesterol + '%'"></strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid black; padding: 3px 0; font-size: 13px;">
+              <span><strong>Sodium</strong> <span x-text="sodium + 'mg'"></span></span>
+              <strong x-text="dvSodium + '%'"></strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid black; padding: 3px 0; font-size: 13px;">
+              <span><strong>Total Carbohydrate</strong> <span x-text="totalCarbs + 'g'"></span></span>
+              <strong x-text="dvCarbs + '%'"></strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid black; padding: 3px 0 3px 20px; font-size: 13px;">
+              <span>Dietary Fiber <span x-text="fiber + 'g'"></span></span>
+              <strong x-text="dvFiber + '%'"></strong>
+            </div>
+            <div style="border-bottom: 1px solid black; padding: 3px 0 3px 20px; font-size: 13px;">
+              Total Sugars <span x-text="totalSugars + 'g'"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid black; padding: 3px 0 3px 40px; font-size: 13px;">
+              <span>Includes <span x-text="addedSugars + 'g'"></span> Added Sugars</span>
+              <strong x-text="dvAddedSugars + '%'"></strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 10px solid black; padding: 3px 0; font-size: 13px;">
+              <span><strong>Protein</strong> <span x-text="protein + 'g'"></span></span>
+              <strong x-text="dvProtein + '%'"></strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid black; padding: 3px 0; font-size: 13px;">
+              <span>Vitamin D <span x-text="vitaminD + 'mcg'"></span></span>
+              <span x-text="dvVitD + '%'"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid black; padding: 3px 0; font-size: 13px;">
+              <span>Calcium <span x-text="calcium + 'mg'"></span></span>
+              <span x-text="dvCalcium + '%'"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid black; padding: 3px 0; font-size: 13px;">
+              <span>Iron <span x-text="iron + 'mg'"></span></span>
+              <span x-text="dvIron + '%'"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 4px solid black; padding: 3px 0; font-size: 13px;">
+              <span>Potassium <span x-text="potassium + 'mg'"></span></span>
+              <span x-text="dvPotassium + '%'"></span>
+            </div>
+            <div style="font-size: 10px; padding-top: 4px; line-height: 1.3;">
+              * The % Daily Value (DV) tells you how much a nutrient in a serving of food contributes to a daily diet. 2,000 calories a day is used for general nutrition advice.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <FooterNav site={site} />
+
+  <style is:global>
+    @media print {
+      body > *:not(#nutrition-label) { display: none !important; }
+      header, footer, nav, .no-print { display: none !important; }
+      #nutrition-label {
+        display: block !important;
+        margin: 0 auto;
+        border: 2px solid black !important;
+      }
+    }
+  </style>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Nutrition Label Generator",
+    "description": "Generate FDA-style nutrition facts labels for your recipes.",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  })} />
+</BaseLayout>

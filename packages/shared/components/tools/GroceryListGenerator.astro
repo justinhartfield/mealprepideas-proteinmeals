@@ -1,0 +1,193 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HeaderNav from '../HeaderNav.astro';
+import FooterNav from '../FooterNav.astro';
+import { recipes } from '../../data/content/recipes';
+
+interface Props { site?: 'mealprepideas' | 'proteinmeals'; }
+const { site = 'mealprepideas' } = Astro.props;
+
+const recipeData = JSON.stringify(recipes.map(r => ({
+  slug: r.slug, title: r.title, hub: r.hub, meal: r.facets.meal || '',
+  protein: r.protein, calories: r.calories,
+  ingredients: r.ingredients,
+})));
+---
+
+<BaseLayout title="Smart Grocery List Generator | Build Your Shopping List" description="Generate a smart, categorized grocery list from recipes. Add multiple recipes, consolidate ingredients, and print your shopping list.">
+  <HeaderNav site={site} />
+
+  <main class="flex-grow py-16 px-6">
+    <div class="max-w-5xl mx-auto" x-data={`{
+      allRecipes: ${recipeData},
+      selectedRecipes: [],
+      manualItems: [],
+      newItem: '',
+      newCategory: 'other',
+      checkedItems: {},
+      searchQuery: '',
+      showRecipePicker: false,
+      categories: ['Produce','Dairy','Meat & Fish','Grains & Pasta','Canned & Dry','Frozen','Spices & Oils','Other'],
+      init() {
+        const saved = localStorage.getItem('groceryList');
+        if (saved) { try { const d = JSON.parse(saved); this.selectedRecipes = d.recipes || []; this.manualItems = d.manual || []; this.checkedItems = d.checked || {}; } catch(e) {} }
+      },
+      save() { localStorage.setItem('groceryList', JSON.stringify({ recipes: this.selectedRecipes, manual: this.manualItems, checked: this.checkedItems })); },
+      addRecipe(r) { if (!this.selectedRecipes.find(s => s.slug === r.slug)) { this.selectedRecipes.push(r); this.save(); } },
+      removeRecipe(slug) { this.selectedRecipes = this.selectedRecipes.filter(r => r.slug !== slug); this.save(); },
+      addManualItem() { if (this.newItem.trim()) { this.manualItems.push({ text: this.newItem.trim(), category: this.newCategory }); this.newItem = ''; this.save(); } },
+      removeManual(idx) { this.manualItems.splice(idx, 1); this.save(); },
+      toggleCheck(key) { this.checkedItems[key] = !this.checkedItems[key]; this.save(); },
+      clearChecked() { Object.keys(this.checkedItems).forEach(k => { if (this.checkedItems[k]) delete this.checkedItems[k]; }); this.save(); },
+      clearAll() { this.selectedRecipes = []; this.manualItems = []; this.checkedItems = {}; this.save(); },
+      get consolidatedList() {
+        const items = {};
+        this.selectedRecipes.forEach(r => {
+          r.ingredients.forEach(ing => {
+            const key = ing.toLowerCase().trim();
+            if (!items[key]) items[key] = { text: ing, count: 1, category: this.categorize(ing) };
+            else items[key].count++;
+          });
+        });
+        this.manualItems.forEach(m => {
+          const key = m.text.toLowerCase();
+          if (!items[key]) items[key] = { text: m.text, count: 1, category: m.category };
+        });
+        return items;
+      },
+      get groupedList() {
+        const groups = {};
+        this.categories.forEach(c => groups[c] = []);
+        Object.values(this.consolidatedList).forEach(item => {
+          const cat = item.category || 'Other';
+          if (!groups[cat]) groups[cat] = [];
+          groups[cat].push(item);
+        });
+        return groups;
+      },
+      get totalItems() { return Object.keys(this.consolidatedList).length; },
+      get checkedCount() { return Object.values(this.checkedItems).filter(Boolean).length; },
+      categorize(ing) {
+        const l = ing.toLowerCase();
+        if (/chicken|beef|turkey|salmon|shrimp|steak|pork|bacon|sausage|fish|tuna/.test(l)) return 'Meat & Fish';
+        if (/milk|yogurt|cheese|cream|butter|egg/.test(l)) return 'Dairy';
+        if (/rice|pasta|bread|oats|flour|quinoa|noodle|tortilla/.test(l)) return 'Grains & Pasta';
+        if (/canned|beans|lentil|broth|stock|tomato paste|coconut milk/.test(l)) return 'Canned & Dry';
+        if (/frozen|ice/.test(l)) return 'Frozen';
+        if (/oil|vinegar|salt|pepper|spice|garlic powder|oregano|cumin|paprika|cinnamon|honey|syrup|sauce|soy/.test(l)) return 'Spices & Oils';
+        if (/onion|garlic|pepper|tomato|lettuce|spinach|broccoli|carrot|potato|avocado|lemon|lime|berry|banana|apple|cucumber|zucchini|mushroom|celery/.test(l)) return 'Produce';
+        return 'Other';
+      },
+      get filteredRecipes() {
+        if (!this.searchQuery) return this.allRecipes.slice(0, 20);
+        return this.allRecipes.filter(r => r.title.toLowerCase().includes(this.searchQuery.toLowerCase())).slice(0, 20);
+      }
+    }`}>
+
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="h-[2px] w-12" style="background-color: var(--accent-primary);"></div>
+          <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">Shopping Intelligence</span>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-4" style="color: var(--text-primary);">GROCERY LIST<br/>GENERATOR</h1>
+        <p class="text-lg" style="color: var(--text-secondary);">Add recipes, consolidate ingredients, and generate a print-ready shopping list.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Recipe Selector -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-black" style="color: var(--text-primary);">ADD RECIPES</h2>
+            <span class="text-sm font-bold" style="color: var(--text-tertiary);" x-text="selectedRecipes.length + ' selected'"></span>
+          </div>
+          <input x-model="searchQuery" type="text" placeholder="Search recipes..." class="w-full px-4 py-3 rounded-xl font-bold text-sm outline-none mb-4" style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);" />
+          
+          <div class="space-y-2 max-h-[400px] overflow-y-auto">
+            <template x-for="r in filteredRecipes" :key="r.slug">
+              <button x-on:click="addRecipe(r)" class="w-full p-3 rounded-xl text-left transition-all cursor-pointer" x-bind:style="selectedRecipes.find(s => s.slug === r.slug) ? 'background: var(--accent-primary); color: var(--text-inverse);' : 'background: var(--bg-secondary); border: 1px solid var(--border-default);'">
+                <span class="font-bold text-sm block" x-text="r.title"></span>
+                <span class="text-[10px] font-bold opacity-70" x-text="r.protein + 'g P · ' + r.ingredients.length + ' ingredients'"></span>
+              </button>
+            </template>
+          </div>
+
+          <!-- Selected Recipes -->
+          <div class="mt-4" x-show="selectedRecipes.length > 0">
+            <h3 class="text-[10px] font-black uppercase tracking-widest mb-2" style="color: var(--text-tertiary);">Selected</h3>
+            <template x-for="r in selectedRecipes" :key="r.slug">
+              <div class="flex items-center justify-between p-2 rounded-lg mb-1" style="background: var(--bg-tertiary);">
+                <span class="text-xs font-bold" style="color: var(--text-primary);" x-text="r.title"></span>
+                <button x-on:click="removeRecipe(r.slug)" class="text-xs cursor-pointer" style="color: var(--text-tertiary); background: none; border: none;">✕</button>
+              </div>
+            </template>
+          </div>
+
+          <!-- Manual Add -->
+          <div class="mt-6 p-4 rounded-xl" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+            <h3 class="text-[10px] font-black uppercase tracking-widest mb-3" style="color: var(--text-tertiary);">Add Manual Item</h3>
+            <input x-model="newItem" type="text" placeholder="e.g. Paper towels" class="w-full px-3 py-2 rounded-lg font-bold text-sm outline-none mb-2" style="background: var(--bg-tertiary); border: 1px solid var(--border-default); color: var(--text-primary);" x-on:keydown.enter="addManualItem()" />
+            <select x-model="newCategory" class="w-full px-3 py-2 rounded-lg text-sm font-bold mb-2 outline-none" style="background: var(--bg-tertiary); border: 1px solid var(--border-default); color: var(--text-primary);">
+              <template x-for="cat in categories" :key="cat"><option x-text="cat" x-bind:value="cat"></option></template>
+            </select>
+            <button x-on:click="addManualItem()" class="w-full px-4 py-2 rounded-lg font-black uppercase text-[10px] tracking-widest cursor-pointer" style="background: var(--accent-primary); color: var(--text-inverse);">Add Item</button>
+          </div>
+        </div>
+
+        <!-- Shopping List -->
+        <div class="lg:col-span-2">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-4">
+              <h2 class="text-lg font-black" style="color: var(--text-primary);">SHOPPING LIST</h2>
+              <span class="text-sm font-bold" style="color: var(--accent-primary);" x-text="checkedCount + '/' + totalItems + ' checked'"></span>
+            </div>
+            <div class="flex gap-2">
+              <button x-on:click="window.print()" class="px-4 py-2 rounded-full font-bold uppercase text-[10px] tracking-widest cursor-pointer" style="background: var(--accent-primary); color: var(--text-inverse);">🖨️ Print</button>
+              <button x-on:click="clearChecked()" class="px-4 py-2 rounded-full font-bold uppercase text-[10px] tracking-widest cursor-pointer" style="border: 1px solid var(--border-default); color: var(--text-secondary); background: transparent;">Clear ✓</button>
+              <button x-on:click="clearAll()" class="px-4 py-2 rounded-full font-bold uppercase text-[10px] tracking-widest cursor-pointer" style="border: 1px solid var(--border-default); color: var(--text-secondary); background: transparent;">Clear All</button>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <template x-for="cat in categories" :key="cat">
+              <div x-show="groupedList[cat] && groupedList[cat].length > 0">
+                <h3 class="text-[10px] font-black uppercase tracking-[0.3em] mb-3 flex items-center gap-2" style="color: var(--accent-primary);">
+                  <span x-text="cat"></span>
+                  <span class="text-[9px] px-2 py-0.5 rounded" style="background: var(--bg-tertiary); color: var(--text-tertiary);" x-text="groupedList[cat].length"></span>
+                </h3>
+                <div class="space-y-1">
+                  <template x-for="item in groupedList[cat]" :key="item.text">
+                    <div class="flex items-center gap-3 p-3 rounded-xl transition-all cursor-pointer" x-on:click="toggleCheck(item.text.toLowerCase())" x-bind:style="checkedItems[item.text.toLowerCase()] ? 'background: var(--bg-tertiary); opacity: 0.5;' : 'background: var(--bg-secondary); border: 1px solid var(--border-default);'">
+                      <div class="w-5 h-5 rounded flex items-center justify-center flex-shrink-0" x-bind:style="checkedItems[item.text.toLowerCase()] ? 'background: var(--accent-primary);' : 'border: 2px solid var(--border-strong);'">
+                        <span x-show="checkedItems[item.text.toLowerCase()]" style="color: var(--text-inverse); font-size: 12px;">✓</span>
+                      </div>
+                      <span class="text-sm font-bold flex-1" x-bind:style="checkedItems[item.text.toLowerCase()] ? 'color: var(--text-tertiary); text-decoration: line-through;' : 'color: var(--text-primary);'" x-text="item.text"></span>
+                      <span x-show="item.count > 1" class="text-[9px] font-black px-2 py-0.5 rounded" style="background: var(--accent-primary); color: var(--text-inverse);" x-text="'×' + item.count"></span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <div x-show="totalItems === 0" class="text-center py-16 rounded-2xl mt-4" style="background: var(--bg-secondary); border: 1px dashed var(--border-default);">
+            <span class="text-4xl block mb-4">🛒</span>
+            <span class="text-lg font-bold" style="color: var(--text-tertiary);">Add recipes to generate your shopping list</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <FooterNav site={site} />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Smart Grocery List Generator",
+    "description": "Generate categorized grocery lists from recipes with smart ingredient consolidation.",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  })} />
+</BaseLayout>

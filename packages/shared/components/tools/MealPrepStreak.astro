@@ -1,0 +1,212 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HeaderNav from '../HeaderNav.astro';
+import FooterNav from '../FooterNav.astro';
+
+interface Props { site?: 'mealprepideas' | 'proteinmeals'; }
+const { site = 'mealprepideas' } = Astro.props;
+---
+
+<BaseLayout title="Meal Prep Streak Tracker | Gamify Your Prep" description="Track your meal prep consistency with streaks, badges, and stats. Gamify your weekly prep routine and build lasting habits.">
+  <HeaderNav site={site} />
+
+  <main class="flex-grow py-16 px-6">
+    <div class="max-w-4xl mx-auto" x-data={`{
+      prepDays: [],
+      init() {
+        const saved = localStorage.getItem('prepStreak');
+        if (saved) { try { this.prepDays = JSON.parse(saved); } catch(e) {} }
+      },
+      save() { localStorage.setItem('prepStreak', JSON.stringify(this.prepDays)); },
+      logToday() {
+        const today = new Date().toISOString().split('T')[0];
+        if (!this.prepDays.includes(today)) { this.prepDays.push(today); this.save(); }
+      },
+      undoToday() {
+        const today = new Date().toISOString().split('T')[0];
+        this.prepDays = this.prepDays.filter(d => d !== today);
+        this.save();
+      },
+      get todayLogged() {
+        return this.prepDays.includes(new Date().toISOString().split('T')[0]);
+      },
+      get currentStreak() {
+        if (this.prepDays.length === 0) return 0;
+        const sorted = [...this.prepDays].sort().reverse();
+        const today = new Date().toISOString().split('T')[0];
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+        if (sorted[0] !== today && sorted[0] !== yesterday) return 0;
+        let streak = 1;
+        for (let i = 0; i < sorted.length - 1; i++) {
+          const curr = new Date(sorted[i]);
+          const prev = new Date(sorted[i + 1]);
+          const diff = (curr - prev) / 86400000;
+          if (diff === 1) streak++;
+          else break;
+        }
+        return streak;
+      },
+      get longestStreak() {
+        if (this.prepDays.length === 0) return 0;
+        const sorted = [...this.prepDays].sort();
+        let max = 1, curr = 1;
+        for (let i = 1; i < sorted.length; i++) {
+          const diff = (new Date(sorted[i]) - new Date(sorted[i-1])) / 86400000;
+          if (diff === 1) { curr++; max = Math.max(max, curr); }
+          else curr = 1;
+        }
+        return max;
+      },
+      get totalPreps() { return this.prepDays.length; },
+      get thisMonth() {
+        const now = new Date();
+        const month = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+        return this.prepDays.filter(d => d.startsWith(month)).length;
+      },
+      get weekDays() {
+        const days = [];
+        const now = new Date();
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(monday);
+          d.setDate(monday.getDate() + i);
+          const dateStr = d.toISOString().split('T')[0];
+          days.push({ label: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i], date: dateStr, prepped: this.prepDays.includes(dateStr), isToday: dateStr === now.toISOString().split('T')[0] });
+        }
+        return days;
+      },
+      get badges() {
+        const b = [];
+        if (this.totalPreps >= 1) b.push({ name: 'First Prep', emoji: '🥇', desc: 'Logged your first meal prep' });
+        if (this.currentStreak >= 7 || this.longestStreak >= 7) b.push({ name: '7-Day Streak', emoji: '🔥', desc: '7 consecutive days of prep' });
+        if (this.currentStreak >= 30 || this.longestStreak >= 30) b.push({ name: '30-Day Streak', emoji: '⚡', desc: '30 consecutive days of prep' });
+        if (this.totalPreps >= 100) b.push({ name: '100 Meals', emoji: '🏆', desc: 'Prepped 100 total meals' });
+        if (this.totalPreps >= 50) b.push({ name: '50 Preps', emoji: '💪', desc: '50 total meal preps' });
+        if (this.thisMonth >= 4) b.push({ name: 'Monthly Regular', emoji: '📅', desc: '4+ preps this month' });
+        const sundays = this.prepDays.filter(d => new Date(d).getDay() === 0);
+        if (sundays.length >= 4) b.push({ name: 'Sunday Warrior', emoji: '🛡️', desc: 'Prepped 4+ Sundays' });
+        return b;
+      },
+      get motivation() {
+        const s = this.currentStreak;
+        if (s === 0) return "Start your streak today! Every journey begins with a single prep.";
+        if (s < 3) return "Great start! Keep the momentum going.";
+        if (s < 7) return "Almost a week! You're building a real habit.";
+        if (s < 14) return "Over a week! You're officially a meal prepper.";
+        if (s < 30) return "Incredible discipline. You're in the top 10% of preppers.";
+        return "LEGENDARY. You are a meal prep machine. 🏆";
+      }
+    }`}>
+
+      <!-- Header -->
+      <div class="mb-10 text-center">
+        <div class="flex items-center justify-center gap-4 mb-4">
+          <div class="h-[2px] w-12" style="background-color: var(--accent-primary);"></div>
+          <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">Streak Tracker</span>
+          <div class="h-[2px] w-12" style="background-color: var(--accent-primary);"></div>
+        </div>
+        <h1 class="text-5xl md:text-8xl font-black tracking-tighter" style="color: var(--text-primary);">MEAL PREP<br/>STREAK</h1>
+      </div>
+
+      <!-- Big Streak Counter -->
+      <div class="text-center mb-12">
+        <div class="inline-flex flex-col items-center p-10 rounded-3xl" style="background: var(--bg-secondary); border: 2px solid var(--accent-primary);">
+          <span class="text-[10px] font-black uppercase tracking-[0.5em] block mb-2" style="color: var(--accent-primary);">Current Streak</span>
+          <span class="text-8xl md:text-[120px] font-black leading-none tabular-nums" style="color: var(--text-primary);" x-text="currentStreak"></span>
+          <span class="text-lg font-bold mt-2" style="color: var(--text-secondary);" x-text="currentStreak === 1 ? 'day' : 'days'"></span>
+        </div>
+      </div>
+
+      <!-- Log Button -->
+      <div class="text-center mb-12">
+        <template x-if="!todayLogged">
+          <button x-on:click="logToday()" class="px-10 py-5 rounded-full font-black uppercase text-sm tracking-widest cursor-pointer transition-all hover:scale-105" style="background: var(--accent-primary); color: var(--text-inverse);">
+            🍳 I Prepped Today!
+          </button>
+        </template>
+        <template x-if="todayLogged">
+          <div>
+            <div class="inline-flex items-center gap-3 px-8 py-4 rounded-full mb-3" style="background: var(--bg-secondary); border: 2px solid #22c55e;">
+              <span class="text-2xl">✅</span>
+              <span class="font-black uppercase tracking-widest" style="color: #22c55e;">Logged Today!</span>
+            </div>
+            <br/>
+            <button x-on:click="undoToday()" class="text-xs font-bold underline cursor-pointer mt-2" style="color: var(--text-tertiary); background: none; border: none;">Undo</button>
+          </div>
+        </template>
+      </div>
+
+      <!-- Motivation -->
+      <div class="text-center mb-12">
+        <p class="text-lg font-bold italic" style="color: var(--text-secondary);" x-text="motivation"></p>
+      </div>
+
+      <!-- Week View -->
+      <div class="mb-12">
+        <h2 class="text-[10px] font-black uppercase tracking-[0.5em] text-center mb-6" style="color: var(--text-tertiary);">This Week</h2>
+        <div class="flex justify-center gap-4">
+          <template x-for="day in weekDays" :key="day.date">
+            <div class="flex flex-col items-center gap-2">
+              <span class="text-[10px] font-black uppercase" x-bind:style="day.isToday ? 'color: var(--accent-primary);' : 'color: var(--text-tertiary);'" x-text="day.label"></span>
+              <div class="w-12 h-12 rounded-full flex items-center justify-center transition-all" x-bind:style="day.prepped ? 'background: var(--accent-primary); color: var(--text-inverse);' : day.isToday ? 'border: 2px solid var(--accent-primary); background: transparent;' : 'border: 2px solid var(--border-default); background: transparent;'">
+                <span x-show="day.prepped" class="text-lg">✓</span>
+                <span x-show="!day.prepped && day.isToday" class="text-lg" style="color: var(--accent-primary);">·</span>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        <div class="p-6 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-3xl font-black block" style="color: var(--accent-primary);" x-text="currentStreak"></span>
+          <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">Current Streak</span>
+        </div>
+        <div class="p-6 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-3xl font-black block" style="color: var(--text-primary);" x-text="longestStreak"></span>
+          <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">Longest Streak</span>
+        </div>
+        <div class="p-6 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-3xl font-black block" style="color: var(--text-primary);" x-text="totalPreps"></span>
+          <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">Total Preps</span>
+        </div>
+        <div class="p-6 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+          <span class="text-3xl font-black block" style="color: var(--text-primary);" x-text="thisMonth"></span>
+          <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">This Month</span>
+        </div>
+      </div>
+
+      <!-- Badges -->
+      <div class="mb-12">
+        <h2 class="text-[10px] font-black uppercase tracking-[0.5em] text-center mb-6" style="color: var(--text-tertiary);">Badges Earned</h2>
+        <div class="flex flex-wrap justify-center gap-4">
+          <template x-for="badge in badges" :key="badge.name">
+            <div class="p-4 rounded-2xl text-center min-w-[140px]" style="background: var(--bg-secondary); border: 1px solid var(--accent-primary);">
+              <span class="text-3xl block mb-2" x-text="badge.emoji"></span>
+              <span class="text-xs font-black block" style="color: var(--text-primary);" x-text="badge.name"></span>
+              <span class="text-[10px]" style="color: var(--text-tertiary);" x-text="badge.desc"></span>
+            </div>
+          </template>
+          <div x-show="badges.length === 0" class="p-6 rounded-2xl text-center" style="background: var(--bg-secondary); border: 1px dashed var(--border-default);">
+            <span class="text-3xl block mb-2">🎯</span>
+            <span class="text-sm font-bold" style="color: var(--text-tertiary);">Start prepping to earn badges!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <FooterNav site={site} />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Meal Prep Streak Tracker",
+    "description": "Track your meal prep consistency with streaks, badges, and stats.",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  })} />
+</BaseLayout>
