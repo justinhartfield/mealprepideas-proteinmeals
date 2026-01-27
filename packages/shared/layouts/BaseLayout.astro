@@ -1,9 +1,11 @@
 ---
 /**
  * BaseLayout — The Grocery Index Design System
- * Dark mode, neon lime accent, cyberpunk grid aesthetic
+ * Light/dark theme support via CSS custom properties
  * Wraps all pages with shared head, fonts, Alpine, global CSS, noise overlay
  */
+import ThemeToggle from '../components/ThemeToggle.astro';
+
 interface Props {
   title: string;
   description?: string;
@@ -15,13 +17,22 @@ const { title, description = '', canonicalUrl, structuredData } = Astro.props;
 ---
 
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   {description && <meta name="description" content={description} />}
   {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+  <!-- FOUC Prevention: Apply saved theme before paint -->
+  <script is:inline>
+    (function() {
+      const saved = localStorage.getItem('theme');
+      const theme = saved || 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -34,64 +45,183 @@ const { title, description = '', canonicalUrl, structuredData } = Astro.props;
   <!-- Structured Data -->
   {structuredData && <script type="application/ld+json" set:html={structuredData} />}
 
+  <!-- Theme Variables -->
   <style is:global>
-    /* =============================================
-       THE GROCERY INDEX — GLOBAL DESIGN SYSTEM
-       Dark mode, neon lime accent, cyberpunk grid
-       ============================================= */
+    /* ============================================
+       Theme System — Light/Dark CSS Custom Properties
+       ============================================ */
 
-    :root {
-      --brand-lime: #D9FF00;
-      --brand-charcoal: #0F0F0F;
-      --brand-gray: #1A1A1A;
-      --ui-border: rgba(255, 255, 255, 0.1);
+    /* ---- LIGHT MODE (DEFAULT) ---- */
+    :root,
+    [data-theme="light"] {
+      --bg-primary: #F9F7F2;
+      --bg-secondary: #FFFFFF;
+      --bg-tertiary: #F0EDE6;
+      --bg-nav: rgba(249, 247, 242, 0.85);
+
+      --text-primary: #2D3436;
+      --text-secondary: #636E72;
+      --text-tertiary: #B2BEC3;
+      --text-inverse: #FFFFFF;
+
+      --accent-primary: #7E9680;
+      --accent-primary-hover: #6B8370;
+      --accent-secondary: #E67E22;
+      --accent-secondary-hover: #D35400;
+      --accent-glow: rgba(126, 150, 128, 0.15);
+
+      --border-default: rgba(0, 0, 0, 0.08);
+      --border-hover: rgba(126, 150, 128, 0.4);
+      --border-strong: rgba(0, 0, 0, 0.15);
+
+      --shadow-card: 0 4px 0px rgba(0,0,0,0.02), 0 15px 35px -5px rgba(0,0,0,0.06);
+      --shadow-card-hover: 0 25px 50px -12px rgba(0,0,0,0.1);
+      --shadow-glow: 0 0 30px rgba(126, 150, 128, 0.12);
+
+      --pill-active-bg: #7E9680;
+      --pill-active-text: #FFFFFF;
+      --pill-inactive-bg: #F0EDE6;
+      --pill-inactive-text: #636E72;
+
+      --badge-bg: #F0EDE6;
+      --badge-text: #2D3436;
+      --badge-border: rgba(126, 150, 128, 0.3);
+
+      --grid-dot: rgba(0, 0, 0, 0.04);
+      --noise-opacity: 0.03;
+      --scanner-color: #7E9680;
+      --scanner-opacity: 0.15;
+
+      --scrollbar-track: #F9F7F2;
+      --scrollbar-thumb: #7E9680;
+
+      --hero-overlay-bg: #F0EDE6;
+      --hero-overlay-hover: #E8E4DA;
+      --select-bg: var(--bg-tertiary);
+      --select-border: var(--border-default);
     }
 
+    /* ---- DARK MODE ---- */
+    [data-theme="dark"] {
+      --bg-primary: #0F0F0F;
+      --bg-secondary: #1A1A1A;
+      --bg-tertiary: #252525;
+      --bg-nav: rgba(15, 15, 15, 0.8);
+
+      --text-primary: #FFFFFF;
+      --text-secondary: #A0A0A0;
+      --text-tertiary: #666666;
+      --text-inverse: #0F0F0F;
+
+      --accent-primary: #D9FF00;
+      --accent-primary-hover: #C4E600;
+      --accent-secondary: #D9FF00;
+      --accent-secondary-hover: #C4E600;
+      --accent-glow: rgba(217, 255, 0, 0.1);
+
+      --border-default: rgba(255, 255, 255, 0.1);
+      --border-hover: rgba(217, 255, 0, 0.5);
+      --border-strong: rgba(255, 255, 255, 0.2);
+
+      --shadow-card: 0 4px 15px rgba(0, 0, 0, 0.3);
+      --shadow-card-hover: 0 0 30px rgba(217, 255, 0, 0.1);
+      --shadow-glow: 0 0 30px rgba(217, 255, 0, 0.1);
+
+      --pill-active-bg: #D9FF00;
+      --pill-active-text: #000000;
+      --pill-inactive-bg: #1A1A1A;
+      --pill-inactive-text: #A0A0A0;
+
+      --badge-bg: #1A1A1A;
+      --badge-text: #FFFFFF;
+      --badge-border: rgba(255, 255, 255, 0.1);
+
+      --grid-dot: rgba(255, 255, 255, 0.05);
+      --noise-opacity: 0.03;
+      --scanner-color: #D9FF00;
+      --scanner-opacity: 0.3;
+
+      --scrollbar-track: #0F0F0F;
+      --scrollbar-thumb: #D9FF00;
+
+      --hero-overlay-bg: #1A1A1A;
+      --hero-overlay-hover: #252525;
+      --select-bg: #0F0F0F;
+      --select-border: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ---- BASE STYLES ---- */
     body {
       font-family: 'Lexend', sans-serif;
-      background-color: var(--brand-charcoal);
-      color: #FFFFFF;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
       overflow-x: hidden;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
-    /* Modern Grocery Grid Pattern */
+    /* Grid Background */
     .bg-grid {
-      background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+      background-image: radial-gradient(circle at 1px 1px, var(--grid-dot) 1px, transparent 0);
       background-size: 40px 40px;
     }
 
     /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--brand-charcoal); }
-    ::-webkit-scrollbar-thumb { background: var(--brand-lime); border-radius: 10px; }
+    ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
 
-    /* Hyper Border — signature card style */
+    /* Theme Card */
+    .theme-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-default);
+      box-shadow: var(--shadow-card);
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .theme-card:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-card-hover);
+    }
+
+    /* Hyper Border — signature card style (theme-aware) */
     .hyper-border {
       position: relative;
-      background: var(--brand-gray);
-      border: 1px solid var(--ui-border);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-default);
       transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     }
 
     .hyper-border:hover {
-      border-color: var(--brand-lime);
-      box-shadow: 0 0 30px rgba(217, 255, 0, 0.1);
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-glow);
+    }
+
+    /* Theme Navigation */
+    .theme-nav {
+      backdrop-filter: blur(12px);
+      background: var(--bg-nav);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    /* Glass Navigation (legacy alias for theme-nav) */
+    .glass-nav {
+      backdrop-filter: blur(12px);
+      background: var(--bg-nav);
+      border-bottom: 1px solid var(--border-default);
     }
 
     /* Scanner Line Animation */
     .scanner-line {
       position: absolute;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       width: 100%;
       height: 2px;
-      background: var(--brand-lime);
-      box-shadow: 0 0 15px var(--brand-lime);
+      background: var(--scanner-color);
+      box-shadow: 0 0 15px var(--scanner-color);
       animation: scan 4s linear infinite;
-      opacity: 0.3;
+      opacity: var(--scanner-opacity);
       pointer-events: none;
     }
 
@@ -101,23 +231,45 @@ const { title, description = '', canonicalUrl, structuredData } = Astro.props;
       100% { top: 0%; }
     }
 
-    /* Glass Navigation */
-    .glass-nav {
-      backdrop-filter: blur(12px);
-      background: rgba(15, 15, 15, 0.8);
-      border-bottom: 1px solid var(--ui-border);
+    /* Pills */
+    .theme-pill-active,
+    .pill-active {
+      background-color: var(--pill-active-bg);
+      color: var(--pill-active-text);
+    }
+
+    .theme-pill-inactive {
+      background-color: var(--pill-inactive-bg);
+      color: var(--pill-inactive-text);
+      border: 1px solid var(--border-default);
+    }
+
+    /* Buttons */
+    .theme-btn-primary {
+      background-color: var(--accent-primary);
+      color: var(--text-inverse);
+      transition: all 0.3s ease;
+    }
+
+    .theme-btn-primary:hover {
+      background-color: var(--accent-primary-hover);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .theme-btn-cta {
+      background-color: var(--accent-secondary);
+      color: var(--text-inverse);
+      transition: all 0.3s ease;
+    }
+
+    .theme-btn-cta:hover {
+      background-color: var(--accent-secondary-hover);
     }
 
     /* Text Stroke Effect */
     .text-stroke {
-      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+      -webkit-text-stroke: 1px var(--border-strong);
       color: transparent;
-    }
-
-    /* Active Pill */
-    .pill-active {
-      background-color: var(--brand-lime);
-      color: black;
     }
 
     /* Noise Overlay */
@@ -126,37 +278,37 @@ const { title, description = '', canonicalUrl, structuredData } = Astro.props;
       top: 0; left: 0; width: 100%; height: 100%;
       pointer-events: none;
       z-index: 50;
-      opacity: 0.03;
+      opacity: var(--noise-opacity);
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
 
     /* Bento Card */
     .bento-card {
-      background: var(--brand-gray);
-      border: 1px solid var(--ui-border);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-default);
       border-radius: 24px;
       transition: all 0.3s ease;
     }
 
     .bento-card:hover {
-      border-color: var(--brand-lime);
+      border-color: var(--accent-primary);
       transform: translateY(-4px);
     }
 
     /* Macro Card */
     .macro-card {
-      background: linear-gradient(145deg, #1A1A1A 0%, #0F0F0F 100%);
-      border: 1px solid var(--ui-border);
+      background: linear-gradient(145deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+      border: 1px solid var(--border-default);
     }
 
     /* PE Gradient */
     .pe-gradient {
-      background: linear-gradient(90deg, #333 0%, var(--brand-lime) 100%);
+      background: linear-gradient(90deg, var(--text-tertiary) 0%, var(--accent-primary) 100%);
     }
 
     /* Data Row Hover */
     .data-row:hover {
-      background: rgba(217, 255, 0, 0.03);
+      background: var(--accent-glow);
     }
 
     /* Recipe Card Hover */
@@ -172,25 +324,25 @@ const { title, description = '', canonicalUrl, structuredData } = Astro.props;
 
     /* Recipe Gradient */
     .recipe-gradient {
-      background: linear-gradient(180deg, rgba(15,15,15,0) 0%, rgba(15,15,15,1) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, var(--bg-primary) 100%);
     }
 
     /* Macro Bar */
     .macro-bar {
       height: 4px;
-      background: #333;
+      background: var(--bg-tertiary);
       border-radius: 2px;
       overflow: hidden;
     }
 
     .macro-fill {
       height: 100%;
-      background: var(--brand-lime);
+      background: var(--accent-primary);
     }
 
     /* Barcode Decoration */
     .barcode-deco {
-      background: repeating-linear-gradient(90deg, #333, #333 2px, transparent 2px, transparent 4px);
+      background: repeating-linear-gradient(90deg, var(--text-tertiary), var(--text-tertiary) 2px, transparent 2px, transparent 4px);
       width: 60px;
       height: 20px;
       opacity: 0.5;
@@ -198,7 +350,7 @@ const { title, description = '', canonicalUrl, structuredData } = Astro.props;
 
     /* Stat Glow */
     .stat-glow {
-      text-shadow: 0 0 20px rgba(217, 255, 0, 0.3);
+      text-shadow: 0 0 20px var(--accent-glow);
     }
 
     /* Data Stream Mask */
@@ -223,7 +375,7 @@ const { title, description = '', canonicalUrl, structuredData } = Astro.props;
 
     /* PE Ratio Gauge */
     .pe-ratio-gauge {
-      background: conic-gradient(from 180deg at 50% 50%, #D9FF00 var(--percentage), #1A1A1A 0);
+      background: conic-gradient(from 180deg at 50% 50%, var(--accent-primary) var(--percentage), var(--bg-secondary) 0);
     }
 
     /* Alpine Cloak */
@@ -237,6 +389,13 @@ const { title, description = '', canonicalUrl, structuredData } = Astro.props;
       background-size: 1.5em 1.5em;
       padding-right: 2.5rem;
     }
+
+    /* Text utilities */
+    .text-primary { color: var(--text-primary); }
+    .text-secondary { color: var(--text-secondary); }
+    .text-tertiary { color: var(--text-tertiary); }
+    .text-accent { color: var(--accent-primary); }
+    .bg-accent { background-color: var(--accent-primary); }
   </style>
 </head>
 <body class="bg-grid">
@@ -251,11 +410,11 @@ const { title, description = '', canonicalUrl, structuredData } = Astro.props;
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.hyper-border').forEach(btn => {
         btn.addEventListener('mousemove', e => {
-          const rect = btn.getBoundingClientRect();
+          const rect = (btn as HTMLElement).getBoundingClientRect();
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
-          btn.style.setProperty('--mouse-x', `${x}px`);
-          btn.style.setProperty('--mouse-y', `${y}px`);
+          (btn as HTMLElement).style.setProperty('--mouse-x', `${x}px`);
+          (btn as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
         });
       });
     });

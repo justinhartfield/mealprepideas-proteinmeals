@@ -1,7 +1,7 @@
 ---
 /**
  * HighProteinHub — High Protein Authority Hub (T1)
- * Converted from: high_protein_authority_hub__t1_.html
+ * Theme-aware: uses CSS custom properties
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
@@ -51,75 +51,79 @@ const facetGroups = [
     }
   }">
     <!-- T1 HERO: MACRO INTENT PILLAR -->
-    <section class="relative pt-24 pb-32 px-6 overflow-hidden border-b border-zinc-900">
+    <section class="relative pt-24 pb-32 px-6 overflow-hidden" style="border-bottom: 1px solid var(--border-default);">
       <div class="max-w-7xl mx-auto relative z-10">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
           <div class="flex-1">
             <div class="flex items-center gap-4 mb-8">
-              <span class="px-3 py-1 bg-[#D9FF00] text-black text-[10px] font-black uppercase tracking-widest rounded">Pillar 02</span>
-              <span class="text-[10px] text-zinc-500 font-black uppercase tracking-[0.4em]">Optimizing Biological Output</span>
+              <span class="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded"
+                    style="background-color: var(--accent-primary); color: var(--text-inverse);">Pillar 02</span>
+              <span class="text-[10px] font-black uppercase tracking-[0.4em]" style="color: var(--text-tertiary);">Optimizing Biological Output</span>
             </div>
-            <h1 class="text-7xl md:text-9xl font-black tracking-tighter leading-[0.85] mb-8">
-              HIGH<br/><span class="text-zinc-800">PROTEIN</span><br/>SYSTEMS
+            <h1 class="text-7xl md:text-9xl font-black tracking-tighter leading-[0.85] mb-8" style="color: var(--text-primary);">
+              HIGH<br/><span style="color: var(--text-tertiary);">PROTEIN</span><br/>SYSTEMS
             </h1>
-            <p class="max-w-xl text-zinc-400 text-lg font-medium leading-relaxed">
+            <p class="max-w-xl text-lg font-medium leading-relaxed" style="color: var(--text-secondary);">
               The definitive data-layer for macro-intent. We map calorie bands, specific diet constraints, and retail availability to high-leverage protein sources.
             </p>
           </div>
           <!-- Macro Calculator Widget -->
-          <div class="w-full md:w-96 p-8 bg-zinc-900 border border-zinc-800 rounded-3xl relative overflow-hidden group">
+          <div class="w-full md:w-96 p-8 rounded-3xl relative overflow-hidden group"
+               style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
             <div class="scanner-line"></div>
-            <h3 class="text-xs font-black tracking-widest text-zinc-500 uppercase mb-6">Target Macro Profile</h3>
+            <h3 class="text-xs font-black tracking-widest uppercase mb-6" style="color: var(--text-tertiary);">Target Macro Profile</h3>
             <div class="space-y-6" x-data="{ protein: 180 }">
               <div>
                 <div class="flex justify-between text-[10px] font-black uppercase mb-2">
-                  <span class="text-zinc-500">Daily Protein Goal</span>
-                  <span class="text-[#D9FF00]" x-text="protein + 'G'"></span>
+                  <span style="color: var(--text-tertiary);">Daily Protein Goal</span>
+                  <span style="color: var(--accent-primary);" x-text="protein + 'G'"></span>
                 </div>
-                <input type="range" min="100" max="300" x-model="protein" class="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#D9FF00]" />
+                <input type="range" min="100" max="300" x-model="protein" class="w-full h-1 rounded-lg appearance-none cursor-pointer"
+                       style="background: var(--bg-tertiary); accent-color: var(--accent-primary);" />
               </div>
               <div class="grid grid-cols-2 gap-4">
-                <div class="p-4 bg-zinc-950 rounded-xl border border-zinc-800">
-                  <span class="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Calories</span>
-                  <span class="text-xl font-black tabular-nums">2,400</span>
+                <div class="p-4 rounded-xl" style="background: var(--bg-tertiary); border: 1px solid var(--border-default);">
+                  <span class="block text-[10px] font-bold uppercase mb-1" style="color: var(--text-tertiary);">Calories</span>
+                  <span class="text-xl font-black tabular-nums" style="color: var(--text-primary);">2,400</span>
                 </div>
-                <div class="p-4 bg-zinc-950 rounded-xl border border-zinc-800">
-                  <span class="block text-[10px] font-bold text-zinc-500 uppercase mb-1">P:E Ratio</span>
-                  <span class="text-xl font-black tabular-nums text-[#D9FF00]">2.4</span>
+                <div class="p-4 rounded-xl" style="background: var(--bg-tertiary); border: 1px solid var(--border-default);">
+                  <span class="block text-[10px] font-bold uppercase mb-1" style="color: var(--text-tertiary);">P:E Ratio</span>
+                  <span class="text-xl font-black tabular-nums" style="color: var(--accent-primary);">2.4</span>
                 </div>
               </div>
-              <button class="w-full py-4 bg-white text-black text-xs font-black uppercase tracking-widest rounded-xl hover:bg-[#D9FF00] transition-all">Lock Parameters</button>
+              <button class="theme-btn-primary w-full py-4 text-xs font-black uppercase tracking-widest rounded-xl">Lock Parameters</button>
             </div>
           </div>
         </div>
       </div>
-      <div class="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#D9FF00]/5 to-transparent pointer-events-none"></div>
-      <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-[#D9FF00]/10 blur-[120px] rounded-full pointer-events-none"></div>
+      <div class="absolute top-0 right-0 w-1/3 h-full pointer-events-none" style="background: linear-gradient(to left, var(--accent-glow), transparent);"></div>
+      <div class="absolute -bottom-24 -left-24 w-96 h-96 blur-[120px] rounded-full pointer-events-none" style="background: var(--accent-glow);"></div>
     </section>
 
     <!-- DECISION ENGINE -->
     <section class="py-24 px-6 max-w-7xl mx-auto">
       <div class="flex items-center gap-4 mb-12">
-        <div class="h-[1px] flex-grow bg-zinc-900"></div>
-        <h2 class="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-600 whitespace-nowrap">Decision Engine v1.0</h2>
-        <div class="h-[1px] flex-grow bg-zinc-900"></div>
+        <div class="h-[1px] flex-grow" style="background: var(--border-default);"></div>
+        <h2 class="text-[10px] font-black uppercase tracking-[0.5em] whitespace-nowrap" style="color: var(--text-tertiary);">Decision Engine v1.0</h2>
+        <div class="h-[1px] flex-grow" style="background: var(--border-default);"></div>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         <div class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="p-8 bg-zinc-900/50 border border-zinc-800 rounded-3xl hover:border-zinc-700 transition-all">
-            <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">01. Primary Goal</label>
+          <div class="p-8 rounded-3xl transition-all" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+            <label class="block text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-tertiary);">01. Primary Goal</label>
             <div class="flex flex-wrap gap-2">
               <template x-for="g in ['Weight-Loss', 'Muscle-Gain', 'Healthy']">
                 <button x-on:click="query.goal = g"
-                        x-bind:class="query.goal === g ? 'bg-[#D9FF00] text-black border-[#D9FF00]' : 'text-zinc-400 border-zinc-800'"
+                        x-bind:style="query.goal === g ? 'background: var(--accent-primary); color: var(--text-inverse); border-color: var(--accent-primary);' : 'color: var(--text-secondary); border-color: var(--border-default);'"
                         class="px-4 py-2 border rounded-full text-[11px] font-bold uppercase transition-all"
                         x-text="g.replace('-', ' ')"></button>
               </template>
             </div>
           </div>
-          <div class="p-8 bg-zinc-900/50 border border-zinc-800 rounded-3xl hover:border-zinc-700 transition-all">
-            <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">02. Dietary Constraints</label>
-            <select x-model="query.diet" class="w-full bg-transparent border-b-2 border-zinc-800 py-2 text-xl font-bold focus:border-[#D9FF00] outline-none transition-all appearance-none cursor-pointer">
+          <div class="p-8 rounded-3xl transition-all" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+            <label class="block text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-tertiary);">02. Dietary Constraints</label>
+            <select x-model="query.diet" class="w-full py-2 text-xl font-bold outline-none transition-all appearance-none cursor-pointer bg-transparent"
+                    style="border-bottom: 2px solid var(--border-default); color: var(--text-primary);">
               <option value="none">No Restrictions</option>
               <option value="low-carb">Low Carb / Keto</option>
               <option value="vegan">Vegan / Plant-Based</option>
@@ -127,47 +131,51 @@ const facetGroups = [
               <option value="high-fiber">High Fiber Focused</option>
             </select>
           </div>
-          <div class="p-8 bg-zinc-900/50 border border-zinc-800 rounded-3xl hover:border-zinc-700 transition-all">
-            <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">03. Logistics / Method</label>
+          <div class="p-8 rounded-3xl transition-all" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+            <label class="block text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-tertiary);">03. Logistics / Method</label>
             <div class="grid grid-cols-2 gap-3">
               <template x-for="m in ['Air Fryer', 'Crockpot', 'Microwave', 'Frozen SKUs']">
-                <button class="p-3 border border-zinc-800 rounded-xl text-[10px] font-bold uppercase hover:bg-zinc-800 transition-colors text-left flex justify-between items-center group">
+                <button class="p-3 rounded-xl text-[10px] font-bold uppercase text-left flex justify-between items-center group transition-colors"
+                        style="border: 1px solid var(--border-default); color: var(--text-secondary);">
                   <span x-text="m"></span>
-                  <span class="w-1.5 h-1.5 rounded-full bg-zinc-700 group-hover:bg-[#D9FF00]"></span>
+                  <span class="w-1.5 h-1.5 rounded-full" style="background: var(--text-tertiary);"></span>
                 </button>
               </template>
             </div>
           </div>
-          <div class="p-8 bg-zinc-900/50 border border-zinc-800 rounded-3xl hover:border-zinc-700 transition-all">
-            <label class="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">04. Retail Preference</label>
+          <div class="p-8 rounded-3xl transition-all" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
+            <label class="block text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-tertiary);">04. Retail Preference</label>
             <div class="flex items-center gap-4">
               <div class="flex -space-x-3">
                 {['TJ', 'CO', 'WM', 'AL'].map(abbr => (
-                  <div class="w-10 h-10 rounded-full bg-zinc-800 border-2 border-zinc-900 flex items-center justify-center text-[10px] font-bold">{abbr}</div>
+                  <div class="w-10 h-10 rounded-full flex items-center justify-center text-[10px] font-bold"
+                       style="background: var(--bg-tertiary); border: 2px solid var(--bg-primary); color: var(--text-primary);">{abbr}</div>
                 ))}
               </div>
-              <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Filter by store inventory</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-tertiary);">Filter by store inventory</span>
             </div>
           </div>
         </div>
-        <div class="lg:col-span-3 bg-[#D9FF00] rounded-3xl p-8 flex flex-col justify-between items-center text-center">
+        <div class="lg:col-span-3 rounded-3xl p-8 flex flex-col justify-between items-center text-center"
+             style="background-color: var(--accent-primary); color: var(--text-inverse);">
           <div>
-            <span class="text-black/60 text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">Engine Match</span>
-            <div class="text-8xl font-black tracking-tighter text-black tabular-nums" x-text="resultsCount">842</div>
-            <span class="text-black font-bold uppercase text-[10px] tracking-widest">Available Strategies</span>
+            <span class="text-[10px] font-black uppercase tracking-[0.3em] mb-4 block opacity-60">Engine Match</span>
+            <div class="text-8xl font-black tracking-tighter tabular-nums" x-text="resultsCount">842</div>
+            <span class="font-bold uppercase text-[10px] tracking-widest">Available Strategies</span>
           </div>
-          <button class="w-full bg-black text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-[0.98] transition-all">View Results →</button>
+          <button class="w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  style="background: var(--text-primary); color: var(--bg-primary);">View Results →</button>
         </div>
       </div>
     </section>
 
     <!-- TOP CLUSTERS -->
-    <section class="py-24 px-6 border-t border-zinc-900 bg-zinc-950/50">
+    <section class="py-24 px-6" style="border-top: 1px solid var(--border-default); background: var(--bg-tertiary);">
       <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-end mb-16">
           <div>
-            <h2 class="text-4xl md:text-5xl font-black tracking-tighter mb-4">AUTHORITY PACKS</h2>
-            <p class="text-zinc-500 font-medium">Pre-indexed collections of high-intent high-protein strategies.</p>
+            <h2 class="text-4xl md:text-5xl font-black tracking-tighter mb-4" style="color: var(--text-primary);">AUTHORITY PACKS</h2>
+            <p class="font-medium" style="color: var(--text-secondary);">Pre-indexed collections of high-intent high-protein strategies.</p>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -175,55 +183,61 @@ const facetGroups = [
           <a href="#" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden">
             <div class="relative z-10">
               <div class="flex justify-between items-start mb-8">
-                <span class="px-2 py-1 bg-zinc-800 text-[9px] font-black uppercase tracking-widest rounded">SKU Index</span>
-                <span class="text-[#D9FF00] text-xs font-black">150+ PGS</span>
+                <span class="px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded"
+                      style="background: var(--bg-tertiary); color: var(--text-primary);">SKU Index</span>
+                <span class="text-xs font-black" style="color: var(--accent-primary);">150+ PGS</span>
               </div>
-              <h3 class="text-3xl font-black tracking-tighter mb-4 leading-none">Frozen High-Protein Deep-Dive</h3>
-              <p class="text-zinc-400 text-sm font-medium leading-relaxed">Trader Joe's, Costco, and Walmart frozen SKUs sorted by absolute protein-to-calorie efficiency.</p>
+              <h3 class="text-3xl font-black tracking-tighter mb-4 leading-none" style="color: var(--text-primary);">Frozen High-Protein Deep-Dive</h3>
+              <p class="text-sm font-medium leading-relaxed" style="color: var(--text-secondary);">Trader Joe's, Costco, and Walmart frozen SKUs sorted by absolute protein-to-calorie efficiency.</p>
             </div>
-            <div class="relative z-10 pt-8 border-t border-zinc-800 mt-8 flex justify-between items-center">
-              <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Retail Facet</span>
+            <div class="relative z-10 pt-8 mt-8 flex justify-between items-center" style="border-top: 1px solid var(--border-default);">
+              <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">Retail Facet</span>
             </div>
           </a>
           <!-- Fast Food -->
-          <a href="#" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden bg-white">
+          <a href="#" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden"
+             style="background: var(--bg-tertiary);">
             <div class="relative z-10">
               <div class="flex justify-between items-start mb-8">
-                <span class="px-2 py-1 bg-black text-white text-[9px] font-black uppercase tracking-widest rounded">Chain Hacks</span>
-                <span class="text-black text-xs font-black">94% ACCURACY</span>
+                <span class="px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded"
+                      style="background: var(--text-primary); color: var(--bg-primary);">Chain Hacks</span>
+                <span class="text-xs font-black" style="color: var(--text-primary);">94% ACCURACY</span>
               </div>
-              <h3 class="text-3xl font-black tracking-tighter mb-4 leading-none text-black">Fast Food Macro Modification</h3>
-              <p class="text-zinc-600 text-sm font-medium leading-relaxed">How to hack Chick-Fil-A, Chipotle, and Panda Express for 50g+ protein under 600 cals.</p>
+              <h3 class="text-3xl font-black tracking-tighter mb-4 leading-none" style="color: var(--text-primary);">Fast Food Macro Modification</h3>
+              <p class="text-sm font-medium leading-relaxed" style="color: var(--text-secondary);">How to hack Chick-Fil-A, Chipotle, and Panda Express for 50g+ protein under 600 cals.</p>
             </div>
             <div class="relative z-10 space-y-3 mt-8">
               <div class="flex flex-wrap gap-2">
                 {['Chipotle', 'Chick-Fil-A', 'Panera'].map(chain => (
-                  <span class="px-2 py-1 border border-zinc-200 rounded text-[9px] font-bold text-black uppercase">{chain}</span>
+                  <span class="px-2 py-1 rounded text-[9px] font-bold uppercase"
+                        style="border: 1px solid var(--border-default); color: var(--text-primary);">{chain}</span>
                 ))}
               </div>
-              <div class="w-full h-1.5 bg-zinc-200 rounded-full overflow-hidden">
-                <div class="w-3/4 h-full bg-black"></div>
+              <div class="w-full h-1.5 rounded-full overflow-hidden" style="background: var(--border-default);">
+                <div class="w-3/4 h-full" style="background: var(--text-primary);"></div>
               </div>
             </div>
           </a>
           <!-- Clinical -->
-          <a href="#" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden bg-zinc-900 border-l-4 border-l-[#D9FF00]">
+          <a href="#" class="hyper-border p-8 rounded-[2rem] flex flex-col justify-between min-h-[450px] group overflow-hidden"
+             style="border-left: 4px solid var(--accent-primary);">
             <div class="relative z-10">
               <div class="flex justify-between items-start mb-8">
-                <span class="px-2 py-1 bg-zinc-800 text-[9px] font-black uppercase tracking-widest rounded">Trust Tier</span>
-                <span class="text-zinc-500 text-[9px] font-black uppercase tracking-widest">High Retention</span>
+                <span class="px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded"
+                      style="background: var(--bg-tertiary); color: var(--text-primary);">Trust Tier</span>
+                <span class="text-[9px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">High Retention</span>
               </div>
-              <h3 class="text-3xl font-black tracking-tighter mb-4 leading-none">Biological & Health Targets</h3>
-              <p class="text-zinc-400 text-sm font-medium leading-relaxed">Protein-forward protocols for PCOS management, bariatric recovery, and cholesterol control.</p>
+              <h3 class="text-3xl font-black tracking-tighter mb-4 leading-none" style="color: var(--text-primary);">Biological & Health Targets</h3>
+              <p class="text-sm font-medium leading-relaxed" style="color: var(--text-secondary);">Protein-forward protocols for PCOS management, bariatric recovery, and cholesterol control.</p>
             </div>
             <div class="relative z-10 mt-8 grid grid-cols-2 gap-4">
-              <div class="text-center p-3 bg-zinc-950 rounded-xl border border-zinc-800">
-                <span class="block text-xl font-black">8.2k</span>
-                <span class="text-[8px] text-zinc-500 uppercase font-bold">Daily Users</span>
+              <div class="text-center p-3 rounded-xl" style="background: var(--bg-tertiary); border: 1px solid var(--border-default);">
+                <span class="block text-xl font-black" style="color: var(--text-primary);">8.2k</span>
+                <span class="text-[8px] uppercase font-bold" style="color: var(--text-tertiary);">Daily Users</span>
               </div>
-              <div class="text-center p-3 bg-zinc-950 rounded-xl border border-zinc-800">
-                <span class="block text-xl font-black">98%</span>
-                <span class="text-[8px] text-zinc-500 uppercase font-bold">Stickiness</span>
+              <div class="text-center p-3 rounded-xl" style="background: var(--bg-tertiary); border: 1px solid var(--border-default);">
+                <span class="block text-xl font-black" style="color: var(--text-primary);">98%</span>
+                <span class="text-[8px] uppercase font-bold" style="color: var(--text-tertiary);">Stickiness</span>
               </div>
             </div>
           </a>
@@ -235,27 +249,30 @@ const facetGroups = [
     <FacetNav layout="columns" sectionTitle="Global Taxonomy Explorer" groups={facetGroups} />
 
     <!-- 5-DAY PROTOCOL -->
-    <section class="bg-[#D9FF00] text-black py-24 overflow-hidden relative">
+    <section class="py-24 overflow-hidden relative" style="background-color: var(--accent-primary); color: var(--text-inverse);">
       <div class="px-6 max-w-7xl mx-auto flex flex-col md:flex-row gap-16 items-center">
         <div class="flex-1 relative z-10">
           <div class="flex items-center gap-2 mb-6">
-            <div class="w-10 h-[2px] bg-black"></div>
+            <div class="w-10 h-[2px]" style="background: var(--text-inverse);"></div>
             <span class="text-[10px] font-black uppercase tracking-widest">The High Protein Standard</span>
           </div>
           <h2 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-8 uppercase">THE 200G<br/>PROTOCOL</h2>
-          <p class="text-xl font-medium mb-12 text-black/80 max-w-lg">
+          <p class="text-xl font-medium mb-12 opacity-80 max-w-lg">
             The ultimate execution plan. 5 days, 200g protein daily, under 2400 calories. Sunday prep: 105 mins.
           </p>
           <div class="flex flex-wrap gap-4">
-            <button class="px-10 py-5 bg-black text-white text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform">Download Plan (PDF)</button>
-            <button class="px-10 py-5 border-2 border-black text-black text-xs font-black uppercase tracking-widest rounded-full hover:bg-black hover:text-white transition-all">View Batch Guide</button>
+            <button class="px-10 py-5 text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
+                    style="background: var(--text-primary); color: var(--bg-primary);">Download Plan (PDF)</button>
+            <button class="px-10 py-5 text-xs font-black uppercase tracking-widest rounded-full transition-all"
+                    style="border: 2px solid var(--text-inverse);">View Batch Guide</button>
           </div>
         </div>
         <div class="flex-1 relative">
-          <div class="bg-white p-10 rounded-3xl border-2 border-black rotate-2 shadow-[20px_20px_0px_0px_rgba(0,0,0,1)]">
-            <div class="flex justify-between items-center mb-10 border-b border-zinc-200 pb-4">
-              <span class="text-xs font-black tracking-widest">EXECUTION STEPS</span>
-              <span class="px-2 py-1 bg-black text-white text-[9px] font-black uppercase">LIVE v2.4</span>
+          <div class="p-10 rounded-3xl rotate-2"
+               style="background: var(--bg-secondary); border: 2px solid var(--text-primary); box-shadow: 20px 20px 0px 0px var(--text-primary);">
+            <div class="flex justify-between items-center mb-10 pb-4" style="border-bottom: 1px solid var(--border-default);">
+              <span class="text-xs font-black tracking-widest" style="color: var(--text-primary);">EXECUTION STEPS</span>
+              <span class="px-2 py-1 text-[9px] font-black uppercase" style="background: var(--text-primary); color: var(--bg-primary);">LIVE v2.4</span>
             </div>
             <div class="space-y-6">
               {[
@@ -264,8 +281,10 @@ const facetGroups = [
                 { step: '03', text: 'Apply calorie-dense sauces (substitute for Greek Yogurt base).', strikethrough: true },
               ].map(item => (
                 <div class="flex items-start gap-4">
-                  <span class="w-6 h-6 rounded-full bg-black text-white text-[10px] flex items-center justify-center flex-shrink-0 font-black">{item.step}</span>
-                  <p class:list={['text-sm font-bold leading-tight', item.strikethrough && 'text-zinc-400 line-through']}>{item.text}</p>
+                  <span class="w-6 h-6 rounded-full text-[10px] flex items-center justify-center flex-shrink-0 font-black"
+                        style="background: var(--text-primary); color: var(--bg-primary);">{item.step}</span>
+                  <p class="text-sm font-bold leading-tight"
+                     style={item.strikethrough ? 'color: var(--text-tertiary); text-decoration: line-through;' : `color: var(--text-primary);`}>{item.text}</p>
                 </div>
               ))}
             </div>

@@ -1,7 +1,7 @@
 ---
 /**
  * MealPrepHub — Meal Prep Authority Hub (T1)
- * Converted from: meal_prep_authority_hub__t1_.html
+ * Theme-aware: uses CSS custom properties
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
@@ -67,47 +67,52 @@ const structuredData = JSON.stringify({
 
   <main class="flex-grow" x-data="{ decisionGoal: 'Weight Loss', decisionMethod: 'Batch Cooking' }">
     <!-- T1 HERO: LOGISTICS COMMAND CENTER -->
-    <section class="relative min-h-[80vh] flex flex-col justify-center px-6 border-b border-zinc-900 overflow-hidden bg-black">
-      <div class="absolute inset-0 opacity-20 pointer-events-none">
+    <section class="relative min-h-[80vh] flex flex-col justify-center px-6 overflow-hidden"
+             style="border-bottom: 1px solid var(--border-default); background: var(--bg-primary);">
+      <div class="absolute inset-0 opacity-10 pointer-events-none">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs><pattern id="smallGrid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" stroke-width="0.5"/></pattern></defs>
+          <defs><pattern id="smallGrid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" stroke-width="0.5"/></pattern></defs>
           <rect width="100%" height="100%" fill="url(#smallGrid)" />
         </svg>
       </div>
       <div class="max-w-7xl mx-auto w-full relative z-10 grid md:grid-cols-2 gap-12 items-center">
         <div>
-          <div class="inline-flex items-center gap-3 bg-[#D9FF00]/10 border border-[#D9FF00]/20 px-3 py-1 rounded-full mb-6">
+          <div class="inline-flex items-center gap-3 px-3 py-1 rounded-full mb-6"
+               style="background: var(--accent-glow); border: 1px solid var(--border-hover);">
             <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D9FF00] opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-[#D9FF00]"></span>
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style="background-color: var(--accent-primary);"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2" style="background-color: var(--accent-primary);"></span>
             </span>
-            <span class="text-[10px] font-black text-[#D9FF00] tracking-widest uppercase">System Authority: Meal-Prep</span>
+            <span class="text-[10px] font-black tracking-widest uppercase" style="color: var(--accent-primary);">System Authority: Meal-Prep</span>
           </div>
-          <h1 class="text-7xl md:text-[120px] font-black tracking-tighter leading-[0.85] mb-8 italic">
+          <h1 class="text-7xl md:text-[120px] font-black tracking-tighter leading-[0.85] mb-8 italic" style="color: var(--text-primary);">
             BATCH.<br/>STORE.<br/><span class="text-stroke">EXECUTE.</span>
           </h1>
-          <p class="max-w-md text-zinc-400 font-medium text-lg leading-relaxed mb-10">
+          <p class="max-w-md font-medium text-lg leading-relaxed mb-10" style="color: var(--text-secondary);">
             The definitive framework for high-volume food logistics. From 90-minute Sunday sprints to postpartum freezer stashes.
           </p>
           <div class="flex flex-wrap gap-4">
-            <a href="#decision" class="bg-[#D9FF00] text-black px-8 py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-white transition-all transform hover:scale-105">Start Planning</a>
-            <a href="#clusters" class="border border-zinc-700 hover:border-white px-8 py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all">Browse Clusters</a>
+            <a href="#decision" class="theme-btn-primary px-8 py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform">Start Planning</a>
+            <a href="#clusters" class="px-8 py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all"
+               style="border: 1px solid var(--border-default); color: var(--text-primary);">Browse Clusters</a>
           </div>
         </div>
         <div class="relative hidden md:block group">
           <div class="scanner-line"></div>
-          <div class="relative aspect-square rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl">
+          <div class="relative aspect-square rounded-3xl overflow-hidden shadow-2xl"
+               style="border: 1px solid var(--border-default);">
             <img src="https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" alt="Batch Cooking" />
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-            <div class="absolute bottom-8 left-8 right-8 bg-zinc-950/90 backdrop-blur-md p-6 border border-zinc-800 rounded-2xl">
+            <div class="absolute bottom-8 left-8 right-8 backdrop-blur-md p-6 rounded-2xl"
+                 style="background: var(--bg-nav); border: 1px solid var(--border-default);">
               <div class="flex justify-between items-end">
                 <div>
-                  <span class="text-[10px] font-black text-[#D9FF00] uppercase tracking-widest mb-1 block">Featured Strategy</span>
-                  <h3 class="text-xl font-black tracking-tight">Sunday Logistics: 15 Meals</h3>
+                  <span class="text-[10px] font-black uppercase tracking-widest mb-1 block" style="color: var(--accent-primary);">Featured Strategy</span>
+                  <h3 class="text-xl font-black tracking-tight" style="color: var(--text-primary);">Sunday Logistics: 15 Meals</h3>
                 </div>
                 <div class="text-right">
-                  <span class="text-2xl font-black tabular-nums tracking-tighter">90m</span>
-                  <span class="text-[8px] font-bold text-zinc-500 uppercase block">EXECUTION TIME</span>
+                  <span class="text-2xl font-black tabular-nums tracking-tighter" style="color: var(--text-primary);">90m</span>
+                  <span class="text-[8px] font-bold uppercase block" style="color: var(--text-tertiary);">EXECUTION TIME</span>
                 </div>
               </div>
             </div>
@@ -117,50 +122,53 @@ const structuredData = JSON.stringify({
     </section>
 
     <!-- DECISION ENGINE -->
-    <section id="decision" class="py-24 px-6 border-b border-zinc-900 bg-zinc-950">
+    <section id="decision" class="py-24 px-6" style="border-bottom: 1px solid var(--border-default); background: var(--bg-tertiary);">
       <div class="max-w-7xl mx-auto">
         <div class="flex flex-col md:flex-row items-baseline justify-between mb-16 gap-4">
-          <h2 class="text-4xl font-black tracking-tighter uppercase italic">Decision Engine</h2>
-          <p class="text-zinc-500 font-bold text-xs uppercase tracking-widest">Select Constraints to Fetch Optimized Path</p>
+          <h2 class="text-4xl font-black tracking-tighter uppercase italic" style="color: var(--text-primary);">Decision Engine</h2>
+          <p class="font-bold text-xs uppercase tracking-widest" style="color: var(--text-tertiary);">Select Constraints to Fetch Optimized Path</p>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div class="hyper-border p-8 rounded-3xl" x-bind:class="decisionGoal === 'Weight Loss' ? 'border-[#D9FF00]' : ''">
-            <span class="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-10 block">01 / Objective</span>
+          <div class="hyper-border p-8 rounded-3xl" x-bind:style="decisionGoal === 'Weight Loss' ? 'border-color: var(--accent-primary)' : ''">
+            <span class="text-[10px] font-black uppercase tracking-widest mb-10 block" style="color: var(--text-tertiary);">01 / Objective</span>
             <div class="space-y-4">
               <template x-for="goal in ['Weight Loss', 'Muscle Gain', 'Cheap & Quick']">
                 <button x-on:click="decisionGoal = goal"
-                        x-bind:class="decisionGoal === goal ? 'text-[#D9FF00]' : 'text-zinc-500'"
+                        x-bind:style="decisionGoal === goal ? 'color: var(--accent-primary)' : 'color: var(--text-tertiary)'"
                         class="flex items-center justify-between w-full text-left font-black tracking-tight text-xl group transition-all">
                   <span x-text="goal"></span>
-                  <div class="w-4 h-4 rounded-full border border-zinc-700 flex items-center justify-center">
-                    <div class="w-2 h-2 rounded-full bg-[#D9FF00] transition-opacity" x-bind:class="decisionGoal === goal ? 'opacity-100' : 'opacity-0'"></div>
+                  <div class="w-4 h-4 rounded-full flex items-center justify-center" style="border: 1px solid var(--border-default);">
+                    <div class="w-2 h-2 rounded-full transition-opacity" style="background-color: var(--accent-primary);" x-bind:class="decisionGoal === goal ? 'opacity-100' : 'opacity-0'"></div>
                   </div>
                 </button>
               </template>
             </div>
           </div>
           <div class="hyper-border p-8 rounded-3xl">
-            <span class="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-10 block">02 / Method</span>
-            <select x-model="decisionMethod" class="w-full bg-zinc-900 border border-zinc-800 p-4 rounded-xl font-bold tracking-tight text-xl outline-none focus:border-[#D9FF00] appearance-none">
+            <span class="text-[10px] font-black uppercase tracking-widest mb-10 block" style="color: var(--text-tertiary);">02 / Method</span>
+            <select x-model="decisionMethod" class="w-full p-4 rounded-xl font-bold tracking-tight text-xl outline-none appearance-none"
+                    style="background: var(--bg-tertiary); border: 1px solid var(--border-default); color: var(--text-primary);">
               <option>Batch Cooking</option>
               <option>Freezer Dump</option>
               <option>Slow Cooker</option>
               <option>No-Cook Cold</option>
             </select>
           </div>
-          <div class="lg:col-span-2 bg-[#D9FF00] rounded-3xl p-8 flex flex-col justify-between text-black relative overflow-hidden group">
+          <div class="lg:col-span-2 rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden group"
+               style="background-color: var(--accent-primary); color: var(--text-inverse);">
             <div class="relative z-10">
               <div class="flex justify-between items-start mb-8">
-                <span class="text-[10px] font-black uppercase tracking-widest bg-black text-white px-2 py-1 rounded">Recommended System</span>
+                <span class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded"
+                      style="background: var(--text-primary); color: var(--bg-primary);">Recommended System</span>
                 <span class="text-xs font-black italic">INDEX-V4.2</span>
               </div>
               <h4 class="text-4xl font-black tracking-tighter leading-none mb-4" x-text="'The ' + decisionGoal + ' ' + decisionMethod + ' Protocol'"></h4>
               <p class="font-bold text-sm max-w-xs opacity-70">Custom-generated execution plan focusing on caloric density and storage shelf-life.</p>
             </div>
             <div class="mt-12 flex gap-4 relative z-10">
-              <button class="flex-1 bg-black text-white py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-[1.02] transition-transform">Get The Full Plan</button>
+              <button class="flex-1 py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-[1.02] transition-transform"
+                      style="background: var(--text-primary); color: var(--bg-primary);">Get The Full Plan</button>
             </div>
-            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-black/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
           </div>
         </div>
       </div>
@@ -169,39 +177,43 @@ const structuredData = JSON.stringify({
     <!-- TOP CLUSTERS -->
     <section id="clusters" class="py-24 px-6 max-w-7xl mx-auto">
       <div class="flex items-center gap-4 mb-16">
-        <div class="h-[2px] w-24 bg-[#D9FF00]"></div>
-        <h2 class="text-xs font-black tracking-[0.5em] uppercase text-zinc-500">Core Authority Pillars</h2>
+        <div class="h-[2px] w-24" style="background-color: var(--accent-primary);"></div>
+        <h2 class="text-xs font-black tracking-[0.5em] uppercase" style="color: var(--text-tertiary);">Core Authority Pillars</h2>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
         <div class="md:col-span-7 bento-card p-10 flex flex-col justify-between group overflow-hidden relative">
           <div class="relative z-10">
-            <span class="text-[#D9FF00] font-black text-[10px] tracking-widest uppercase mb-4 block">System 01</span>
-            <h3 class="text-5xl font-black tracking-tighter mb-6 leading-none italic">LOGISTICS<br/>BY METHOD</h3>
-            <p class="text-zinc-400 max-w-sm font-medium mb-8">Specialized batching protocols for Crockpot, Air-Fryer, and Freezer-first strategies.</p>
+            <span class="font-black text-[10px] tracking-widest uppercase mb-4 block" style="color: var(--accent-primary);">System 01</span>
+            <h3 class="text-5xl font-black tracking-tighter mb-6 leading-none italic" style="color: var(--text-primary);">LOGISTICS<br/>BY METHOD</h3>
+            <p class="max-w-sm font-medium mb-8" style="color: var(--text-secondary);">Specialized batching protocols for Crockpot, Air-Fryer, and Freezer-first strategies.</p>
             <div class="flex flex-wrap gap-2">
               {['Instant Pot', 'Slow-Cooker', 'No-Cook'].map(tag => (
-                <span class="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-[9px] font-black uppercase tracking-widest group-hover:border-[#D9FF00] transition-all">{tag}</span>
+                <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest transition-all"
+                      style="background: var(--bg-tertiary); border: 1px solid var(--border-default); color: var(--text-secondary);">{tag}</span>
               ))}
             </div>
           </div>
         </div>
-        <div class="md:col-span-5 bento-card p-10 flex flex-col justify-between bg-zinc-100 text-black">
+        <div class="md:col-span-5 bento-card p-10 flex flex-col justify-between"
+             style="background: var(--bg-tertiary);">
           <div>
-            <div class="w-12 h-12 bg-black text-[#D9FF00] rounded-xl flex items-center justify-center mb-8">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-8"
+                 style="background: var(--text-primary); color: var(--accent-primary);">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             </div>
-            <h3 class="text-4xl font-black tracking-tighter mb-4 leading-none uppercase">PERSONA<br/>FLOWS</h3>
-            <p class="font-bold text-zinc-600 mb-6">Optimized meal systems for postpartum recovery, student life, and picky toddlers.</p>
+            <h3 class="text-4xl font-black tracking-tighter mb-4 leading-none uppercase" style="color: var(--text-primary);">PERSONA<br/>FLOWS</h3>
+            <p class="font-bold mb-6" style="color: var(--text-secondary);">Optimized meal systems for postpartum recovery, student life, and picky toddlers.</p>
           </div>
-          <a href="#" class="group flex items-center justify-between text-xs font-black uppercase tracking-widest border-t border-zinc-200 pt-6">
+          <a href="#" class="group flex items-center justify-between text-xs font-black uppercase tracking-widest pt-6"
+             style="border-top: 1px solid var(--border-default); color: var(--text-primary);">
             Explore Personas
             <svg class="w-5 h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
           </a>
         </div>
-        <div class="md:col-span-12 bento-card p-8 md:p-12 bg-[#111] flex flex-col md:flex-row items-center gap-12 group">
+        <div class="md:col-span-12 bento-card p-8 md:p-12 flex flex-col md:flex-row items-center gap-12 group">
           <div class="flex-1">
-            <h3 class="text-5xl md:text-7xl font-black tracking-tighter italic uppercase mb-6 leading-[0.85]">The Weekly<br/>Blueprint</h3>
-            <p class="text-zinc-500 font-bold mb-8 max-w-lg italic uppercase text-sm tracking-widest">A standardized 5-day cycle: Sunday Prep to Friday Night Survival.</p>
+            <h3 class="text-5xl md:text-7xl font-black tracking-tighter italic uppercase mb-6 leading-[0.85]" style="color: var(--text-primary);">The Weekly<br/>Blueprint</h3>
+            <p class="font-bold mb-8 max-w-lg italic uppercase text-sm tracking-widest" style="color: var(--text-tertiary);">A standardized 5-day cycle: Sunday Prep to Friday Night Survival.</p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               {[
                 { value: '15', label: 'Total Meals' },
@@ -209,15 +221,16 @@ const structuredData = JSON.stringify({
                 { value: '0', label: 'Waste Score' },
                 { value: '35g', label: 'Protein Avg' },
               ].map(stat => (
-                <div class="p-4 border border-zinc-800 rounded-xl">
-                  <span class="text-2xl font-black tabular-nums tracking-tighter block text-[#D9FF00]">{stat.value}</span>
-                  <span class="text-[8px] font-black text-zinc-600 uppercase tracking-widest">{stat.label}</span>
+                <div class="p-4 rounded-xl" style="border: 1px solid var(--border-default);">
+                  <span class="text-2xl font-black tabular-nums tracking-tighter block" style="color: var(--accent-primary);">{stat.value}</span>
+                  <span class="text-[8px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">{stat.label}</span>
                 </div>
               ))}
             </div>
-            <button class="bg-[#D9FF00] text-black w-full py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-white transition-all transform hover:-translate-y-1">Download Current Protocol</button>
+            <button class="theme-btn-primary w-full py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:-translate-y-1 transition-transform">Download Current Protocol</button>
           </div>
-          <div class="w-full md:w-1/3 aspect-[4/5] bg-zinc-900 rounded-3xl overflow-hidden relative border border-zinc-800">
+          <div class="w-full md:w-1/3 aspect-[4/5] rounded-3xl overflow-hidden relative"
+               style="background: var(--bg-tertiary); border: 1px solid var(--border-default);">
             <img src="https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover opacity-60 mix-blend-luminosity hover:opacity-100 hover:mix-blend-normal transition-all duration-1000" alt="Meal Containers" />
             <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
           </div>
@@ -229,17 +242,17 @@ const structuredData = JSON.stringify({
     <FacetNav layout="columns" sectionTitle="Universal Taxonomy" badge="54 Active Dimensions" groups={facetGroups} />
 
     <!-- DATA STREAM -->
-    <section class="bg-zinc-950 py-12 border-b border-zinc-900 relative">
-      <div class="data-stream overflow-hidden whitespace-nowrap flex py-2 border-y border-[#D9FF00]/10">
+    <section class="py-12 relative" style="background: var(--bg-tertiary); border-bottom: 1px solid var(--border-default);">
+      <div class="data-stream overflow-hidden whitespace-nowrap flex py-2" style="border-top: 1px solid var(--accent-glow); border-bottom: 1px solid var(--accent-glow);">
         <div class="flex animate-marquee gap-8 items-center">
           {[1,2,3,4,5].map(() => (
             <div class="flex gap-8 items-center">
-              <span class="text-[10px] font-black tracking-tighter text-[#D9FF00]">INDEX UPDATED: 2024-05-12</span>
-              <span class="w-1 h-1 rounded-full bg-zinc-800"></span>
-              <span class="text-[10px] font-black tracking-tighter text-zinc-500">NEW CLUSTER: POSTPARTUM FREEZER STASH [54 PAGES]</span>
-              <span class="w-1 h-1 rounded-full bg-zinc-800"></span>
-              <span class="text-[10px] font-black tracking-tighter text-[#D9FF00]">TRAFFIC WINNER: CROCKPOT NO-MICROWAVE</span>
-              <span class="w-1 h-1 rounded-full bg-zinc-800"></span>
+              <span class="text-[10px] font-black tracking-tighter" style="color: var(--accent-primary);">INDEX UPDATED: 2024-05-12</span>
+              <span class="w-1 h-1 rounded-full" style="background: var(--border-default);"></span>
+              <span class="text-[10px] font-black tracking-tighter" style="color: var(--text-tertiary);">NEW CLUSTER: POSTPARTUM FREEZER STASH [54 PAGES]</span>
+              <span class="w-1 h-1 rounded-full" style="background: var(--border-default);"></span>
+              <span class="text-[10px] font-black tracking-tighter" style="color: var(--accent-primary);">TRAFFIC WINNER: CROCKPOT NO-MICROWAVE</span>
+              <span class="w-1 h-1 rounded-full" style="background: var(--border-default);"></span>
             </div>
           ))}
         </div>

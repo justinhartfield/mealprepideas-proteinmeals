@@ -1,9 +1,10 @@
 ---
 /**
  * proteinmeals.co/high-protein/[facetType]/[facetValue]/ — Single Facet Category (T2)
- * Dynamic route using taxonomy data
+ * Uses DietCategory or MethodCategory (NEW components)
  */
-import SingleFacetCategory from '@mealprepideas/shared/components/SingleFacetCategory.astro';
+import DietCategory from '@mealprepideas/shared/components/DietCategory.astro';
+import MethodCategory from '@mealprepideas/shared/components/MethodCategory.astro';
 import { generateSingleFacetPaths, slugToDisplay } from '@mealprepideas/shared/utils/urls';
 import type { FacetKey } from '@mealprepideas/shared/data/taxonomy';
 
@@ -18,35 +19,82 @@ const { facetType, facetValue } = Astro.params;
 const displayValue = slugToDisplay(facetValue!);
 const displayType = slugToDisplay(facetType!);
 
-// Placeholder recipe data
-const placeholderRecipes = [
-  { id: 1, title: `${displayValue} Power Bowl`, tags: ['High Protein', 'Batch-Cook'], protein: '32g', cal: '480', time: 'No-Cook' },
-  { id: 2, title: `${displayValue} Macro Stack`, tags: ['Meal Prep', 'Muscle Gain'], protein: '45g', cal: '520', time: 'Instant-Pot' },
-  { id: 3, title: `${displayValue} Lean Soup`, tags: ['Budget', 'Low Calorie'], protein: '24g', cal: '310', time: 'Crockpot' },
-  { id: 4, title: `${displayValue} Quick Kit`, tags: ['Quick', 'Breakfast'], protein: '28g', cal: '350', time: 'Sheet-Pan' },
-];
+const isMethod = facetType === 'method';
+
+// Placeholder recipes
+const placeholderRecipes = isMethod
+  ? Array.from({ length: 6 }, (_, i) => ({
+      id: i + 1,
+      title: `${displayValue} Recipe ${i + 1}`,
+      protein: `${28 + i * 4}g`,
+      cals: `${320 + i * 50}`,
+      time: `${10 + i * 3}m`,
+      category: ['lunch', 'dinner', 'snacks', 'dinner', 'lunch', 'dinner'][i],
+      img: '',
+    }))
+  : Array.from({ length: 6 }, (_, i) => ({
+      id: i + 1,
+      title: `${displayValue} Meal ${i + 1}`,
+      protein: `${24 + i * 3}g`,
+      cal: `${380 + i * 40}`,
+      pe: ['High', 'Elite', 'Mid', 'High', 'Elite', 'Mid'][i],
+      tags: [['Lunch', 'Muscle Gain'], ['Dinner', 'Weight Loss'], ['Dinner', 'Cheap'], ['Breakfast', 'Quick'], ['Lunch', 'No-Microwave'], ['Dinner', 'Crockpot']][i],
+    }));
 
 const placeholderFaqs = [
   { question: `What defines ${displayValue} in our high-protein system?`, answer: `Our ${displayValue} protocols ensure a minimum of 30g protein per serving while optimizing for taste, cost, and prep efficiency.` },
   { question: `Can I combine ${displayValue} with other constraints?`, answer: `Absolutely. Our faceted taxonomy allows you to intersect ${displayValue.toLowerCase()} with goals, methods, and store constraints.` },
 ];
+
+const exploreColumns = [
+  { title: 'By Meal', number: '01', links: [
+    { label: 'Breakfast', href: '#' }, { label: 'Lunch', href: '#' }, { label: 'Dinner', href: '#' },
+  ]},
+  { title: 'By Goal', number: '02', links: [
+    { label: 'Weight Loss', href: '#' }, { label: 'Muscle Gain', href: '#' }, { label: 'Budget', href: '#' },
+  ]},
+  { title: 'Constraints', number: '03', links: [
+    { label: 'High Fiber', href: '#' }, { label: 'Low Calorie', href: '#' }, { label: 'Quick Prep', href: '#' },
+  ]},
+];
 ---
 
-<SingleFacetCategory
-  hub="high-protein"
-  facetType={facetType as FacetKey}
-  facetValue={facetValue!}
-  title={`${displayValue} High Protein Protocol | ProteinMeals.co`}
-  description={`Explore ${displayValue} high-protein protocols. Macro-optimized meals and systematic nutrition.`}
-  canonicalUrl={`https://proteinmeals.co/high-protein/${facetType}/${facetValue}/`}
-  headline={`${displayValue} High`}
-  headlineAccent="Protein."
-  subheadline={`The systematic approach to ${displayValue.toLowerCase()} nutrition. Optimized for high P:E ratios and macro density.`}
-  useCases={[
-    { number: '01. Recovery', title: 'Recovery', description: 'Leucine-rich sources for muscle synthesis.' },
-    { number: '02. Density', title: 'Density', description: 'Maximum protein per calorie and dollar.' },
-    { number: '03. Volume', title: 'Volume', description: 'High satiety, low calorie-density options.' },
-  ]}
-  recipes={placeholderRecipes}
-  faqs={placeholderFaqs}
-/>
+{isMethod ? (
+  <MethodCategory
+    hub="high-protein"
+    facetType={facetType!}
+    facetValue={facetValue!}
+    title={`${displayValue} High Protein Recipes | ProteinMeals.co`}
+    description={`${displayValue} high-protein recipes optimized for macro density.`}
+    canonicalUrl={`https://proteinmeals.co/high-protein/${facetType}/${facetValue}/`}
+    headline={displayValue}
+    subheadline={`High-performance ${displayValue.toLowerCase()} cooking protocols optimized for maximum protein output.`}
+    useCases={[
+      { number: '01.', title: 'Recovery', description: 'Leucine-rich sources for muscle synthesis' },
+      { number: '02.', title: 'Density', description: 'Maximum protein per calorie and dollar' },
+      { number: '03.', title: 'Volume', description: 'High satiety, low calorie-density options' },
+    ]}
+    recipes={placeholderRecipes as any}
+    faqs={placeholderFaqs}
+    exploreColumns={exploreColumns}
+  />
+) : (
+  <DietCategory
+    hub="high-protein"
+    facetType={facetType!}
+    facetValue={facetValue!}
+    title={`${displayValue} High Protein Protocol | ProteinMeals.co`}
+    description={`Explore ${displayValue} high-protein protocols.`}
+    canonicalUrl={`https://proteinmeals.co/high-protein/${facetType}/${facetValue}/`}
+    headline={displayValue}
+    headlineAccent="Protein."
+    definition={`The systematic approach to ${displayValue.toLowerCase()} nutrition. Optimized for high P:E ratios and macro density.`}
+    definitionBullets={[
+      `Best for ${displayValue.toLowerCase()} high-protein optimization.`,
+      `Optimized for macro density and cost efficiency.`,
+    ]}
+    recipes={placeholderRecipes as any}
+    faqs={placeholderFaqs}
+    exploreColumns={exploreColumns}
+  />
+)}
