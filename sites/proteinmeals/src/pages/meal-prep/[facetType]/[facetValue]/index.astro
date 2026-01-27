@@ -1,8 +1,7 @@
 ---
 /**
- * mealprepideas.co/meal-prep/[facetType]/[facetValue]/ — Single Facet Category (T2)
- * Renders PersonaConditionPage for persona, RetailerChainPage for store/chain,
- * MethodCategory for method, DietCategory for everything else.
+ * proteinmeals.co/meal-prep/[facetType]/[facetValue]/ — Single Facet Category (T2)
+ * Cross-hub: meal-prep content on proteinmeals.co
  */
 import DietCategory from '@mealprepideas/shared/components/DietCategory.astro';
 import MethodCategory from '@mealprepideas/shared/components/MethodCategory.astro';
@@ -59,11 +58,9 @@ function calculateAvgPE(topPicks: typeof stores[number]['topPicks']): string {
 }
 
 // --- DEFAULT (Diet/Method) RENDERING ---
-// Look up real content data
 const seoContent = getFacetContent(buildFacetKey(facetType!, facetValue!), 'meal-prep');
 const realRecipes = getRecipesMatchingAnyFacet('meal-prep', facetType!, facetValue!);
 
-// Build recipe display objects from real data, with fallback placeholders
 const displayRecipes = realRecipes.length > 0
   ? realRecipes.slice(0, 6).map((r, i) => isMethod
       ? { id: i + 1, title: r.title, slug: r.slug, protein: `${r.protein}g`, cals: `${r.calories}`, time: `${r.prepTime + r.cookTime}m`, category: r.facets.meal || 'dinner', img: '/images/recipes/' + r.slug + '.jpg' }
@@ -90,38 +87,12 @@ const displayRecipes = realRecipes.length > 0
         tags: [['Lunch', 'Muscle Gain'], ['Dinner', 'Weight Loss'], ['Dinner', 'Cheap'], ['Breakfast', 'Quick'], ['Lunch', 'No-Microwave'], ['Dinner', 'Crockpot']][i],
       }));
 
-// Use SEO content FAQs if available, otherwise fallback
 const displayFaqs = seoContent?.faqItems ?? [
   { question: `What makes ${displayValue} meal prep unique?`, answer: `Our ${displayValue} protocols are optimized for efficiency, batch-cooking stability, and nutrient density.` },
   { question: `How long do these meals last?`, answer: `Most ${displayValue} meals are optimized for 5-day fridge life and 90-day freezer stability.` },
 ];
 
-// Build contextual explore columns — link to two-facet combos when on a diet/goal/constraint page
-const dv = displayValue;
-const fv = facetValue;
-const ft = facetType;
-const isDietOrGoal = ft === 'diet' || ft === 'goal' || ft === 'constraint';
-const exploreColumns = isDietOrGoal ? [
-  { title: `${dv} by Meal`, titleHref: '/meal-prep/meal/', number: '01', links: [
-    { label: `${dv} Breakfast`, href: `/meal-prep/meal/breakfast/${ft}/${fv}/` },
-    { label: `${dv} Lunch`, href: `/meal-prep/meal/lunch/${ft}/${fv}/` },
-    { label: `${dv} Dinner`, href: `/meal-prep/meal/dinner/${ft}/${fv}/` },
-  ]},
-  { title: `${dv} by Method`, titleHref: '/meal-prep/method/', number: '02', links: [
-    { label: `${dv} Air Fryer`, href: `/meal-prep/method/air-fryer/${ft}/${fv}/` },
-    { label: `${dv} Crockpot`, href: `/meal-prep/method/crockpot/${ft}/${fv}/` },
-    { label: `${dv} No-Cook`, href: `/meal-prep/method/no-cook/${ft}/${fv}/` },
-  ]},
-  { title: `${dv} by Goal`, titleHref: '/meal-prep/goal/', number: '03', links: ft === 'goal' ? [
-    { label: 'Weight Loss', href: '/meal-prep/goal/weight-loss/' },
-    { label: 'Muscle Gain', href: '/meal-prep/goal/muscle-gain/' },
-    { label: 'Budget', href: '/meal-prep/constraint/budget/' },
-  ] : [
-    { label: `${dv} Weight Loss`, href: `/meal-prep/${ft}/${fv}/goal/weight-loss/` },
-    { label: `${dv} Muscle Gain`, href: `/meal-prep/${ft}/${fv}/goal/muscle-gain/` },
-    { label: `${dv} Healthy`, href: `/meal-prep/${ft}/${fv}/goal/healthy/` },
-  ]},
-] : [
+const exploreColumns = [
   { title: 'By Meal', titleHref: '/meal-prep/meal/', number: '01', links: [
     { label: 'Breakfast', href: '/meal-prep/meal/breakfast/' }, { label: 'Lunch', href: '/meal-prep/meal/lunch/' }, { label: 'Dinner', href: '/meal-prep/meal/dinner/' },
   ]},
@@ -132,23 +103,13 @@ const exploreColumns = isDietOrGoal ? [
     { label: 'High Fiber', href: '/meal-prep/constraint/high-fiber/' }, { label: 'Low Calorie', href: '/meal-prep/diet/low-calorie/' }, { label: 'Quick Prep', href: '/meal-prep/constraint/quick/' },
   ]},
 ];
-
-// P:E widget data per facet type
-const peData: Record<string, { label: string; target: string; barWidth: string; score: string; scoreLabel: string }> = {
-  'diet': { label: 'DIET OPTIMIZED', target: '25-40%', barWidth: '75%', score: '0.7+', scoreLabel: 'Avg Protein Grams Per 10 Calories' },
-  'goal': { label: 'GOAL ALIGNED', target: '30-45%', barWidth: '85%', score: '0.8+', scoreLabel: 'Avg Protein Grams Per 10 Calories' },
-  'meal': { label: 'MEAL TYPE', target: '25-35%', barWidth: '70%', score: '6+', scoreLabel: 'Recipes In This Category' },
-  'constraint': { label: 'CONSTRAINT MET', target: '100%', barWidth: '90%', score: String(realRecipes.length), scoreLabel: 'Matching Protocols Available' },
-  'ingredient': { label: 'KEY INGREDIENT', target: '20-40g', barWidth: '80%', score: String(realRecipes.length), scoreLabel: 'Recipes Featuring This Ingredient' },
-};
-const pe = peData[facetType!] || peData['diet'];
 ---
 
 {isPersona ? (
   <PersonaConditionPage
-    title={`Meal Prep for ${displayValue} | MealPrepIdeas.co`}
+    title={`Meal Prep for ${displayValue} | ProteinMeals.co`}
     description={`Complete meal prep guide for ${displayValue.toLowerCase()}. Recipes, plans, and tips tailored to your needs.`}
-    canonicalUrl={`https://mealprepideas.co/meal-prep/persona/${facetValue}/`}
+    canonicalUrl={`https://proteinmeals.co/meal-prep/persona/${facetValue}/`}
     conditionName={displayValue}
     conditionType={persona?.conditionType || 'persona'}
     definition={persona?.definition || `Comprehensive meal prep guide tailored for ${displayValue.toLowerCase()}. Browse curated recipes, weekly plans, and nutrition tips designed specifically for your lifestyle.`}
@@ -159,10 +120,10 @@ const pe = peData[facetType!] || peData['diet'];
   />
 ) : isStoreOrChain && storeData ? (
   <RetailerChainPage
-    site="mealprepideas"
-    title={`${storeData.name} Meal Prep Guide | MealPrepIdeas.co`}
+    site="proteinmeals"
+    title={`${storeData.name} Meal Prep Guide | ProteinMeals.co`}
     description={storeData.description}
-    canonicalUrl={`https://mealprepideas.co/meal-prep/${facetType}/${facetValue}/`}
+    canonicalUrl={`https://proteinmeals.co/meal-prep/${facetType}/${facetValue}/`}
     entityName={storeData.name}
     entityType={storeData.type === 'grocery' ? 'store' : 'chain'}
     tagline={storeData.tagline}
@@ -189,9 +150,9 @@ const pe = peData[facetType!] || peData['diet'];
     hub="meal-prep"
     facetType={facetType!}
     facetValue={facetValue!}
-    title={seoContent?.metaTitle ?? `${displayValue} Meal Prep System | MealPrepIdeas.co`}
+    title={seoContent?.metaTitle ?? `${displayValue} Meal Prep System | ProteinMeals.co`}
     description={seoContent?.metaDescription ?? `${displayValue} meal prep protocols optimized for batch-cooking.`}
-    canonicalUrl={`https://mealprepideas.co/meal-prep/${facetType}/${facetValue}/`}
+    canonicalUrl={`https://proteinmeals.co/meal-prep/${facetType}/${facetValue}/`}
     headline={seoContent?.h1 ?? displayValue}
     subheadline={seoContent?.heroText ?? `High-performance ${displayValue.toLowerCase()} cooking protocols optimized for rapid protein denaturing and moisture retention.`}
     useCases={[
@@ -208,9 +169,9 @@ const pe = peData[facetType!] || peData['diet'];
     hub="meal-prep"
     facetType={facetType!}
     facetValue={facetValue!}
-    title={seoContent?.metaTitle ?? `${displayValue} Meal Prep Index | MealPrepIdeas.co`}
+    title={seoContent?.metaTitle ?? `${displayValue} Meal Prep Index | ProteinMeals.co`}
     description={seoContent?.metaDescription ?? `Explore ${displayValue} meal prep protocols.`}
-    canonicalUrl={`https://mealprepideas.co/meal-prep/${facetType}/${facetValue}/`}
+    canonicalUrl={`https://proteinmeals.co/meal-prep/${facetType}/${facetValue}/`}
     headline={seoContent?.h1 ?? displayValue}
     headlineAccent="PREP."
     definition={seoContent?.heroText ?? `High-performance ${displayValue.toLowerCase()} meal prep focuses on maximizing nutrient density while optimizing for batch-cooking logistics.`}
@@ -224,10 +185,5 @@ const pe = peData[facetType!] || peData['diet'];
     recipes={displayRecipes as any}
     faqs={displayFaqs}
     exploreColumns={exploreColumns}
-    peLabel={pe.label}
-    peTarget={pe.target}
-    peBarWidth={pe.barWidth}
-    peScore={pe.score}
-    peScoreLabel={pe.scoreLabel}
   />
 )}

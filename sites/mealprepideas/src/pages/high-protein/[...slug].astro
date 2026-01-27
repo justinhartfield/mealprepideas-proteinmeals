@@ -1,0 +1,105 @@
+---
+/**
+ * mealprepideas.co/high-protein/[...slug] — Two-Facet Combo Catch-all (T3)
+ * Cross-hub: high-protein combos on mealprepideas.co
+ */
+import DietGoalCombo from '@mealprepideas/shared/components/DietGoalCombo.astro';
+import PersonaMethodCombo from '@mealprepideas/shared/components/PersonaMethodCombo.astro';
+import MethodMealCombo from '@mealprepideas/shared/components/MethodMealCombo.astro';
+import RetailConstraintCombo from '@mealprepideas/shared/components/RetailConstraintCombo.astro';
+import { generateTwoFacetPaths, slugToDisplay } from '@mealprepideas/shared/utils/urls';
+import { getRecipesForHub } from '@mealprepideas/shared/utils/content';
+import type { FacetKey } from '@mealprepideas/shared/data/taxonomy';
+
+export function getStaticPaths() {
+  const paths = generateTwoFacetPaths('high-protein');
+  return paths.map(({ slug, facetA, facetB }) => ({
+    params: { slug: slug.join('/') },
+    props: { facetA, facetB },
+  }));
+}
+
+interface Props {
+  facetA: { type: FacetKey; value: string };
+  facetB: { type: FacetKey; value: string };
+}
+
+const { facetA, facetB } = Astro.props;
+const displayA = slugToDisplay(facetA.value);
+const displayB = slugToDisplay(facetB.value);
+
+// Try to match real recipes from this hub that match either facet
+const allHubRecipes = getRecipesForHub('high-protein');
+const matchingRecipes = allHubRecipes.filter(r => {
+  const facets = r.facets as Record<string, string | undefined>;
+  const matchA = facets[facetA.type] === facetA.value;
+  const matchB = facets[facetB.type] === facetB.value;
+  return matchA || matchB;
+}).sort((a, b) => {
+  const facetsA = a.facets as Record<string, string | undefined>;
+  const facetsB = b.facets as Record<string, string | undefined>;
+  const scoreA = (facetsA[facetA.type] === facetA.value ? 1 : 0) + (facetsA[facetB.type] === facetB.value ? 1 : 0);
+  const scoreB = (facetsB[facetA.type] === facetA.value ? 1 : 0) + (facetsB[facetB.type] === facetB.value ? 1 : 0);
+  return scoreB - scoreA;
+}).slice(0, 6);
+
+const displayRecipes = matchingRecipes.length > 0
+  ? matchingRecipes.map((r, i) => ({
+      id: i + 1,
+      title: r.title,
+      protein: `${r.protein}g`,
+      cal: `${r.calories}`,
+      method: r.facets.method || (facetA.type === 'method' ? facetA.value : facetB.type === 'method' ? facetB.value : 'batch-cook'),
+      tag: r.facets.constraint || r.facets.goal || r.facets.diet || 'Protein',
+      score: 9.8 - i * 0.3,
+    }))
+  : Array.from({ length: 6 }, (_, i) => ({
+      id: i + 1,
+      title: `${displayA} ${displayB} Idea #${i + 1}`,
+      protein: `${28 + i * 3}g`,
+      cal: `${420 + i * 40}`,
+      method: facetA.type === 'method' ? facetA.value : facetB.type === 'method' ? facetB.value : 'batch-cook',
+      tag: ['High Fiber', 'Budget', 'Quick', 'Freezer-Friendly', 'Comfort', 'Classic'][i],
+      score: 9.8 - i * 0.3,
+    }));
+
+const placeholderFaqs = [
+  { question: `How do I combine ${displayA} with ${displayB} effectively?`, answer: `Our system optimizes the intersection of ${displayA.toLowerCase()} and ${displayB.toLowerCase()} for maximum nutritional benefit and prep efficiency.` },
+  { question: `How long do these meals store?`, answer: `Most protocols are optimized for 5-day fridge life. Freezer-friendly variants extend to 90 days.` },
+];
+
+const siblings = [
+  { href: `/high-protein/${facetA.type}/${facetA.value}/`, label: `${displayA} Hub`, sublabel: `All ${displayA} protocols` },
+  { href: `/high-protein/${facetB.type}/${facetB.value}/`, label: `${displayB} Hub`, sublabel: `All ${displayB} protocols` },
+];
+
+// Route to appropriate T3 component based on facet types
+const isRetailCombo = facetA.type === 'store' || facetA.type === 'chain' || facetB.type === 'store' || facetB.type === 'chain';
+const isPersonaMethod = facetA.type === 'persona' || facetB.type === 'persona';
+const isDietGoal = (facetA.type === 'diet' || facetB.type === 'diet') && (facetA.type === 'goal' || facetB.type === 'goal');
+const isMealMethod = facetA.type === 'meal' || facetB.type === 'meal';
+
+const sharedProps = {
+  hub: 'high-protein' as const,
+  facetA, facetB,
+  title: `${displayA} ${displayB} Protocols | MealPrepIdeas.co`,
+  description: `${displayA} meets ${displayB}. High-protein protocols at the intersection.`,
+  canonicalUrl: `https://mealprepideas.co/high-protein/${facetA.type}/${facetA.value}/${facetB.type}/${facetB.value}/`,
+  headline: displayA,
+  headlineAccent: `${displayB} System`,
+  subheadline: `Solving the intersection of ${displayA.toLowerCase()} and ${displayB.toLowerCase()} with data-backed prep protocols.`,
+  recipes: displayRecipes,
+  faqs: placeholderFaqs,
+  siblings,
+};
+---
+
+{isRetailCombo ? (
+  <RetailConstraintCombo {...sharedProps} />
+) : isPersonaMethod ? (
+  <PersonaMethodCombo {...sharedProps} />
+) : isMealMethod ? (
+  <MethodMealCombo {...sharedProps} />
+) : (
+  <DietGoalCombo {...sharedProps} />
+)}

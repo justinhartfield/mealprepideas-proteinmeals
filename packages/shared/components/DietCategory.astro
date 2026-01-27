@@ -39,6 +39,11 @@ interface Props {
   faqs?: FAQ[];
   site?: "mealprepideas" | "proteinmeals";
   exploreColumns?: { title: string; links: { label: string; href: string }[] }[];
+  peLabel?: string;
+  peTarget?: string;
+  peBarWidth?: string;
+  peScore?: string;
+  peScoreLabel?: string;
 }
 
 const {
@@ -48,6 +53,11 @@ const {
   recipes = [],
   faqs = [],
   exploreColumns = [],
+  peLabel = 'TOP TIER',
+  peTarget = '30-40%',
+  peBarWidth = '85%',
+  peScore = '0.8+',
+  peScoreLabel = 'Average Protein Grams\nPer 10 Calories',
 } = Astro.props;
 
 const hubPath = hub === 'meal-prep' ? '/meal-prep/' : '/high-protein/';
@@ -106,21 +116,21 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
           <div class="hyper-border p-8 rounded-3xl" style="background-color: var(--bg-primary);">
             <div class="flex justify-between items-center mb-8">
               <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-secondary);">P:E Efficiency Index</span>
-              <span class="font-black italic" style="color: var(--accent-primary);">TOP TIER</span>
+              <span class="font-black italic" style="color: var(--accent-primary);">{peLabel}</span>
             </div>
             <div class="space-y-6">
               <div>
                 <div class="flex justify-between text-[10px] font-black mb-2 uppercase tracking-widest">
-                  <span>Protein Target</span><span>30-40%</span>
+                  <span>Protein Target</span><span>{peTarget}</span>
                 </div>
                 <div class="h-2 w-full rounded-full overflow-hidden" style="background-color: var(--bg-tertiary);">
-                  <div class="h-full pe-gradient w-[85%]"></div>
+                  <div class="h-full pe-gradient" style={`width: ${peBarWidth}`}></div>
                 </div>
               </div>
               <div class="pt-6 border-t" style="border-color: var(--border-default);">
                 <div class="flex items-center gap-4">
-                  <span class="text-4xl font-black tabular-nums tracking-tighter">0.8+</span>
-                  <p class="text-[10px] font-bold leading-tight uppercase" style="color: var(--text-secondary);">Average Protein Grams<br/>Per 10 Calories</p>
+                  <span class="text-4xl font-black tabular-nums tracking-tighter">{peScore}</span>
+                  <p class="text-[10px] font-bold leading-tight uppercase" style="color: var(--text-secondary);">{peScoreLabel}</p>
                 </div>
               </div>
             </div>

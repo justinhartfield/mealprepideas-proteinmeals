@@ -1,0 +1,32 @@
+---
+/**
+ * mealprepideas.co/high-protein/[facetType]/ — Facet Type Index Page
+ * Lists all values for a given facet type (cross-hub on mealprepideas)
+ */
+import FacetTypeIndex from '@mealprepideas/shared/components/FacetTypeIndex.astro';
+import { facets, FACET_ORDER, type FacetKey } from '@mealprepideas/shared/data/taxonomy';
+import { slugToDisplay } from '@mealprepideas/shared/utils/urls';
+
+export function getStaticPaths() {
+  return FACET_ORDER.map(facetType => ({
+    params: { facetType },
+    props: { facetType: facetType as FacetKey },
+  }));
+}
+
+interface Props {
+  facetType: FacetKey;
+}
+
+const { facetType } = Astro.props;
+const facetLabel = facets[facetType]?.label || slugToDisplay(facetType);
+---
+
+<FacetTypeIndex
+  title={`${facetLabel} High Protein Categories | MealPrepIdeas.co`}
+  description={`Browse all ${facetLabel.toLowerCase()} categories for high protein meals. Find recipes, guides, and plans organized by ${facetLabel.toLowerCase()}.`}
+  canonicalUrl={`https://mealprepideas.co/high-protein/${facetType}/`}
+  hub="high-protein"
+  facetType={facetType}
+  site="mealprepideas"
+/>
