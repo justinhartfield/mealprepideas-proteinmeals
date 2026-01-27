@@ -538,6 +538,224 @@ export const facetContent: FacetPageContent[] = [
       },
     ],
   },
+
+  // ─── PHASE 7: EXPANDED FACET CONTENT ───────────────────────────────
+
+  // method:instant-pot (meal-prep)
+  {
+    facetKey: "method:instant-pot",
+    hub: "meal-prep",
+    h1: "Instant Pot Meal Prep Recipes",
+    metaTitle: "Instant Pot Meal Prep: Set It & Forget It Recipes | MealPrepIdeas.co",
+    metaDescription: "Instant Pot meal prep recipes that save hours. Dump, set, and walk away. Batch cook a full week of meals in under 60 minutes with pressure cooking.",
+    heroText: "The Instant Pot is the meal prepper's best friend. Dump ingredients, seal the lid, and walk away. In 20-30 minutes of actual pressure cooking, you get fork-tender proteins and perfectly cooked grains — no babysitting required. It's the closest thing to a personal chef for $80.",
+    sectionIntros: {
+      recipes: "Every recipe here is optimized for Instant Pot batch cooking. We focus on recipes where pressure cooking actually makes a difference — braised meats, beans from dry, one-pot rice dishes — not things you can do faster on the stovetop.",
+      technique: "The key to Instant Pot meal prep: use natural release for meats (keeps them juicy), quick release for vegetables (prevents mush), and the pot-in-pot method for cooking rice and protein simultaneously.",
+    },
+    faqItems: [
+      {
+        question: "Is the Instant Pot actually faster than regular cooking for meal prep?",
+        answer: "For most meal prep, yes. A whole chicken in 25 minutes, dried beans in 30 minutes, and braised meats in 40 minutes (vs 3-4 hours). The real time savings come from being hands-off — you can prep other things while it cooks. The 10-15 minutes for pressure build-up is the trade-off.",
+      },
+      {
+        question: "What size Instant Pot is best for meal prep?",
+        answer: "6-quart for individuals or couples, 8-quart for families or if you want to batch cook large amounts. The 8-quart is only slightly more expensive and gives you 30% more capacity, which is a big deal for weekly meal prep.",
+      },
+    ],
+  },
+
+  // method:sheet-pan (meal-prep)
+  {
+    facetKey: "method:sheet-pan",
+    hub: "meal-prep",
+    h1: "Sheet Pan Meal Prep Recipes",
+    metaTitle: "Sheet Pan Meal Prep: One Pan Dinners & Batch Cooking | MealPrepIdeas.co",
+    metaDescription: "Sheet pan meal prep recipes for easy batch cooking. One pan, one oven, minimal cleanup. Perfectly roasted proteins and vegetables every time.",
+    heroText: "Sheet pan dinners are the lazy genius of meal prep. Toss everything on a pan, slide it in the oven, and 25 minutes later you have perfectly roasted protein and vegetables. One pan to wash. No stirring, no flipping, no supervision needed. This is how you meal prep without hating your life.",
+    sectionIntros: {
+      recipes: "Our sheet pan recipes are designed for meal prep specifically — they reheat well, the flavors hold up for days, and everything cooks at the same temperature. No more timing three different dishes to finish at the same time.",
+      technique: "Sheet pan success comes down to three rules: cut everything the same size (even cooking), don't overcrowd (or nothing browns), and use parchment paper (cleanup takes 10 seconds).",
+    },
+    faqItems: [
+      {
+        question: "How do I prevent vegetables from getting soggy on a sheet pan?",
+        answer: "Three things: spread them in a single layer with space between pieces, make sure the oven is fully preheated to 425°F before the pan goes in, and pat wet vegetables dry first. Overcrowding is the #1 cause of steamed-not-roasted veggies.",
+      },
+      {
+        question: "Can I cook protein and vegetables on the same sheet pan?",
+        answer: "Yes, but stagger the cooking times. Root vegetables and thick proteins go in first (10-15 min head start), then add quick-cooking items like broccoli, asparagus, or fish. Or use two sheet pans at different oven positions.",
+      },
+    ],
+  },
+
+  // method:no-cook (meal-prep)
+  {
+    facetKey: "method:no-cook",
+    hub: "meal-prep",
+    h1: "No-Cook Meal Prep Ideas",
+    metaTitle: "No-Cook Meal Prep: Zero Heat Recipes & Ideas | MealPrepIdeas.co",
+    metaDescription: "No-cook meal prep recipes that require zero cooking. Wraps, salad jars, overnight oats, and more. Perfect for hot summers and tiny kitchens.",
+    heroText: "No oven. No stove. No microwave. Just a cutting board, a bowl, and 15 minutes. No-cook meal prep is perfect for summer heat, dorm rooms, office kitchens, or when you simply refuse to turn on the stove. These recipes prove that the best meals sometimes require zero cooking.",
+    sectionIntros: {
+      recipes: "Every recipe here requires absolutely zero heat. We rely on canned proteins, fresh produce, store-bought rotisserie chicken, and smart assembly techniques to create meals that taste intentional, not lazy.",
+      strategy: "The no-cook meal prep playbook: buy pre-cooked proteins (rotisserie chicken, canned tuna, deli meat), use hearty bases that hold up (wraps, mason jars, bento boxes), and make flavorful dressings that do the heavy lifting.",
+    },
+    faqItems: [
+      {
+        question: "How long do no-cook meal preps last?",
+        answer: "Most no-cook preps last 3-5 days in the fridge. Mason jar salads and wraps hold up best. The key is keeping wet and dry ingredients separated — dressing on the bottom of jars, crispy items on top. Anything with avocado should be added fresh when eating.",
+      },
+      {
+        question: "Are no-cook meals nutritious enough?",
+        answer: "Absolutely. Canned tuna, chickpeas, Greek yogurt, cottage cheese, and eggs are all high-protein, no-cook options. Pair with fresh vegetables, nuts, and whole grain wraps for a complete, balanced meal. No cooking does not mean no nutrition.",
+      },
+    ],
+  },
+
+  // diet:gluten-free (high-protein)
+  {
+    facetKey: "diet:gluten-free",
+    hub: "high-protein",
+    h1: "Gluten-Free High Protein Meals",
+    metaTitle: "Gluten-Free High Protein Meals: Recipes & Plans | ProteinMeals.co",
+    metaDescription: "Gluten-free high protein recipes that never compromise on taste or macros. 30-60g protein per serving with zero gluten ingredients.",
+    heroText: "Going gluten-free does not mean going low-protein. Our gluten-free recipes hit 30-60g protein per serving using naturally gluten-free ingredients — no expensive specialty products needed. Real meat, fish, eggs, legumes, and whole grains like rice and quinoa do the heavy lifting.",
+    sectionIntros: {
+      recipes: "Every recipe is naturally gluten-free — we avoid wheat, barley, and rye entirely. No gluten-free bread substitutes, no almond flour workarounds. Just real food that happens to be gluten-free and packed with protein.",
+      guides: "Our guides cover the science of gluten-free eating for athletes and active people, how to read labels for hidden gluten, and why going gluten-free does not need to cost more or taste worse.",
+    },
+    faqItems: [
+      {
+        question: "What are the best gluten-free protein sources?",
+        answer: "Chicken, beef, fish, eggs, Greek yogurt, lentils, chickpeas, quinoa, and rice are all naturally gluten-free and high in protein. The only things you need to avoid are breaded items, soy sauce (use tamari or coconut aminos), and some processed meats with fillers.",
+      },
+      {
+        question: "Is gluten-free eating good for building muscle?",
+        answer: "There is no disadvantage to building muscle on a gluten-free diet. Protein sources are virtually the same. The main adjustment is carb sources — swap bread and pasta for rice, potatoes, quinoa, and oats (certified GF). Your muscles cannot tell the difference.",
+      },
+    ],
+  },
+
+  // diet:dairy-free (high-protein)
+  {
+    facetKey: "diet:dairy-free",
+    hub: "high-protein",
+    h1: "Dairy-Free High Protein Meals",
+    metaTitle: "Dairy-Free High Protein Meals: Recipes Without Dairy | ProteinMeals.co",
+    metaDescription: "High protein meals without any dairy. Recipes hitting 30-50g protein per serving using meat, fish, eggs, and plant sources. No whey needed.",
+    heroText: "Dairy-free does not mean protein-free. Yes, you lose whey, cheese, and yogurt — but you gain nothing but creative alternatives. Our dairy-free recipes hit serious protein numbers using chicken, fish, eggs, tofu, legumes, and plant-based protein sources. No compromise required.",
+    sectionIntros: {
+      recipes: "Every recipe is 100% dairy-free. No hidden butter, no cream, no cheese. We use coconut milk, cashew cream, nutritional yeast, and avocado to add richness where dairy would normally go.",
+      guides: "Learn how to hit your protein targets without dairy, the best dairy-free protein powders, and how to make creamy sauces and dressings without a drop of milk.",
+    },
+    faqItems: [
+      {
+        question: "How do I get enough protein without dairy?",
+        answer: "Dairy is convenient but not essential. Chicken breast (31g/serving), eggs (6g each), canned tuna (20g/can), lentils (18g/cup), tofu (20g/cup), and plant-based protein powder (20-30g/scoop) all provide excellent protein without dairy. Most people can easily hit 120g+ daily without any dairy at all.",
+      },
+      {
+        question: "What replaces whey protein for shakes?",
+        answer: "Pea protein is the closest to whey in terms of amino acid profile and muscle-building research. Other good options: brown rice protein, hemp protein, and soy protein. Many athletes prefer a pea/rice blend for the best taste and complete amino acids.",
+      },
+    ],
+  },
+
+  // persona:college (meal-prep)
+  {
+    facetKey: "persona:college",
+    hub: "meal-prep",
+    h1: "College Meal Prep Ideas",
+    metaTitle: "College Meal Prep: Dorm-Friendly Recipes & Budget Ideas | MealPrepIdeas.co",
+    metaDescription: "College meal prep for dorms and tight budgets. Recipes that work with a microwave, mini-fridge, and under $5 per day. No kitchen required.",
+    heroText: "College meal prep has three constraints: no money, no kitchen, and no time. We work within all three. These recipes cost under $5 per day, work with a microwave and mini-fridge, and take less than 30 minutes per week. Your dining plan is overpriced and the dining hall is closed. This is your backup plan.",
+    sectionIntros: {
+      recipes: "Every recipe costs under $2 per serving, requires minimal equipment (most work with just a microwave), and can be stored in a mini-fridge. We calculated costs based on Walmart and Aldi prices because we know you are not shopping at Whole Foods.",
+      strategy: "The college meal prep strategy: buy staples in bulk (rice, beans, oats, eggs), cook one protein per week (rotisserie chicken is the ultimate hack), and make the same base meals with different sauces for variety.",
+    },
+    faqItems: [
+      {
+        question: "Can I meal prep with only a microwave?",
+        answer: "Yes. Microwave egg cups, mug meals, overnight oats (no heat needed), quesadillas, steamed vegetables, and even pasta (microwave in a mug with water) all work. Add a $15 rice cooker and your options double. You do not need a full kitchen to eat well in college.",
+      },
+      {
+        question: "What is the cheapest protein for college students?",
+        answer: "Eggs ($0.15 each), canned beans ($0.50/can = 4 servings), canned tuna ($0.75/can), rotisserie chicken ($5 for 4 meals), and frozen chicken thighs ($1/lb on sale). Buy what is on sale and build meals around it.",
+      },
+    ],
+  },
+
+  // persona:kids (meal-prep)
+  {
+    facetKey: "persona:kids",
+    hub: "meal-prep",
+    h1: "Kid-Friendly Meal Prep Ideas",
+    metaTitle: "Kid-Friendly Meal Prep: Recipes Kids Actually Eat | MealPrepIdeas.co",
+    metaDescription: "Kid-friendly meal prep recipes that even picky eaters love. Hidden veggies, fun shapes, and flavors kids actually enjoy. Family-tested.",
+    heroText: "Meal prep for kids is about two things: food they will actually eat, and food that is good for them. The magic happens when those two overlap. Our kid-friendly recipes use familiar flavors, hide vegetables where they cannot be detected, and come in shapes and presentations that make eating fun.",
+    sectionIntros: {
+      recipes: "These recipes have been tested on real kids (picky ones included). Every recipe hides at least one vegetable, uses kid-approved flavors, and can be reheated without turning into something unrecognizable.",
+      strategy: "The kid meal prep playbook: make proteins in fun shapes (nuggets, meatballs, wraps), hide veggies in sauces and mixtures, let kids customize their own plates, and always have a familiar backup option.",
+    },
+    faqItems: [
+      {
+        question: "How do I hide vegetables in meals for picky eaters?",
+        answer: "Finely grate zucchini and carrots into meatballs and nuggets — they are invisible once cooked. Blend spinach into smoothies and pasta sauces. Add cauliflower to mac and cheese. Puree butternut squash into tomato soup. Kids cannot taste what they cannot see.",
+      },
+      {
+        question: "What are the best meal prep lunches for school?",
+        answer: "Bento boxes with a variety of small items work best: chicken nuggets, cheese cubes, crackers, fruit, and veggies with ranch. Wraps cut into pinwheels. Pasta salad in a thermos. Keep it room-temperature safe or include an ice pack.",
+      },
+    ],
+  },
+
+  // goal:healthy (meal-prep)
+  {
+    facetKey: "goal:healthy",
+    hub: "meal-prep",
+    h1: "Healthy Meal Prep Ideas",
+    metaTitle: "Healthy Meal Prep: Nutritious Recipes & Weekly Plans | MealPrepIdeas.co",
+    metaDescription: "Healthy meal prep recipes with balanced macros, whole ingredients, and real nutrition. Plan your week with wholesome meals that taste amazing.",
+    heroText: "Healthy meal prep is not about restriction — it is about preparation. When your fridge is stocked with balanced, delicious meals, the healthy choice becomes the easy choice. No willpower required, just a Sunday afternoon and some good containers.",
+    sectionIntros: {
+      recipes: "Our healthy meal prep recipes focus on whole ingredients, balanced macros, and real flavor. Nothing diet-y, nothing bland. Just good food made with vegetables, lean proteins, whole grains, and healthy fats.",
+      plans: "Each healthy meal plan is designed around 1600-2000 calories per day with balanced macronutrients. We include variety to prevent boredom and ensure you get a wide range of vitamins and minerals throughout the week.",
+    },
+    faqItems: [
+      {
+        question: "What makes a meal prep truly healthy?",
+        answer: "A healthy meal has three things: a quality protein source (chicken, fish, legumes), fiber-rich carbohydrates (sweet potato, quinoa, brown rice), and healthy fats (olive oil, avocado, nuts). If your plate has all three, you are doing great. Skip the supplements and eat real food.",
+      },
+      {
+        question: "How do I keep healthy meal prep from getting boring?",
+        answer: "Rotate between 3-4 base proteins per week, change your sauces and seasonings (teriyaki one week, Mediterranean the next), and vary your cooking methods (sheet pan Monday, crockpot Wednesday, stir-fry Friday). Same base system, different flavors.",
+      },
+    ],
+  },
+
+  // goal:healthy (high-protein)
+  {
+    facetKey: "goal:healthy",
+    hub: "high-protein",
+    h1: "Healthy High Protein Meals",
+    metaTitle: "Healthy High Protein Meals: Clean Eating Recipes | ProteinMeals.co",
+    metaDescription: "Healthy high protein meals with clean ingredients and balanced nutrition. 30-50g protein per serving from whole food sources. No junk, no gimmicks.",
+    heroText: "High protein does not have to mean processed, artificial, or bland. Our healthy high-protein meals use whole food sources — real chicken, fish, eggs, and legumes — with balanced macros and nutrient-dense sides. This is how you build muscle and feel good doing it.",
+    sectionIntros: {
+      recipes: "Every recipe hits 30-50g protein from whole food sources. No protein bars, no weird powders, no processed meat products. Just real food, seasoned well, cooked properly, and portioned for your goals.",
+      guides: "Learn how to calculate your protein needs, the best lean protein sources ranked by quality, and how to build a healthy high-protein plate without overthinking it.",
+    },
+    faqItems: [
+      {
+        question: "How much protein do I actually need per day?",
+        answer: "For most active adults: 0.7-1g per pound of body weight. A 160lb person needs 112-160g daily. For muscle gain, aim for the higher end. For general health, the lower end is fine. Spread it across 3-4 meals for optimal absorption (30-40g per meal).",
+      },
+      {
+        question: "What is the healthiest high-protein food?",
+        answer: "Salmon wins overall — high protein, omega-3 fatty acids, vitamin D, and anti-inflammatory benefits. For everyday eating, chicken breast, eggs, Greek yogurt, and lentils are the most practical. Variety is more important than finding one perfect food.",
+      },
+    ],
+  },
 ];
 
 export default facetContent;

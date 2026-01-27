@@ -819,6 +819,368 @@ export const plans: MealPlan[] = [
       { step: 5, task: 'Make yogurt parfait layers in 3 jars', duration: '5 min' },
     ],
   },
+
+  // ─── PLAN 6: College Student Budget Meal Prep ─────────────────────
+  {
+    slug: "college-student-budget-meal-prep",
+    title: "College Student Budget Meal Prep",
+    description: "A full week of meals for under $30. Designed for dorm life with minimal equipment. High protein, low effort, and incredibly cheap.",
+    hub: "meal-prep",
+    facets: {
+      persona: "college",
+      constraint: "budget",
+    },
+    totalPrepTime: 60,
+    dailyCalories: 1800,
+    dailyProtein: 100,
+    groceryBudget: "$25-30",
+    days: [
+      {
+        day: "Monday",
+        meals: [
+          { type: "breakfast", title: "Microwave egg cup with cheese and ham", calories: 280, protein: 22 },
+          { type: "lunch", recipeSlug: "no-cook-greek-salad-jars", title: "Greek Salad Jar", calories: 320, protein: 14 },
+          { type: "dinner", recipeSlug: "budget-ground-turkey-taco-meat", title: "Turkey Taco Bowl with Rice", calories: 380, protein: 28 },
+          { type: "snack", title: "Banana with peanut butter", calories: 290, protein: 8 },
+        ],
+      },
+      {
+        day: "Tuesday",
+        meals: [
+          { type: "breakfast", title: "Overnight oats with protein powder", calories: 380, protein: 26 },
+          { type: "lunch", recipeSlug: "budget-chicken-stir-fry-meal-prep", title: "Budget Chicken Stir-Fry", calories: 420, protein: 35 },
+          { type: "dinner", recipeSlug: "budget-ground-turkey-taco-meat", title: "Turkey Taco Nachos", calories: 400, protein: 28 },
+          { type: "snack", title: "Greek yogurt with honey", calories: 180, protein: 18 },
+        ],
+      },
+      {
+        day: "Wednesday",
+        meals: [
+          { type: "breakfast", title: "Microwave egg cup with cheese and ham", calories: 280, protein: 22 },
+          { type: "lunch", recipeSlug: "no-cook-greek-salad-jars", title: "Greek Salad Jar", calories: 320, protein: 14 },
+          { type: "dinner", recipeSlug: "budget-chicken-drumstick-meal-prep", title: "Baked Chicken Drumsticks with Rice", calories: 450, protein: 38 },
+          { type: "snack", title: "String cheese and crackers", calories: 200, protein: 10 },
+        ],
+      },
+      {
+        day: "Thursday",
+        meals: [
+          { type: "breakfast", title: "Overnight oats with protein powder", calories: 380, protein: 26 },
+          { type: "lunch", recipeSlug: "budget-chicken-stir-fry-meal-prep", title: "Budget Chicken Stir-Fry", calories: 420, protein: 35 },
+          { type: "dinner", recipeSlug: "budget-ground-turkey-taco-meat", title: "Turkey Taco Lettuce Wraps", calories: 300, protein: 28 },
+          { type: "snack", title: "Apple with peanut butter", calories: 260, protein: 7 },
+        ],
+      },
+      {
+        day: "Friday",
+        meals: [
+          { type: "breakfast", title: "Microwave egg cup with veggies", calories: 280, protein: 22 },
+          { type: "lunch", recipeSlug: "no-cook-greek-salad-jars", title: "Greek Salad Jar", calories: 320, protein: 14 },
+          { type: "dinner", title: "Finish leftovers or eat out (budget: $8)", calories: 500, protein: 25 },
+          { type: "snack", title: "Trail mix (1/4 cup)", calories: 180, protein: 6 },
+        ],
+      },
+    ],
+    shoppingList: [
+      {
+        category: "Protein",
+        items: [
+          "Ground turkey 93% lean (2 lbs) — ~$5",
+          "Chicken drumsticks family pack (3 lbs) — ~$3",
+          "Chicken breast (2 lbs) — ~$5",
+          "Eggs (1 dozen) — ~$3",
+          "Deli ham slices (8 oz) — ~$2.50",
+        ],
+      },
+      {
+        category: "Pantry Staples",
+        items: [
+          "White rice (2 lb bag) — ~$1.50",
+          "Black beans, 2 cans — ~$1.50",
+          "Diced tomatoes with chiles, 1 can — ~$0.80",
+          "Rolled oats — ~$2",
+          "Peanut butter — ~$2",
+          "Soy sauce — ~$1.50",
+          "Taco seasoning packet — ~$0.50",
+        ],
+      },
+      {
+        category: "Produce & Dairy",
+        items: [
+          "Frozen stir-fry vegetables (16 oz) — ~$1.50",
+          "Chickpeas, 1 can — ~$0.80",
+          "Cherry tomatoes (1 pint) — ~$2",
+          "Cucumbers (2) — ~$1",
+          "Bananas (4) — ~$0.50",
+          "Greek yogurt (32 oz) — ~$3",
+          "Shredded cheese (8 oz) — ~$2",
+        ],
+      },
+    ],
+    prepSchedule: [
+      { step: 1, task: "Cook ground turkey taco meat in one skillet", duration: "15 min" },
+      { step: 2, task: "Season and bake chicken drumsticks", duration: "5 min prep + 40 min bake" },
+      { step: 3, task: "Cook 3 cups rice in a pot or rice cooker", duration: "20 min" },
+      { step: 4, task: "Assemble 3 Greek salad jars", duration: "10 min" },
+      { step: 5, task: "Make 2 overnight oat jars", duration: "5 min" },
+      { step: 6, task: "Prep microwave egg cup fillings (dice veggies/ham)", duration: "5 min" },
+    ],
+  },
+
+  // ─── PLAN 7: Keto High-Protein 5-Day Plan ────────────────────────
+  {
+    slug: "keto-high-protein-5-day-plan",
+    title: "Keto High-Protein 5-Day Plan",
+    description: "Hit 150g+ protein daily on strict keto. Under 25g net carbs with high-fat, high-protein meals designed for weight loss and muscle preservation.",
+    hub: "high-protein",
+    facets: {
+      diet: "keto",
+      goal: "weight-loss",
+    },
+    totalPrepTime: 120,
+    dailyCalories: 1800,
+    dailyProtein: 155,
+    groceryBudget: "$60-75",
+    days: [
+      {
+        day: "Monday",
+        meals: [
+          { type: "breakfast", recipeSlug: "keto-bacon-egg-cups", title: "Keto Bacon Egg Cups (2)", calories: 480, protein: 48 },
+          { type: "lunch", recipeSlug: "high-protein-tuna-salad-lettuce-wraps", title: "Tuna Salad Lettuce Wraps", calories: 280, protein: 40 },
+          { type: "dinner", recipeSlug: "steak-and-egg-protein-plate", title: "Steak and Egg Plate", calories: 490, protein: 62 },
+          { type: "snack", title: "Handful of almonds and string cheese", calories: 250, protein: 14 },
+        ],
+      },
+      {
+        day: "Tuesday",
+        meals: [
+          { type: "breakfast", recipeSlug: "keto-bacon-egg-cups", title: "Keto Bacon Egg Cups (2)", calories: 480, protein: 48 },
+          { type: "lunch", recipeSlug: "protein-packed-air-fryer-chicken-thighs", title: "Air Fryer Chicken Thighs with Side Salad", calories: 430, protein: 48 },
+          { type: "dinner", recipeSlug: "low-carb-shrimp-stir-fry", title: "Low-Carb Shrimp Stir Fry", calories: 310, protein: 38 },
+          { type: "snack", title: "Celery with cream cheese", calories: 150, protein: 4 },
+        ],
+      },
+      {
+        day: "Wednesday",
+        meals: [
+          { type: "breakfast", recipeSlug: "keto-egg-muffin-cups", title: "Keto Egg Muffin Cups (3)", calories: 495, protein: 54 },
+          { type: "lunch", recipeSlug: "high-protein-tuna-salad-lettuce-wraps", title: "Tuna Salad Lettuce Wraps", calories: 280, protein: 40 },
+          { type: "dinner", recipeSlug: "gluten-free-steak-bowls", title: "Steak Bowl with Cauliflower Rice", calories: 480, protein: 52 },
+          { type: "snack", title: "Pork rinds with guacamole", calories: 200, protein: 12 },
+        ],
+      },
+      {
+        day: "Thursday",
+        meals: [
+          { type: "breakfast", recipeSlug: "keto-bacon-egg-cups", title: "Keto Bacon Egg Cups (2)", calories: 480, protein: 48 },
+          { type: "lunch", recipeSlug: "protein-packed-air-fryer-chicken-thighs", title: "Air Fryer Chicken Thighs with Avocado", calories: 460, protein: 48 },
+          { type: "dinner", recipeSlug: "low-carb-shrimp-stir-fry", title: "Low-Carb Shrimp Stir Fry", calories: 310, protein: 38 },
+          { type: "snack", title: "Hard-boiled eggs (2) with everything seasoning", calories: 160, protein: 12 },
+        ],
+      },
+      {
+        day: "Friday",
+        meals: [
+          { type: "breakfast", recipeSlug: "keto-egg-muffin-cups", title: "Keto Egg Muffin Cups (3)", calories: 495, protein: 54 },
+          { type: "lunch", recipeSlug: "high-protein-tuna-salad-lettuce-wraps", title: "Tuna Salad Lettuce Wraps", calories: 280, protein: 40 },
+          { type: "dinner", recipeSlug: "steak-and-egg-protein-plate", title: "Steak and Egg Plate", calories: 490, protein: 62 },
+          { type: "snack", title: "Cheese crisps and pepperoni", calories: 220, protein: 16 },
+        ],
+      },
+    ],
+    shoppingList: [
+      {
+        category: "Protein",
+        items: [
+          "Sirloin steak (2 lbs)",
+          "Flank steak (1.5 lbs)",
+          "Chicken thighs bone-in (3 lbs)",
+          "Large shrimp (1.5 lbs)",
+          "Bacon (1 lb)",
+          "Eggs (3 dozen)",
+          "Canned tuna (6 cans)",
+        ],
+      },
+      {
+        category: "Dairy & Fats",
+        items: [
+          "Cheddar cheese (shredded, 8 oz)",
+          "String cheese (8 pack)",
+          "Cream cheese (8 oz)",
+          "Heavy cream (1 pint)",
+          "Butter (1 stick)",
+          "Greek yogurt (16 oz)",
+        ],
+      },
+      {
+        category: "Produce",
+        items: [
+          "Riced cauliflower (2 bags frozen)",
+          "Baby spinach (1 bag)",
+          "Butter lettuce (2 heads)",
+          "Snap peas (1 lb)",
+          "Bell peppers (3)",
+          "Avocados (4)",
+          "Celery",
+          "Lemons (3)",
+        ],
+      },
+      {
+        category: "Pantry",
+        items: [
+          "Coconut aminos",
+          "Almonds (raw, 8 oz)",
+          "Pork rinds",
+          "Everything bagel seasoning",
+          "Sesame oil",
+          "Olive oil",
+        ],
+      },
+    ],
+    prepSchedule: [
+      { step: 1, task: "Bake 12 keto bacon egg cups", duration: "25 min" },
+      { step: 2, task: "Bake 12 keto egg muffin cups", duration: "25 min" },
+      { step: 3, task: "Air fry chicken thighs in 2 batches", duration: "25 min" },
+      { step: 4, task: "Make tuna salad for 3 lunches", duration: "10 min" },
+      { step: 5, task: "Prep stir fry veggies (slice peppers, snap peas)", duration: "10 min" },
+      { step: 6, task: "Marinate flank steak for Wednesday", duration: "5 min" },
+      { step: 7, task: "Hard boil 6 eggs for snacks", duration: "15 min" },
+    ],
+  },
+
+  // ─── PLAN 8: Postpartum Recovery Meal Plan ────────────────────────
+  {
+    slug: "postpartum-recovery-meal-plan",
+    title: "Postpartum Recovery Meal Plan",
+    description: "Nourishing, nutrient-dense meals for new moms. Iron-rich proteins, healthy fats, and anti-inflammatory foods to support postpartum recovery and energy.",
+    hub: "meal-prep",
+    facets: {
+      persona: "postpartum",
+      goal: "healthy",
+    },
+    totalPrepTime: 90,
+    dailyCalories: 2200,
+    dailyProtein: 110,
+    groceryBudget: "$65-80",
+    days: [
+      {
+        day: "Monday",
+        meals: [
+          { type: "breakfast", title: "Overnight oats with walnuts, flax, and berries", calories: 420, protein: 18 },
+          { type: "lunch", recipeSlug: "low-sodium-chicken-soup", title: "Homemade Chicken Soup", calories: 320, protein: 32 },
+          { type: "dinner", recipeSlug: "sheet-pan-teriyaki-salmon-vegetables", title: "Teriyaki Salmon with Sweet Potato and Broccoli", calories: 520, protein: 38 },
+          { type: "snack", title: "Apple slices with almond butter and honey", calories: 300, protein: 8 },
+          { type: "snack", title: "Lactation cookie and glass of milk", calories: 280, protein: 10 },
+        ],
+      },
+      {
+        day: "Tuesday",
+        meals: [
+          { type: "breakfast", recipeSlug: "freezer-breakfast-sandwiches", title: "Freezer Breakfast Sandwich", calories: 340, protein: 22 },
+          { type: "lunch", recipeSlug: "low-sodium-chicken-soup", title: "Homemade Chicken Soup", calories: 320, protein: 32 },
+          { type: "dinner", recipeSlug: "one-pan-pasta-primavera", title: "One-Pan Pasta Primavera", calories: 410, protein: 16 },
+          { type: "snack", title: "Trail mix with dried fruit and dark chocolate", calories: 320, protein: 8 },
+          { type: "snack", title: "Greek yogurt with granola", calories: 280, protein: 20 },
+        ],
+      },
+      {
+        day: "Wednesday",
+        meals: [
+          { type: "breakfast", title: "Overnight oats with walnuts, flax, and berries", calories: 420, protein: 18 },
+          { type: "lunch", recipeSlug: "instant-pot-chicken-burrito-bowls", title: "Chicken Burrito Bowl", calories: 470, protein: 38 },
+          { type: "dinner", recipeSlug: "high-fiber-turkey-chili", title: "Turkey Chili (iron-rich)", calories: 380, protein: 34 },
+          { type: "snack", title: "Hummus with whole wheat pita and veggies", calories: 280, protein: 8 },
+          { type: "snack", title: "Banana smoothie with spinach and protein powder", calories: 350, protein: 25 },
+        ],
+      },
+      {
+        day: "Thursday",
+        meals: [
+          { type: "breakfast", recipeSlug: "freezer-breakfast-sandwiches", title: "Freezer Breakfast Sandwich", calories: 340, protein: 22 },
+          { type: "lunch", recipeSlug: "instant-pot-chicken-burrito-bowls", title: "Chicken Burrito Bowl", calories: 470, protein: 38 },
+          { type: "dinner", recipeSlug: "sheet-pan-sausage-and-veggies", title: "Sheet Pan Sausage and Veggies", calories: 440, protein: 24 },
+          { type: "snack", title: "Cottage cheese with pineapple", calories: 200, protein: 18 },
+          { type: "snack", title: "Handful of almonds and dark chocolate", calories: 250, protein: 8 },
+        ],
+      },
+      {
+        day: "Friday",
+        meals: [
+          { type: "breakfast", title: "Overnight oats with walnuts, flax, and berries", calories: 420, protein: 18 },
+          { type: "lunch", recipeSlug: "low-sodium-chicken-soup", title: "Homemade Chicken Soup", calories: 320, protein: 32 },
+          { type: "dinner", title: "Leftovers or partner cooks tonight", calories: 500, protein: 30 },
+          { type: "snack", title: "Toast with avocado and everything seasoning", calories: 280, protein: 6 },
+          { type: "snack", title: "Lactation cookie and glass of milk", calories: 280, protein: 10 },
+        ],
+      },
+    ],
+    shoppingList: [
+      {
+        category: "Protein",
+        items: [
+          "Salmon fillets (4, 6 oz each)",
+          "Chicken breasts (3 lbs)",
+          "Ground turkey 93% lean (2 lbs)",
+          "Smoked sausage (1.5 lbs)",
+          "Eggs (2 dozen)",
+          "Turkey sausage patties (12)",
+        ],
+      },
+      {
+        category: "Produce",
+        items: [
+          "Sweet potatoes (3)",
+          "Broccoli (2 heads)",
+          "Bell peppers (5, mixed colors)",
+          "Onions (3)",
+          "Carrots (1 lb bag)",
+          "Celery (1 bunch)",
+          "Baby spinach (2 bags)",
+          "Avocados (3)",
+          "Bananas (5)",
+          "Mixed berries (2 pints)",
+          "Apples (3)",
+          "Lemons (3)",
+        ],
+      },
+      {
+        category: "Dairy & Grains",
+        items: [
+          "Greek yogurt (32 oz)",
+          "Cottage cheese (16 oz)",
+          "Milk (1/2 gallon)",
+          "English muffins (12 pack)",
+          "Whole wheat penne pasta (1 lb)",
+          "Rolled oats (large container)",
+          "White rice (2 lb bag)",
+          "Granola",
+        ],
+      },
+      {
+        category: "Pantry & Recovery Foods",
+        items: [
+          "Walnuts and almonds (8 oz each)",
+          "Ground flaxseed",
+          "Almond butter",
+          "Dark chocolate chips",
+          "Hummus (10 oz)",
+          "Low-sodium chicken broth (2 cartons)",
+          "Kidney beans (1 can)",
+          "Black beans (2 cans)",
+          "Crushed tomatoes (1 can)",
+          "Lactation cookies (store-bought or bake)",
+        ],
+      },
+    ],
+    prepSchedule: [
+      { step: 1, task: "Make a big pot of chicken soup (6 servings)", duration: "45 min" },
+      { step: 2, task: "Batch cook Instant Pot chicken for burrito bowls", duration: "25 min" },
+      { step: 3, task: "Assemble and freeze 4 breakfast sandwiches", duration: "20 min" },
+      { step: 4, task: "Make 3 overnight oat jars", duration: "5 min" },
+      { step: 5, task: "Prep sheet pan sausage and veggies (chop, season, store)", duration: "10 min" },
+      { step: 6, task: "Wash and portion all produce and snacks", duration: "10 min" },
+    ],
+  },
 ];
 
 export default plans;
