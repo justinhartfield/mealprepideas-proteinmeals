@@ -146,24 +146,34 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
         <h2 class="text-3xl font-black tracking-tighter mb-8">Recommended Protocols</h2>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <template x-for="recipe in recipes" x-bind:key="recipe.id">
-            <div class="hyper-border rounded-2xl p-6 group">
-              <h4 class="text-xl font-black mb-4 group-hover-accent-text transition-colors" x-text="recipe.title"></h4>
-              <div class="flex gap-2 mb-4">
-                <template x-for="tag in recipe.tags">
-                  <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--bg-tertiary);" x-text="tag"></span>
-                </template>
+            <a x-bind:href={`recipe.slug ? '${hubPath}recipes/' + recipe.slug + '/' : '${hubPath}'`} class="hyper-border rounded-2xl overflow-hidden group block">
+              <div class="aspect-video relative overflow-hidden" style="background-color: var(--bg-tertiary);">
+                <template x-if="recipe.img"><img x-bind:src="recipe.img" class="w-full h-full object-cover" x-bind:alt="recipe.title" /></template>
+                <div class="scanner-line opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="absolute inset-0 recipe-gradient"></div>
               </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
-                  <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Protein</span>
-                  <span class="font-black" style="color: var(--accent-primary);" x-text="recipe.protein"></span>
+              <div class="p-6">
+                <h4 class="text-xl font-black mb-4 group-hover-accent-text transition-colors" x-text="recipe.title"></h4>
+                <div class="flex flex-wrap gap-2 mb-4">
+                  <template x-for="tag in recipe.tags">
+                    <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--bg-tertiary);" x-text="tag"></span>
+                  </template>
                 </div>
-                <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
-                  <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Calories</span>
-                  <span class="font-black" x-text="recipe.cal"></span>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
+                    <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Protein</span>
+                    <span class="font-black" style="color: var(--accent-primary);" x-text="recipe.protein"></span>
+                  </div>
+                  <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
+                    <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Calories</span>
+                    <span class="font-black" x-text="recipe.cal"></span>
+                  </div>
                 </div>
               </div>
-            </div>
+              <div class="py-4 text-center hover-accent-bg hover-inverse-text transition-all text-[10px] font-black uppercase tracking-[0.2em]" style="background-color: var(--bg-secondary); border-top: 1px solid var(--border-default);">
+                View Full Recipe
+              </div>
+            </a>
           </template>
         </div>
       </section>
