@@ -23,8 +23,10 @@ const matchingRecipes = getRecipesMatchingAnyFacet('meal-prep', 'persona', perso
   recipes={matchingRecipes.map((r, i) => ({
     id: i + 1,
     title: r.title,
+    slug: r.slug,
     protein: `${r.protein}g`,
     cal: `${r.calories}`,
     tags: Object.values(r.facets).filter(Boolean) as string[],
+    img: '/images/recipes/' + r.slug + '.jpg',
   }))}
 />

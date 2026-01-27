@@ -10,7 +10,7 @@ import BreadcrumbNav from './BreadcrumbNav.astro';
 import ExploreByBlock from './ExploreByBlock.astro';
 
 interface NutrientRule { nutrient: string; recommendation: string; reason: string; severity?: 'critical' | 'important' | 'helpful'; }
-interface Recipe { id: number; title: string; protein: string; cal: string; tags: string[]; }
+interface Recipe { id: number; title: string; protein: string; cal: string; tags: string[]; img?: string; slug?: string; }
 interface FAQ { question: string; answer: string; }
 
 interface Props {

@@ -16,6 +16,7 @@ interface Recipe {
   cal: string;
   pe?: string;
   tags: string[];
+  img?: string;
 }
 
 interface FAQ {
@@ -156,6 +157,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
                x-transition:enter-end="opacity-100 transform translate-y-0"
                class="hyper-border rounded-2xl overflow-hidden group">
             <div class="aspect-video relative overflow-hidden" style="background-color: var(--bg-tertiary);">
+              <template x-if="recipe.img"><img x-bind:src="recipe.img" class="w-full h-full object-cover" x-bind:alt="recipe.title" /></template>
               <div class="scanner-line opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div class="absolute inset-0 recipe-gradient"></div>
               <div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
