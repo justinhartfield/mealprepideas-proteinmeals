@@ -3,11 +3,6 @@
  * AuthGate — Wraps content behind Clerk authentication
  * Shows a compelling sign-up prompt when not signed in.
  * When signed in, shows the slotted content.
- * 
- * Usage:
- *   <AuthGate toolName="Meal Planner" toolDescription="Plan your week...">
- *     <ActualToolContent />
- *   </AuthGate>
  */
 interface Props {
   toolName: string;
@@ -22,42 +17,14 @@ const {
 } = Astro.props;
 ---
 
-<div x-data="{ authReady: false, signedIn: false }" x-init="
-  function checkAuth() {
-    if (window.Clerk && window.Clerk.user) {
-      signedIn = true;
-      authReady = true;
-    } else if (window.__authReady) {
-      signedIn = !!window.Clerk?.user;
-      authReady = true;
-    }
-  }
-  checkAuth();
-  window.addEventListener('clerk-ready', () => { checkAuth(); });
-  // Fallback timeout — if Clerk takes too long, show gate
-  setTimeout(() => { if (!authReady) authReady = true; }, 3000);
-">
-  <!-- Loading state -->
-  <div x-show="!authReady" x-cloak class="flex items-center justify-center py-32">
-    <div class="text-center">
-      <div class="inline-block w-8 h-8 border-2 border-t-transparent rounded-full animate-spin mb-4" style="border-color: var(--accent-primary); border-top-color: transparent;"></div>
-      <p class="text-sm font-medium" style="color: var(--text-secondary);">Loading...</p>
-    </div>
-  </div>
-
-  <!-- Auth Gate — Not signed in -->
-  <div x-show="authReady && !signedIn" x-cloak class="flex items-center justify-center py-20 px-6">
+<div x-data="authGate()" x-init="init()">
+  <!-- Auth Gate — Not signed in (default visible, no x-cloak) -->
+  <div x-show="!signedIn" class="flex items-center justify-center py-20 px-6" x-transition>
     <div class="max-w-lg w-full text-center">
-      <!-- Icon -->
       <div class="text-6xl mb-6">{toolIcon}</div>
-      
-      <!-- Tool name -->
       <h2 class="text-3xl md:text-4xl font-black tracking-tight mb-3">{toolName}</h2>
-      
-      <!-- Description -->
       <p class="text-base mb-8 leading-relaxed" style="color: var(--text-secondary);">{toolDescription}</p>
       
-      <!-- Benefits -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         <div class="rounded-2xl p-4" style="background: var(--bg-tertiary);">
           <div class="text-2xl mb-2">⚡</div>
@@ -73,7 +40,6 @@ const {
         </div>
       </div>
       
-      <!-- Sign in button -->
       <button
         @click="window.authHelper?.openSignIn()"
         class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer"
@@ -90,7 +56,34 @@ const {
   </div>
 
   <!-- Authenticated — show the tool -->
-  <div x-show="authReady && signedIn" x-cloak>
+  <div x-show="signedIn" x-cloak x-transition>
     <slot />
   </div>
 </div>
+
+<script is:inline>
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('authGate', () => ({
+      signedIn: false,
+      init() {
+        // Check immediately
+        this.checkAuth();
+        // Listen for Clerk ready event
+        window.addEventListener('clerk-ready', () => this.checkAuth());
+        // Poll as fallback (Clerk may have loaded before Alpine)
+        var self = this;
+        var attempts = 0;
+        var poll = setInterval(function() {
+          self.checkAuth();
+          attempts++;
+          if (self.signedIn || attempts > 20) clearInterval(poll);
+        }, 500);
+      },
+      checkAuth() {
+        if (window.Clerk && window.Clerk.user) {
+          this.signedIn = true;
+        }
+      }
+    }));
+  });
+</script>
