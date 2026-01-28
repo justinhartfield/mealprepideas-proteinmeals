@@ -1,0 +1,30 @@
+---
+/**
+ * LanguageSwitcher — EN/ES toggle for the navigation bar
+ * Shows current language flag + links to alternate language version
+ */
+import { getLangFromUrl, localizedPath, getOtherLang } from '../i18n/utils';
+import { languages } from '../i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const otherLang = getOtherLang(lang);
+
+// Build the alternate URL: strip current lang prefix, add other lang prefix
+let currentPath = Astro.url.pathname;
+if (lang !== 'en' && currentPath.startsWith(`/${lang}/`)) {
+  currentPath = currentPath.slice(lang.length + 1);
+}
+if (!currentPath.startsWith('/')) currentPath = '/' + currentPath;
+
+const switchUrl = localizedPath(otherLang, currentPath);
+---
+
+<a
+  href={switchUrl}
+  class="lang-switch flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all hover:opacity-80 no-underline"
+  style="border: 1px solid var(--border-subtle); color: var(--text-secondary);"
+  title={`Switch to ${languages[otherLang]}`}
+>
+  <span class="text-sm">{otherLang === 'es' ? '🇪🇸' : '🇺🇸'}</span>
+  <span>{otherLang.toUpperCase()}</span>
+</a>

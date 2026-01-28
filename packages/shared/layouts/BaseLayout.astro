@@ -5,6 +5,7 @@
  * Wraps all pages with shared head, fonts, Alpine, global CSS, noise overlay
  */
 import ThemeToggle from '../components/ThemeToggle.astro';
+import { getLangFromUrl, getAlternateUrls } from '../i18n/utils';
 
 interface Props {
   title: string;
@@ -28,6 +29,11 @@ const {
   faviconEmoji,
 } = Astro.props;
 
+// i18n
+const pageLang = getLangFromUrl(Astro.url);
+const siteBase = Astro.site?.href?.replace(/\/$/, '') || '';
+const alternateUrls = siteBase ? getAlternateUrls(Astro.url.pathname, siteBase) : [];
+
 // Infer site from URL or fallback
 const currentUrl = canonicalUrl || Astro.url?.href || '';
 const siteHref = Astro.site?.href || Astro.site?.toString() || '';
@@ -38,13 +44,19 @@ const gaId = isMealPrep ? 'G-TQHW6LM9X1' : 'G-LWJ3R2F2BG';
 ---
 
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth" data-theme="light">
+<html lang={pageLang} class="scroll-smooth" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   {description && <meta name="description" content={description} />}
   {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+  {alternateUrls.map(({ lang, url }) => (
+    <link rel="alternate" hreflang={lang} href={url} />
+  ))}
+  {alternateUrls.length > 0 && (
+    <link rel="alternate" hreflang="x-default" href={alternateUrls.find(a => a.lang === 'en')?.url || ''} />
+  )}
 
   <!-- Favicon (emoji) -->
   <link rel="icon" href={`data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${resolvedFavicon}</text></svg>`} />

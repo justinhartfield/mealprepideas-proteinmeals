@@ -4,6 +4,7 @@
  * Uses CSS custom properties from themes.css
  */
 import ThemeToggle from './ThemeToggle.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
 
 interface Props {
   site?: 'mealprepideas' | 'proteinmeals';
@@ -89,6 +90,7 @@ const {
         </div>
       </div>
     )}
+    <LanguageSwitcher />
     <ThemeToggle />
 
     <!-- Auth: Signed Out - Sign In Button -->

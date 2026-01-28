@@ -13,6 +13,13 @@ export default defineConfig({
   adapter: netlify(),
   integrations: [tailwind(), alpinejs(), sitemap()],
   site: 'https://mealprepideas.co',
+  i18n: {
+    locales: ['en', 'es'],
+    defaultLocale: 'en',
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   vite: {
     resolve: {
       alias: {
