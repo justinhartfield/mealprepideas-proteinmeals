@@ -11,7 +11,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   output: 'static',
   adapter: netlify(),
-  integrations: [tailwind(), alpinejs(), sitemap()],
+  integrations: [
+    tailwind(),
+    alpinejs(),
+    sitemap({
+      filter: (page) => {
+        // Exclude meal-prep pages from proteinmeals.co sitemap (canonical is mealprepideas.co)
+        const isMealPrep = page.includes('/meal-prep');
+        return !isMealPrep;
+      },
+    }),
+  ],
   site: 'https://proteinmeals.co',
   vite: {
     resolve: {

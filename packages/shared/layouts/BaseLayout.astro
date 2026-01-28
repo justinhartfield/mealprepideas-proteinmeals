@@ -37,7 +37,31 @@ const alternateUrls = siteBase ? getAlternateUrls(Astro.url.pathname, siteBase) 
 // Infer site from URL or fallback
 const currentUrl = canonicalUrl || Astro.url?.href || '';
 const siteHref = Astro.site?.href || Astro.site?.toString() || '';
-const isMealPrep = siteHref.includes('mealprepideas') || currentUrl.includes('mealprepideas') || Astro.url?.pathname?.startsWith('/meal-prep');
+const isMealPrepSite = siteHref.includes('mealprepideas');
+const isProteinSite = siteHref.includes('proteinmeals');
+
+// Determine which hub this page belongs to
+const pathname = Astro.url?.pathname || '';
+const isMealPrepContent = pathname.startsWith('/meal-prep') || pathname.startsWith('/es/meal-prep');
+const isHighProteinContent = pathname.startsWith('/high-protein') || pathname.startsWith('/es/high-protein');
+
+// Cross-hub detection: page is from the "other" site's primary hub
+const isCrossHub = (isMealPrepSite && isHighProteinContent) || (isProteinSite && isMealPrepContent);
+
+// For cross-hub pages, set canonical to the proper site
+const crossHubCanonical = isCrossHub 
+  ? (isMealPrepContent 
+      ? `https://mealprepideas.co${pathname}` 
+      : `https://proteinmeals.co${pathname}`)
+  : null;
+
+// Final canonical: cross-hub canonical takes precedence, then explicit, then none
+const resolvedCanonical = crossHubCanonical || canonicalUrl;
+
+// noindex cross-hub pages to avoid duplicate content
+const shouldNoindex = isCrossHub;
+
+const isMealPrep = isMealPrepSite || (!isProteinSite && isMealPrepContent);
 const resolvedSiteName = siteName || (isMealPrep ? 'MealPrepIdeas.co' : 'ProteinMeals.co');
 const resolvedFavicon = faviconEmoji || (isMealPrep ? '🥦' : '🍗');
 const gaId = isMealPrep ? 'G-TQHW6LM9X1' : 'G-LWJ3R2F2BG';
@@ -50,7 +74,8 @@ const gaId = isMealPrep ? 'G-TQHW6LM9X1' : 'G-LWJ3R2F2BG';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   {description && <meta name="description" content={description} />}
-  {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+  {shouldNoindex && <meta name="robots" content="noindex, follow" />}
+  {resolvedCanonical && <link rel="canonical" href={resolvedCanonical} />}
   {alternateUrls.map(({ lang, url }) => (
     <link rel="alternate" hreflang={lang} href={url} />
   ))}
@@ -65,7 +90,7 @@ const gaId = isMealPrep ? 'G-TQHW6LM9X1' : 'G-LWJ3R2F2BG';
   <meta property="og:title" content={title} />
   {description && <meta property="og:description" content={description} />}
   <meta property="og:type" content={ogType} />
-  {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+  {resolvedCanonical && <meta property="og:url" content={resolvedCanonical} />}
   <meta property="og:image" content={ogImage} />
   <meta property="og:site_name" content={resolvedSiteName} />
 
