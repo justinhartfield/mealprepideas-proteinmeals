@@ -13,33 +13,32 @@ export function getStaticPaths() {
 
 const { plan } = Astro.props;
 
+// Map a meal to include image + recipeSlug
+function mapMeal(meal: typeof plan.days[0]['meals'][0] | undefined) {
+  if (!meal) return { name: '—', protein: '—', cals: '—' };
+  return {
+    name: meal.title,
+    protein: `${meal.protein}g`,
+    cals: `${meal.calories}`,
+    image: meal.recipeSlug ? `/images/recipes/${meal.recipeSlug}.jpg` : undefined,
+    recipeSlug: meal.recipeSlug,
+  };
+}
+
 // Map days to the shape BatchPrepPlan expects
 function mapDays(planDays: typeof plan.days) {
-  return planDays.map((d, i) => {
-    const breakfast = d.meals.find(m => m.type === 'breakfast');
-    const lunch = d.meals.find(m => m.type === 'lunch');
-    const dinner = d.meals.find(m => m.type === 'dinner');
-    return {
-      day: d.day,
-      dayNumber: i + 1,
-      breakfast: {
-        name: breakfast?.title || '—',
-        protein: breakfast ? `${breakfast.protein}g` : '—',
-        cals: breakfast ? `${breakfast.calories}` : '—',
-      },
-      lunch: {
-        name: lunch?.title || '—',
-        protein: lunch ? `${lunch.protein}g` : '—',
-        cals: lunch ? `${lunch.calories}` : '—',
-      },
-      dinner: {
-        name: dinner?.title || '—',
-        protein: dinner ? `${dinner.protein}g` : '—',
-        cals: dinner ? `${dinner.calories}` : '—',
-      },
-    };
-  });
+  return planDays.map((d, i) => ({
+    day: d.day,
+    dayNumber: i + 1,
+    breakfast: mapMeal(d.meals.find(m => m.type === 'breakfast')),
+    lunch: mapMeal(d.meals.find(m => m.type === 'lunch')),
+    dinner: mapMeal(d.meals.find(m => m.type === 'dinner')),
+  }));
 }
+
+// Pick a hero image from the first recipe that has one
+const firstRecipeSlug = plan.days.flatMap(d => d.meals).find(m => m.recipeSlug)?.recipeSlug;
+const heroImage = firstRecipeSlug ? `/images/recipes/${firstRecipeSlug}.jpg` : undefined;
 
 // Flatten shopping list categories into flat items
 function mapShoppingList(list: typeof plan.shoppingList) {
@@ -65,6 +64,7 @@ const totalMeals = plan.days.reduce((sum, d) => sum + d.meals.filter(m => m.type
   description={plan.description}
   planName={plan.title}
   planId={plan.slug}
+  heroImage={heroImage}
   totalMeals={totalMeals}
   prepTime={`${plan.totalPrepTime} min`}
   weeklyBudget={plan.groceryBudget}

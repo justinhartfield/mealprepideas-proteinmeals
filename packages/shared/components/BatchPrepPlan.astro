@@ -9,11 +9,13 @@ import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
 
+interface MealInfo { name: string; protein: string; cals: string; image?: string; recipeSlug?: string; }
+
 interface DayPlan {
   day: string; dayNumber: number;
-  breakfast: { name: string; protein: string; cals: string };
-  lunch: { name: string; protein: string; cals: string };
-  dinner: { name: string; protein: string; cals: string };
+  breakfast: MealInfo;
+  lunch: MealInfo;
+  dinner: MealInfo;
 }
 
 interface ShoppingItem { text: string; checked?: boolean; }
@@ -21,6 +23,7 @@ interface ShoppingItem { text: string; checked?: boolean; }
 interface Props {
   title: string; description?: string; canonicalUrl?: string;
   planName: string; planId?: string;
+  heroImage?: string;
   totalMeals?: number; prepTime?: string; weeklyBudget?: string; avgProtein?: string;
   days?: DayPlan[];
   shoppingList?: ShoppingItem[];
@@ -30,6 +33,7 @@ interface Props {
 
 const {
   title, description, canonicalUrl, planName, planId = 'P5-001',
+  heroImage,
   totalMeals = 15, prepTime = '90 min', weeklyBudget = '$52', avgProtein = '42g',
   days = [], shoppingList = [], prepSteps = [],
   site,
@@ -81,6 +85,19 @@ const structuredData = JSON.stringify({
       </div>
       <h1 class="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-8">{planName}</h1>
 
+      {/* Hero Image */}
+      {heroImage && (
+        <div class="mb-12 rounded-2xl overflow-hidden" style="border: 1px solid var(--border-default);">
+          <img
+            src={heroImage}
+            onerror="this.onerror=null;this.src='/images/placeholder.svg'"
+            alt={planName}
+            class="w-full h-64 md:h-80 object-cover"
+            loading="eager"
+          />
+        </div>
+      )}
+
       <!-- Key Stats -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
         {[
@@ -120,17 +137,36 @@ const structuredData = JSON.stringify({
                 { meal: 'Lunch', ...d.lunch },
                 { meal: 'Dinner', ...d.dinner },
               ].map(m => (
-                <div class="hyper-border rounded-2xl p-6">
-                  <span class="text-[10px] font-black uppercase tracking-widest block mb-3" style="color: var(--accent-primary);">{m.meal}</span>
-                  <h4 class="text-xl font-black mb-4">{m.name}</h4>
-                  <div class="grid grid-cols-2 gap-3">
-                    <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
-                      <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Protein</span>
-                      <span class="text-lg font-black" style="color: var(--accent-primary);">{m.protein}</span>
-                    </div>
-                    <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
-                      <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Calories</span>
-                      <span class="text-lg font-black">{m.cals}</span>
+                <div class="hyper-border rounded-2xl overflow-hidden">
+                  {m.image && (
+                    <a href={m.recipeSlug ? (isProteinmeals ? `/high-protein/recipes/${m.recipeSlug}/` : `${mpBase}/meal-prep/recipes/${m.recipeSlug}/`) : '#'}>
+                      <img
+                        src={m.image}
+                        onerror="this.onerror=null;this.src='/images/placeholder.svg'"
+                        alt={m.name}
+                        class="w-full h-40 object-cover"
+                        loading="lazy"
+                      />
+                    </a>
+                  )}
+                  <div class="p-6">
+                    <span class="text-[10px] font-black uppercase tracking-widest block mb-3" style="color: var(--accent-primary);">{m.meal}</span>
+                    <h4 class="text-xl font-black mb-4">
+                      {m.recipeSlug ? (
+                        <a href={isProteinmeals ? `/high-protein/recipes/${m.recipeSlug}/` : `${mpBase}/meal-prep/recipes/${m.recipeSlug}/`} class="hover:opacity-80 transition-opacity" style="color: var(--text-primary); text-decoration: none;">
+                          {m.name}
+                        </a>
+                      ) : m.name}
+                    </h4>
+                    <div class="grid grid-cols-2 gap-3">
+                      <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
+                        <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Protein</span>
+                        <span class="text-lg font-black" style="color: var(--accent-primary);">{m.protein}</span>
+                      </div>
+                      <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
+                        <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Calories</span>
+                        <span class="text-lg font-black">{m.cals}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
