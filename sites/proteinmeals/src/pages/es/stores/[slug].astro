@@ -1,0 +1,30 @@
+---
+/**
+ * proteinmeals.co/es/stores/[slug] — REDIRECT to canonical /es/high-protein/store/ or /es/high-protein/chain/
+ */
+import { stores } from '@mealprepideas/shared/data/content/stores';
+
+export function getStaticPaths() {
+  return stores.map(store => ({
+    params: { slug: store.slug },
+    props: { store },
+  }));
+}
+
+const { store } = Astro.props;
+const facetType = store.type === 'grocery' ? 'store' : 'chain';
+const redirectPath = `/es/high-protein/${facetType}/${store.slug}/`;
+const canonicalUrl = `https://proteinmeals.co${redirectPath}`;
+---
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href={canonicalUrl} />
+  <meta http-equiv="refresh" content={`0;url=${redirectPath}`} />
+  <title>Redirigiendo…</title>
+</head>
+<body>
+  <p>Redirigiendo a <a href={redirectPath}>{redirectPath}</a>…</p>
+</body>
+</html>

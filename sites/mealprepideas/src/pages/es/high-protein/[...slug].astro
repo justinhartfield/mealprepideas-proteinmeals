@@ -1,0 +1,257 @@
+---
+/**
+ * mealprepideas.co/es/high-protein/[...slug] — Two-Facet Combo Catch-all (Spanish)
+ * Same logic as English version with Spanish meta text and /es/ canonical URLs.
+ */
+import TwoFacetCombo from '@mealprepideas/shared/components/TwoFacetCombo.astro';
+import PersonaMethodCombo from '@mealprepideas/shared/components/PersonaMethodCombo.astro';
+import MethodMealCombo from '@mealprepideas/shared/components/MethodMealCombo.astro';
+import RetailConstraintCombo from '@mealprepideas/shared/components/RetailConstraintCombo.astro';
+import { generateTwoFacetPaths, slugToDisplay } from '@mealprepideas/shared/utils/urls';
+import { getRecipesForHub } from '@mealprepideas/shared/utils/content';
+import {
+  generateHeroDescription,
+  generateTargetStat,
+  generateLogistics,
+  generateSiblingPages,
+  generateMatrixId,
+} from '@mealprepideas/shared/data/content/comboDescriptions';
+import { getMethodLogistics } from '@mealprepideas/shared/data/content/methodLogistics';
+import { getPersonaMethodHero } from '@mealprepideas/shared/data/content/personaMethodContent';
+import { facets } from '@mealprepideas/shared/data/taxonomy';
+import type { FacetKey } from '@mealprepideas/shared/data/taxonomy';
+
+export function getStaticPaths() {
+  const paths = generateTwoFacetPaths('high-protein');
+  return paths.map(({ slug, facetA, facetB }) => ({
+    params: { slug: slug.join('/') },
+    props: { facetA, facetB },
+  }));
+}
+
+interface Props {
+  facetA: { type: FacetKey; value: string };
+  facetB: { type: FacetKey; value: string };
+}
+
+const { facetA, facetB } = Astro.props;
+const displayA = slugToDisplay(facetA.value);
+const displayB = slugToDisplay(facetB.value);
+
+// Try to match real recipes from this hub that match either facet
+const allHubRecipes = getRecipesForHub('high-protein');
+const matchingRecipes = allHubRecipes.filter(r => {
+  const facets = r.facets as Record<string, string | undefined>;
+  const matchA = facets[facetA.type] === facetA.value;
+  const matchB = facets[facetB.type] === facetB.value;
+  return matchA || matchB;
+}).sort((a, b) => {
+  const facetsA = a.facets as Record<string, string | undefined>;
+  const facetsB = b.facets as Record<string, string | undefined>;
+  const scoreA = (facetsA[facetA.type] === facetA.value ? 1 : 0) + (facetsA[facetB.type] === facetB.value ? 1 : 0);
+  const scoreB = (facetsB[facetA.type] === facetA.value ? 1 : 0) + (facetsB[facetB.type] === facetB.value ? 1 : 0);
+  return scoreB - scoreA;
+}).slice(0, 10);
+
+// Route to appropriate T3 component based on facet types
+const isRetailCombo = facetA.type === 'store' || facetA.type === 'chain' || facetB.type === 'store' || facetB.type === 'chain';
+const isPersonaMethod =
+  (facetA.type === 'persona' && facetB.type === 'method') ||
+  (facetA.type === 'method' && facetB.type === 'persona');
+const isMealMethod = facetA.type === 'meal' || facetB.type === 'meal';
+
+// ── PersonaMethodCombo-specific props ──
+if (isPersonaMethod) {
+  const personaFacet = facetA.type === 'persona' ? facetA : facetB;
+  const methodFacet = facetA.type === 'method' ? facetA : facetB;
+  const personaName = slugToDisplay(personaFacet.value);
+  const methodName = slugToDisplay(methodFacet.value);
+
+  const heroContent = getPersonaMethodHero(personaFacet.value, methodFacet.value);
+  const methodLogistics = getMethodLogistics(methodFacet.value);
+
+  const focusOptions = ['protein', 'fiber', 'healing', 'energy'];
+  const reheatOptions = ['Microwave', 'Air Fryer', 'Oven', 'Stovetop', 'Room Temp', 'Pot', 'Toaster Oven', 'Gentle Steam'];
+
+  const personaMethodRecipes = matchingRecipes.length > 0
+    ? matchingRecipes.map((r, i) => ({
+        id: `${personaFacet.value.substring(0, 2).toUpperCase()}-${String(i + 1).padStart(2, '0')}`,
+        title: r.title,
+        slug: r.slug,
+        protein: `${r.protein}g`,
+        fiber: `${Math.round(r.calories * 0.02)}g`,
+        focus: focusOptions[i % focusOptions.length],
+        stability: `${Math.max(5, 10 - i)}/10`,
+        reheat: reheatOptions[i % reheatOptions.length],
+      }))
+    : Array.from({ length: 10 }, (_, i) => ({
+        id: `${personaFacet.value.substring(0, 2).toUpperCase()}-${String(i + 1).padStart(2, '0')}`,
+        title: `${personaName} ${methodName} Recipe #${i + 1}`,
+        slug: undefined as string | undefined,
+        protein: `${28 + i * 3}g`,
+        fiber: `${4 + i * 2}g`,
+        focus: focusOptions[i % focusOptions.length],
+        stability: `${Math.max(5, 10 - i)}/10`,
+        reheat: reheatOptions[i % reheatOptions.length],
+      }));
+
+  const allMethods = facets.method.values;
+  const siblingMethods = allMethods.filter(m => m !== methodFacet.value).slice(0, 2);
+  const siblingPages = [
+    ...siblingMethods.map(m => ({
+      label: `${personaName} / ${slugToDisplay(m)}`,
+      swapType: 'Cambiar Método',
+      title: `${personaName} / ${slugToDisplay(m)}`,
+      href: `/es/high-protein/method/${m}/persona/${personaFacet.value}/`,
+      count: `${Math.floor(Math.random() * 150 + 50)} Estrategias`,
+    })),
+    {
+      label: `${personaName} / Alta Fibra`,
+      swapType: 'Agregar Restricción',
+      title: `${personaName} / Alta Fibra`,
+      href: `/es/high-protein/persona/${personaFacet.value}/`,
+      count: `${Math.floor(Math.random() * 100 + 30)} Estrategias`,
+    },
+  ];
+
+  var personaMethodProps = {
+    title: `Alta Proteína ${personaName} con ${methodName} | MealPrepIdeas.co`,
+    description: heroContent.heroDescription,
+    canonicalUrl: `https://mealprepideas.co/es/high-protein/${facetA.type}/${facetA.value}/${facetB.type}/${facetB.value}/`,
+    hub: 'high-protein' as const,
+    personaSlug: personaFacet.value,
+    personaName,
+    methodSlug: methodFacet.value,
+    methodName,
+    heroDescription: heroContent.heroDescription,
+    avgPrepTime: heroContent.avgPrepTime,
+    recipes: personaMethodRecipes,
+    logisticsTitle: methodLogistics?.logisticsTitle || `El Protocolo ${methodName}`,
+    logisticsSteps: methodLogistics?.steps || [
+      { title: 'Preparación', description: `Protocolo estándar de preparación con ${methodName.toLowerCase()} para necesidades de ${personaName.toLowerCase()}.` },
+      { title: 'Ejecución', description: `Ejecuta el método ${methodName.toLowerCase()} con tiempos y porciones optimizadas.` },
+      { title: 'Almacenamiento', description: 'Almacena en recipientes apropiados con etiquetas de fecha para seguimiento de frescura.' },
+    ],
+    storageCards: methodLogistics?.storageCards || [
+      { label: 'Almacenamiento Estándar', value: '5 Días' },
+      { label: 'Congelado', value: '3 Meses' },
+      { label: 'Preparación Fresca', value: '3 Días' },
+      { label: 'Recipientes Sellados', value: '7 Días' },
+    ],
+    siblingPages,
+    site: 'mealprepideas' as const,
+  };
+}
+
+// ── TwoFacetCombo / MethodMealCombo / RetailConstraintCombo props ──
+const tagOptions = ['high-fiber', 'budget', 'quick', 'no-cook', 'for-the-week', 'freezer-friendly', 'one-pan', 'simple'];
+
+const displayRecipes = matchingRecipes.length > 0
+  ? matchingRecipes.map((r, i) => ({
+      id: i + 1,
+      title: r.title,
+      slug: r.slug,
+      protein: `${r.protein}g`,
+      cal: `${r.calories}`,
+      tags: [
+        r.facets.constraint,
+        r.facets.method,
+        r.facets.diet,
+      ].filter((t): t is string => !!t),
+      img: '/images/recipes/' + r.slug + '.jpg',
+    }))
+  : Array.from({ length: 10 }, (_, i) => ({
+      id: i + 1,
+      title: `${displayA} ${displayB} Protocol #${i + 1}`,
+      protein: `${42 - i * 2}g`,
+      cal: `${480 + i * 20}`,
+      tags: [tagOptions[i % tagOptions.length], tagOptions[(i + 3) % tagOptions.length]],
+      img: '',
+    }));
+
+const heroDescription = generateHeroDescription(facetA.type, facetA.value, displayA, facetB.type, facetB.value, displayB);
+const targetStat = generateTargetStat(facetA.type, facetA.value, facetB.type, facetB.value);
+const logistics = generateLogistics(facetA.type, facetA.value, displayA, facetB.type, facetB.value, displayB);
+const comboSiblingPages = generateSiblingPages('high-protein', facetA.type, facetA.value, displayA, facetB.type, facetB.value, displayB);
+const matrixId = generateMatrixId(facetA.type, facetA.value, facetB.type, facetB.value);
+
+const personaFacet = facetA.type === 'persona' ? facetA : facetB.type === 'persona' ? facetB : null;
+const methodFacet = facetA.type === 'method' ? facetA : facetB.type === 'method' ? facetB : null;
+
+const legacyRecipes = displayRecipes.map((r, i) => ({
+  id: r.id,
+  title: r.title,
+  protein: r.protein,
+  cal: r.cal,
+  method: facetA.type === 'method' ? facetA.value : facetB.type === 'method' ? facetB.value : 'batch-cook',
+  tag: r.tags[0] || 'Proteína',
+  score: 9.8 - i * 0.3,
+}));
+
+const legacyFaqs = [
+  { question: `¿Cómo combino ${displayA} con ${displayB} de manera efectiva?`, answer: `Nuestro sistema optimiza la intersección de ${displayA.toLowerCase()} y ${displayB.toLowerCase()} para máximo beneficio nutricional y eficiencia en la preparación.` },
+  { question: `¿Cuánto tiempo se almacenan estas comidas?`, answer: `La mayoría de los protocolos están optimizados para 5 días en refrigerador. Las variantes aptas para congelador se extienden a 90 días.` },
+];
+
+const legacySiblings = [
+  { href: `/es/high-protein/${facetA.type}/${facetA.value}/`, label: `Centro ${displayA}`, sublabel: `Todos los protocolos de ${displayA}` },
+  { href: `/es/high-protein/${facetB.type}/${facetB.value}/`, label: `Centro ${displayB}`, sublabel: `Todos los protocolos de ${displayB}` },
+];
+
+const legacyProps = {
+  hub: 'high-protein' as const,
+  facetA, facetB,
+  title: `Protocolos ${displayA} ${displayB} | MealPrepIdeas.co`,
+  description: `${displayA} y ${displayB}. Protocolos de alta proteína en la intersección.`,
+  canonicalUrl: `https://mealprepideas.co/es/high-protein/${facetA.type}/${facetA.value}/${facetB.type}/${facetB.value}/`,
+  headline: displayA,
+  headlineAccent: `Sistema ${displayB}`,
+  subheadline: heroDescription,
+  heroDescription,
+  personaSlug: personaFacet?.value || '',
+  personaName: personaFacet ? slugToDisplay(personaFacet.value) : '',
+  methodSlug: methodFacet?.value || '',
+  methodName: methodFacet ? slugToDisplay(methodFacet.value) : '',
+  logisticsTitle: logistics.title,
+  logisticsSteps: logistics.cards.map(c => ({ title: c.label, description: c.value })),
+  storageCards: logistics.cards,
+  siblingPages: comboSiblingPages.map(s => ({ label: s.label, swapType: 'facet', title: s.label, href: s.href, count: '—' })),
+  recipes: legacyRecipes,
+  faqs: legacyFaqs,
+  siblings: legacySiblings,
+  site: 'mealprepideas' as const,
+};
+
+const twoFacetProps = {
+  hub: 'high-protein' as const,
+  title: `Protocolos ${displayA} ${displayB} | MealPrepIdeas.co`,
+  description: `${displayA} y ${displayB}. Protocolos de alta proteína en la intersección.`,
+  canonicalUrl: `https://mealprepideas.co/es/high-protein/${facetA.type}/${facetA.value}/${facetB.type}/${facetB.value}/`,
+  facetTypeA: facetA.type,
+  facetValueA: facetA.value,
+  facetTypeB: facetB.type,
+  facetValueB: facetB.value,
+  displayA,
+  displayB,
+  heroDescription,
+  matrixId,
+  targetStat,
+  recipes: displayRecipes,
+  logisticsTitle: logistics.title,
+  logisticsDescription: logistics.description,
+  logisticsPrepTime: logistics.prepTime,
+  logisticsCards: logistics.cards,
+  siblingPages: comboSiblingPages,
+  site: 'mealprepideas' as const,
+};
+---
+
+{isRetailCombo ? (
+  <RetailConstraintCombo {...legacyProps} />
+) : isPersonaMethod ? (
+  <PersonaMethodCombo {...personaMethodProps!} />
+) : isMealMethod ? (
+  <MethodMealCombo {...legacyProps} />
+) : (
+  <TwoFacetCombo {...twoFacetProps} />
+)}

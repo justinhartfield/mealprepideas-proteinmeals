@@ -1,0 +1,22 @@
+---
+/**
+ * proteinmeals.co/es/meal-prep/recipes/[slug] — Recipe Page (Spanish)
+ * Uses MealPrepRecipe component — lang auto-detected from URL by BaseLayout
+ */
+import MealPrepRecipe from '@mealprepideas/shared/components/MealPrepRecipe.astro';
+import { recipes } from '@mealprepideas/shared/data/content/recipes';
+import { getRelatedRecipes } from '@mealprepideas/shared/utils/content';
+
+export function getStaticPaths() {
+  return recipes
+    .filter(r => r.hub === 'meal-prep')
+    .map(recipe => ({
+      params: { slug: recipe.slug },
+      props: { recipe },
+    }));
+}
+
+const { recipe } = Astro.props;
+const related = getRelatedRecipes(recipe, 4);
+---
+<MealPrepRecipe recipe={recipe} relatedRecipes={related} />

@@ -1,0 +1,22 @@
+---
+/**
+ * mealprepideas.co/es/high-protein/recipes/[slug] — Recipe Page (Spanish)
+ * Uses HighProteinRecipe component — lang auto-detected from URL by BaseLayout
+ */
+import HighProteinRecipe from '@mealprepideas/shared/components/HighProteinRecipe.astro';
+import { recipes } from '@mealprepideas/shared/data/content/recipes';
+import { getRelatedRecipes } from '@mealprepideas/shared/utils/content';
+
+export function getStaticPaths() {
+  return recipes
+    .filter(r => r.hub === 'high-protein')
+    .map(recipe => ({
+      params: { slug: recipe.slug },
+      props: { recipe },
+    }));
+}
+
+const { recipe } = Astro.props;
+const related = getRelatedRecipes(recipe, 4);
+---
+<HighProteinRecipe recipe={recipe} relatedRecipes={related} />

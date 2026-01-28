@@ -1,0 +1,29 @@
+---
+/**
+ * mealprepideas.co/es/high-protein/for/[slug] — REDIRECT to canonical /es/high-protein/persona/[slug]/
+ */
+import { facets } from '@mealprepideas/shared/data/taxonomy';
+
+export function getStaticPaths() {
+  return facets.persona.values.map(persona => ({
+    params: { slug: persona },
+    props: { persona },
+  }));
+}
+
+const { persona } = Astro.props;
+const canonicalUrl = `https://mealprepideas.co/es/high-protein/persona/${persona}/`;
+const redirectPath = `/es/high-protein/persona/${persona}/`;
+---
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href={canonicalUrl} />
+  <meta http-equiv="refresh" content={`0;url=${redirectPath}`} />
+  <title>Redirigiendo…</title>
+</head>
+<body>
+  <p>Redirigiendo a <a href={redirectPath}>{redirectPath}</a>…</p>
+</body>
+</html>

@@ -1,0 +1,32 @@
+---
+/**
+ * proteinmeals.co/es/meal-prep/[facetType]/ — Facet Type Index Page (Spanish)
+ * Lists all values for a given facet type (cross-hub on proteinmeals)
+ */
+import FacetTypeIndex from '@mealprepideas/shared/components/FacetTypeIndex.astro';
+import { facets, FACET_ORDER, type FacetKey } from '@mealprepideas/shared/data/taxonomy';
+import { slugToDisplay } from '@mealprepideas/shared/utils/urls';
+
+export function getStaticPaths() {
+  return FACET_ORDER.map(facetType => ({
+    params: { facetType },
+    props: { facetType: facetType as FacetKey },
+  }));
+}
+
+interface Props {
+  facetType: FacetKey;
+}
+
+const { facetType } = Astro.props;
+const facetLabel = facets[facetType]?.label || slugToDisplay(facetType);
+---
+
+<FacetTypeIndex
+  title={`Categorías de ${facetLabel} para Meal Prep | ProteinMeals.co`}
+  description={`Explora todas las categorías de ${facetLabel.toLowerCase()} para la preparación de comidas. Encuentra recetas, guías y planes organizados por ${facetLabel.toLowerCase()}.`}
+  canonicalUrl={`https://proteinmeals.co/es/meal-prep/${facetType}/`}
+  hub="meal-prep"
+  facetType={facetType}
+  site="proteinmeals"
+/>
