@@ -193,6 +193,7 @@ const t = useTranslations(lang);
     get scaledCarbs() { return Math.round(this.baseMacros.carbs * this.multiplier); },
     get scaledFat() { return Math.round(this.baseMacros.fat * this.multiplier); },
     showGrocery: false,
+    showVegan: false,
     yieldGateMsg: '',
     increment() {
       if (this.servings >= 5 && !(window.authHelper && window.authHelper.isSignedIn())) {
@@ -213,6 +214,41 @@ const t = useTranslations(lang);
         const scaled = parseFloat(n) * ratio;
         return scaled % 1 === 0 ? String(scaled) : scaled.toFixed(1);
       });
+    },
+    veganSwap(text) {
+      if (!this.showVegan) return text;
+      const swaps = [
+        [/\\b(\\d+\\s*)?eggs?\\b/gi, (m, n) => (n || '') + 'flax eggs (1 tbsp flax + 3 tbsp water each)'],
+        [/\\b(\\d+[\\d.\\/\\s]*)?(cups?\\s+)?milk\\b/gi, (m, n, c) => (n || '') + (c || '') + 'oat milk'],
+        [/\\bheavy cream\\b/gi, 'coconut cream'],
+        [/\\bbutter\\b/gi, 'vegan butter'],
+        [/\\bGreek yogurt\\b/gi, 'coconut yogurt'],
+        [/\\byogurt\\b/gi, 'coconut yogurt'],
+        [/\\bhoney\\b/gi, 'maple syrup'],
+        [/\\bchicken (thighs?|breasts?|pieces?)\\b/gi, 'extra-firm tofu'],
+        [/\\bchicken\\b/gi, 'chickpeas'],
+        [/\\bbeef\\b/gi, 'seitan'],
+        [/\\bground (beef|turkey|pork)\\b/gi, 'plant-based ground'],
+        [/\\bturkey\\b/gi, 'tempeh'],
+        [/\\bpork\\b/gi, 'jackfruit'],
+        [/\\bsalmon\\b/gi, 'marinated tofu'],
+        [/\\bshrimp\\b/gi, 'hearts of palm'],
+        [/\\bfish\\b/gi, 'tofu'],
+        [/\\bfeta cheese\\b/gi, 'vegan feta'],
+        [/\\bcheddar cheese\\b/gi, 'vegan cheddar'],
+        [/\\bparmesan\\b/gi, 'nutritional yeast'],
+        [/\\bmozzarella\\b/gi, 'vegan mozzarella'],
+        [/\\bcheese\\b/gi, 'vegan cheese'],
+        [/\\bwhey protein\\b/gi, 'pea protein'],
+        [/\\bprotein powder\\b/gi, 'plant protein powder'],
+        [/\\bbacon\\b/gi, 'coconut bacon'],
+        [/\\bsausage\\b/gi, 'plant-based sausage'],
+      ];
+      let result = text;
+      for (const [pattern, replacement] of swaps) {
+        result = result.replace(pattern, replacement);
+      }
+      return result;
     }
   }`}>
     <!-- BREADCRUMB -->
@@ -307,9 +343,9 @@ const t = useTranslations(lang);
           <div class="rp-inventory__header">
             <h2 class="rp-section-title">{t('recipe.inventoryList')}</h2>
             <div class="rp-toggle-pills">
-              <span class="rp-pill rp-pill--active" id="pill-original">{t('recipe.original')}</span>
-              <span class="rp-pill" id="pill-vegan" onclick="window.authHelper ? window.authHelper.requireAuth(function() { document.getElementById('pill-vegan').classList.add('rp-pill--active'); document.getElementById('pill-original').classList.remove('rp-pill--active'); }) : void(0)">
-                <svg class="inline w-3 h-3 mr-1 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24" data-auth-show="signed-out"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+              <span class="rp-pill cursor-pointer" :class="{ 'rp-pill--active': !showVegan }" @click="showVegan = false">{t('recipe.original')}</span>
+              <span class="rp-pill cursor-pointer" :class="{ 'rp-pill--active': showVegan }" @click="window.authHelper ? window.authHelper.requireAuth(() => { showVegan = true; }) : (showVegan = true)">
+                <svg x-show="!showVegan" class="inline w-3 h-3 mr-1 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24" data-auth-show="signed-out"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                 VEGAN SWAP
               </span>
             </div>
@@ -319,7 +355,7 @@ const t = useTranslations(lang);
           <div class="rp-ingredients-grid">
             {ingredients.map(ing => (
               <div class="rp-ingredient">
-                <span class="rp-ingredient__text" x-text={`scaleIngredient('${ing.text.replace(/'/g, "\\'")}')`}>{ing.text}</span>
+                <span class="rp-ingredient__text" x-text={`veganSwap(scaleIngredient('${ing.text.replace(/'/g, "\\'")}'))`}>{ing.text}</span>
                 <span class="rp-ingredient__role">{ing.role}</span>
               </div>
             ))}
@@ -448,7 +484,7 @@ const t = useTranslations(lang);
               </button>
               <span class="text-sm leading-relaxed transition-all"
                     x-bind:style="checked ? 'color: var(--text-tertiary); text-decoration: line-through;' : 'color: var(--text-primary);'"
-                    x-text={`scaleIngredient('${ing.replace(/'/g, "\\'")}')`}>
+                    x-text={`veganSwap(scaleIngredient('${ing.replace(/'/g, "\\'")}'))`}>
                 {ing}
               </span>
             </li>
