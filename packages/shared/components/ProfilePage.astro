@@ -111,6 +111,46 @@ const siteName = isProteinmeals ? 'ProteinMeals.co' : 'MealPrepIdeas.co';
             </div>
           </template>
         </div>
+
+        <!-- Grocery List Actions -->
+        <div x-show="groceryList.length > 0" class="flex flex-wrap gap-3 mt-6 pt-6 border-t" style="border-color: var(--border-subtle);">
+          <!-- Copy to Clipboard -->
+          <button @click="
+            const text = groceryList.map(item => (item.checked ? '✓ ' : '☐ ') + item.text + ' (' + item.recipeName + ')').join('\n');
+            navigator.clipboard.writeText(text).then(() => { $el.querySelector('span').textContent = '✓ COPIED'; setTimeout(() => { $el.querySelector('span').textContent = 'COPY TO CLIPBOARD'; }, 2000); });
+          " class="flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all hover:opacity-80"
+             style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+            <span>COPY TO CLIPBOARD</span>
+          </button>
+
+          <!-- Print Friendly -->
+          <button @click="
+            const w = window.open('', '_blank');
+            const items = groceryList.map(item => '<li style=\'padding:6px 0;border-bottom:1px solid #eee;\'>' + item.text + ' <span style=\'color:#999;font-size:12px;\'>(' + item.recipeName + ')</span></li>').join('');
+            w.document.write('<html><head><title>Grocery List - MealPrepIdeas.co</title><style>body{font-family:system-ui,sans-serif;max-width:600px;margin:40px auto;padding:20px;}h1{font-size:24px;margin-bottom:4px;}p{color:#666;font-size:14px;margin-bottom:24px;}ul{list-style:none;padding:0;}@media print{button{display:none!important;}}</style></head><body><h1>🛒 Grocery List</h1><p>' + groceryList.length + ' items from MealPrepIdeas.co</p><ul>' + items + '</ul><br><button onclick=\'window.print()\' style=\'padding:12px 24px;background:#222;color:#fff;border:none;border-radius:99px;font-weight:900;font-size:12px;cursor:pointer;\'>PRINT</button></body></html>');
+            w.document.close();
+          " class="flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all hover:opacity-80"
+             style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            <span>PRINT FRIENDLY</span>
+          </button>
+
+          <!-- Send To My Phone -->
+          <button @click="
+            const text = '🛒 Grocery List\n\n' + groceryList.map(item => '☐ ' + item.text).join('\n') + '\n\nFrom MealPrepIdeas.co';
+            if (navigator.share) {
+              navigator.share({ title: 'Grocery List', text: text }).catch(() => {});
+            } else {
+              const smsBody = encodeURIComponent(text);
+              window.open('sms:?body=' + smsBody);
+            }
+          " class="flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all hover:opacity-80"
+             style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-primary);">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            <span>SEND TO MY PHONE</span>
+          </button>
+        </div>
       </div>
 
       <!-- TAB: Macro Calculator -->
