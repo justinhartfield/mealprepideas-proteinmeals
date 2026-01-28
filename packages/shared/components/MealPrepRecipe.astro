@@ -31,8 +31,11 @@ const recipeId = `MP-${recipe.slug.split('-').map(w => w[0]?.toUpperCase()).join
 const totalTimeMin = recipe.prepTime + recipe.cookTime;
 const servings = recipe.servings;
 
-// P:E Ratio = protein / (calories / 100), format to 1 decimal
-const peRatio = (recipe.protein / (recipe.calories / 100)).toFixed(1);
+// P:E Ratio (Ted Naiman) = protein_g / (fat_g + net_carb_g)
+// Net carbs = carbs - fiber; energy = fat + net carbs
+const netCarbs = Math.max(0, (recipe.carbs || 0) - (recipe.fiber || 0));
+const energyDenom = (recipe.fat || 0) + netCarbs;
+const peRatio = energyDenom > 0 ? (recipe.protein / energyDenom).toFixed(1) : '∞';
 
 // Ingredient role assignment
 function getIngredientRole(text: string, protein: number): string {
