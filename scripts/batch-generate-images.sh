@@ -7,7 +7,11 @@ set -euo pipefail
 SCRIPT="/opt/homebrew/lib/node_modules/clawdbot/skills/nano-banana-pro/scripts/generate_image.py"
 PM_DIR="sites/proteinmeals/public/images/recipes"
 MPI_DIR="sites/mealprepideas/public/images/recipes"
-export GEMINI_API_KEY="AIzaSyAwKz09QjLvoAXktzzh8MwtjtvdQyu6SbY"
+# GEMINI_API_KEY must be set in environment (don't commit keys!)
+if [ -z "${GEMINI_API_KEY:-}" ]; then
+  echo "Error: GEMINI_API_KEY environment variable not set"
+  exit 1
+fi
 
 cd /Users/customer/clawd/Projects/mealprepideas-proteinmeals
 
