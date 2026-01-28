@@ -443,7 +443,7 @@ const structuredData = JSON.stringify({
               </button>
               <span class="text-sm leading-relaxed transition-all"
                     x-bind:style="checked ? 'color: var(--text-tertiary); text-decoration: line-through;' : 'color: var(--text-primary);'"
-                    x-text="scaleIngredient(`${ing}`)">
+                    x-text={`scaleIngredient('${ing.replace(/'/g, "\\'")}')`}>
                 {ing}
               </span>
             </li>
