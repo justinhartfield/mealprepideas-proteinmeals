@@ -143,14 +143,30 @@ export const synonyms: Record<string, string> = {
 export const indexedCombos = {
   'high-protein': [
     ['method', 'goal'],
+    ['method', 'diet'],
+    ['diet', 'goal'],
     ['diet', 'constraint'],
     ['store', 'constraint'],
+    ['store', 'diet'],
     ['chain', 'goal'],
+    ['chain', 'diet'],
+    ['meal', 'diet'],
+    ['meal', 'goal'],
   ],
   'meal-prep': [
     ['persona', 'method'],
+    ['persona', 'diet'],
+    ['persona', 'goal'],
+    ['meal', 'method'],
+    ['meal', 'diet'],
+    ['meal', 'goal'],
     ['meal', 'constraint'],
+    ['method', 'diet'],
+    ['method', 'goal'],
+    ['method', 'constraint'],
     ['diet', 'goal'],
+    ['diet', 'constraint'],
+    ['goal', 'constraint'],
   ],
 } as const;
 
