@@ -2035,6 +2035,7 @@ import { recipesBatchMP1 } from './recipes-batch-mp1';
 import { recipesBatchMP2 } from './recipes-batch-mp2';
 import { recipesBatchHP1 } from './recipes-batch-hp1';
 import { recipesBatchHP2 } from './recipes-batch-hp2';
+import { recipesBatchGaps } from './recipes-batch-gaps';
 
 export const recipes: Recipe[] = [
   ...mealPrepRecipes,
@@ -2044,6 +2045,7 @@ export const recipes: Recipe[] = [
   ...recipesBatchMP2,
   ...recipesBatchHP1,
   ...recipesBatchHP2,
+  ...recipesBatchGaps,
 ];
 
 export default recipes;
