@@ -48,7 +48,7 @@ const {
   title, description, canonicalUrl, hub, facetType, facetValue,
   headline, subheadline,
   useCases = [],
-  recipeCount = 245,
+  recipeCount: recipeCountProp,
   recipes = [],
   faqs = [],
   exploreColumns = [],
@@ -57,6 +57,7 @@ const {
   planCard,
 } = Astro.props;
 
+const recipeCount = recipeCountProp ?? recipes.length;
 const hubPath = hub === 'meal-prep' ? '/meal-prep/' : '/high-protein/';
 const breadcrumbs = [
   { label: 'Home', href: '/' },
