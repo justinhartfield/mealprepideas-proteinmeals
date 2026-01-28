@@ -1,4 +1,6 @@
 ---
+import AuthGate from '../AuthGate.astro';
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HeaderNav from '../HeaderNav.astro';
 import FooterNav from '../FooterNav.astro';
@@ -11,6 +13,7 @@ const { site = 'mealprepideas' } = Astro.props;
   <HeaderNav site={site} />
 
   <main class="flex-grow py-16 px-6">
+  <AuthGate toolName="Meal Prep Streak" toolDescription="Track your meal prep consistency. Build streaks and stay motivated." toolIcon="🔥">
     <div class="max-w-4xl mx-auto" x-data={`{
       prepDays: [],
       init() {
@@ -196,7 +199,9 @@ const { site = 'mealprepideas' } = Astro.props;
         </div>
       </div>
     </div>
-  </main>
+  
+    </AuthGate>
+</main>
 
   <FooterNav site={site} />
 

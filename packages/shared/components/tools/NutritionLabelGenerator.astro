@@ -1,4 +1,6 @@
 ---
+import AuthGate from '../AuthGate.astro';
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HeaderNav from '../HeaderNav.astro';
 import FooterNav from '../FooterNav.astro';
@@ -13,6 +15,7 @@ const { site = 'mealprepideas' } = Astro.props;
   <HeaderNav site={site} />
 
   <main class="flex-grow py-16 px-6">
+  <AuthGate toolName="Nutrition Label" toolDescription="Generate FDA-style nutrition labels for any recipe. Perfect for tracking macros." toolIcon="🏷️">
     <div class="max-w-5xl mx-auto">
       <div class="mb-12">
         <div class="flex items-center gap-4 mb-4">
@@ -232,7 +235,9 @@ const { site = 'mealprepideas' } = Astro.props;
         </div>
       </div>
     </div>
-  </main>
+  
+    </AuthGate>
+</main>
 
   <FooterNav site={site} />
 

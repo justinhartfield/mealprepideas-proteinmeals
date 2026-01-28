@@ -1,4 +1,6 @@
 ---
+import AuthGate from '../AuthGate.astro';
+
 /**
  * RoiCalculator — Meal Prep ROI Calculator
  * Calculate how much you save by meal prepping vs eating out
@@ -38,6 +40,7 @@ const structuredData = JSON.stringify({
 
   <main class="flex-1 px-4 md:px-8 py-12 max-w-4xl mx-auto w-full"
     x-data="roiCalc()">
+  <AuthGate toolName="ROI Calculator" toolDescription="Calculate how much time and money you save with meal prep vs eating out." toolIcon="📊">
 
     <!-- Hero -->
     <div class="text-center mb-12">
@@ -214,7 +217,9 @@ const structuredData = JSON.stringify({
       <p class="text-lg font-bold" style="color: var(--text-primary);">Enter your numbers above</p>
       <p class="text-sm mt-2" style="color: var(--text-secondary);">We'll show you exactly how much meal prepping can save you.</p>
     </div>
-  </main>
+  
+    </AuthGate>
+</main>
 
   <FooterNav site={site} />
 </BaseLayout>

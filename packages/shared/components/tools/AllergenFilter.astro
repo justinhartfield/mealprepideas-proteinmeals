@@ -1,4 +1,6 @@
 ---
+import AuthGate from '../AuthGate.astro';
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HeaderNav from '../HeaderNav.astro';
 import FooterNav from '../FooterNav.astro';
@@ -21,6 +23,7 @@ const recipeData = JSON.stringify(recipes.map(r => ({
   <HeaderNav site={site} />
 
   <main class="flex-grow py-16 px-6">
+  <AuthGate toolName="Allergen Filter" toolDescription="Filter recipes by allergens and dietary restrictions. Find safe meals for any sensitivity." toolIcon="⚠️">
     <div class="max-w-7xl mx-auto" x-data={`{
       recipes: ${recipeData},
       filters: {
@@ -108,7 +111,9 @@ const recipeData = JSON.stringify(recipes.map(r => ({
         <p class="text-sm" style="color: var(--text-secondary);">Try removing some filters to see more results.</p>
       </div>
     </div>
-  </main>
+  
+    </AuthGate>
+</main>
 
   <FooterNav site={site} />
 

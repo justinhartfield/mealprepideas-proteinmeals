@@ -1,4 +1,6 @@
 ---
+import AuthGate from '../AuthGate.astro';
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HeaderNav from '../HeaderNav.astro';
 import FooterNav from '../FooterNav.astro';
@@ -19,6 +21,7 @@ const recipeData = JSON.stringify(recipes.map(r => ({
   <HeaderNav site={site} />
 
   <main class="flex-grow py-16 px-6">
+  <AuthGate toolName="Meal Planner" toolDescription="Build your perfect weekly meal plan. Drag-and-drop recipes, track macros, generate shopping lists." toolIcon="📅">
     <div class="max-w-7xl mx-auto" x-data={`{
       recipes: ${recipeData},
       days: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
@@ -213,7 +216,9 @@ const recipeData = JSON.stringify(recipes.map(r => ({
         </div>
       </div>
     </div>
-  </main>
+  
+    </AuthGate>
+</main>
 
   <FooterNav site={site} />
 

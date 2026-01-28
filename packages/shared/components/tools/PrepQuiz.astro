@@ -1,4 +1,6 @@
 ---
+import AuthGate from '../AuthGate.astro';
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HeaderNav from '../HeaderNav.astro';
 import FooterNav from '../FooterNav.astro';
@@ -15,6 +17,7 @@ const hpBase = site === 'proteinmeals' ? '' : 'https://proteinmeals.co';
   <HeaderNav site={site} />
 
   <main class="flex-grow py-16 px-6">
+  <AuthGate toolName="Prep Style Quiz" toolDescription="Discover your ideal meal prep approach based on your lifestyle and goals." toolIcon="🧪">
     <div class="max-w-4xl mx-auto" x-data={`{
       step: 0,
       answers: { time: '', skill: '', diet: '', budget: '', audience: '' },
@@ -258,7 +261,9 @@ const hpBase = site === 'proteinmeals' ? '' : 'https://proteinmeals.co';
         </template>
       </div>
     </div>
-  </main>
+  
+    </AuthGate>
+</main>
 
   <FooterNav site={site} />
 

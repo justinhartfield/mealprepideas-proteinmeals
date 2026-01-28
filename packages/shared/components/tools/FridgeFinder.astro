@@ -1,4 +1,6 @@
 ---
+import AuthGate from '../AuthGate.astro';
+
 /**
  * FridgeFinder — "What's In My Fridge?" Tool
  * Select ingredients, get matching recipe suggestions
@@ -56,6 +58,7 @@ const structuredData = JSON.stringify({
 
   <main class="flex-1 px-4 md:px-8 py-12 max-w-6xl mx-auto w-full"
     x-data={`fridgeFinder(${JSON.stringify(recipeData)})`}>
+  <AuthGate toolName="Fridge Finder" toolDescription="Find recipes from ingredients you already have. No more wasted food." toolIcon="🔍">
 
     <!-- Hero -->
     <div class="text-center mb-12">
@@ -190,7 +193,9 @@ const structuredData = JSON.stringify({
       <p class="text-lg font-bold" style="color: var(--text-primary);">Open your fridge and start selecting!</p>
       <p class="text-sm mt-2" style="color: var(--text-secondary);">Pick at least 1 ingredient above to see matching recipes.</p>
     </div>
-  </main>
+  
+    </AuthGate>
+</main>
 
   <FooterNav site={site} />
 </BaseLayout>

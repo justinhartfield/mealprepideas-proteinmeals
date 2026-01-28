@@ -1,4 +1,6 @@
 ---
+import AuthGate from '../AuthGate.astro';
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HeaderNav from '../HeaderNav.astro';
 import FooterNav from '../FooterNav.astro';
@@ -35,6 +37,7 @@ const dataJson = JSON.stringify(proteinData);
   <HeaderNav site={site} />
   
   <main class="flex-grow py-16 px-6">
+  <AuthGate toolName="Protein Cost Ranker" toolDescription="Compare protein sources by cost per gram. Find the best value for your budget." toolIcon="💰">
     <div class="max-w-6xl mx-auto">
       <!-- Header -->
       <div class="mb-12">
@@ -180,7 +183,9 @@ const dataJson = JSON.stringify(proteinData);
         </div>
       </div>
     </div>
-  </main>
+  
+    </AuthGate>
+</main>
 
   <FooterNav site={site} />
   
