@@ -10,6 +10,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
+import PlanCTA from './PlanCTA.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
 
 interface Recipe {
@@ -320,6 +321,9 @@ const logisticsTitleLines = logisticsTitle.split('\n');
         </div>
       </section>
     )}
+
+    <!-- PLAN CTA -->
+    <PlanCTA hub={hub} />
   </main>
 
   <FooterNav copyrightSuffix="Index Authority Network. T3 Combo Page." />

@@ -8,6 +8,7 @@ import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
 import ExploreByBlock from './ExploreByBlock.astro';
+import PlanCTA from './PlanCTA.astro';
 
 interface Recipe {
   id: number;
@@ -267,6 +268,9 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
       </aside>
       </div>
     </section>
+
+    <!-- PLAN CTA -->
+    <PlanCTA hub={hub} />
 
     <!-- INTERNAL LINKS -->
     {exploreColumns.length > 0 && (
