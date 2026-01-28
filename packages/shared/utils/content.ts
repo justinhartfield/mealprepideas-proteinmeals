@@ -7,6 +7,38 @@ import { recipes, type Recipe } from '../data/content/recipes';
 import { plans, type MealPlan } from '../data/content/plans';
 import { stores, type RetailerData } from '../data/content/stores';
 import { facetContent, type FacetPageContent } from '../data/content/facetContent';
+import { translateRecipe, translateRecipes } from '../data/content/recipeTranslations';
+import type { Lang } from '../i18n/utils';
+
+/**
+ * Get translated recipes for a language.
+ * Returns all recipes with text fields translated to the specified language.
+ * Falls back to English for any recipe without a translation.
+ */
+export function getTranslatedRecipes(lang: Lang): Recipe[] {
+  return translateRecipes(recipes, lang);
+}
+
+/**
+ * Get recipes matching facet criteria with optional language translation.
+ */
+export function getRecipesMatchingFacetTranslated(
+  hub: 'meal-prep' | 'high-protein',
+  facetType: string,
+  facetValue: string,
+  lang: Lang = 'en'
+): Recipe[] {
+  const matched = getRecipesMatchingAnyFacet(hub, facetType, facetValue);
+  return lang === 'en' ? matched : translateRecipes(matched, lang);
+}
+
+/**
+ * Get related recipes with optional language translation.
+ */
+export function getRelatedRecipesTranslated(recipe: Recipe, limit: number = 4, lang: Lang = 'en'): Recipe[] {
+  const related = getRelatedRecipes(recipe, limit);
+  return lang === 'en' ? related : translateRecipes(related, lang);
+}
 
 /**
  * Get recipes matching specific facet criteria for a given hub.

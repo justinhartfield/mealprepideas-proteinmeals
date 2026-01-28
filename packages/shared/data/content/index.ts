@@ -9,3 +9,4 @@ export { facetContent, type FacetPageContent } from './facetContent';
 export { personaContent, getPersonaContent, type PersonaContent } from './personas';
 export { methodLogistics, getMethodLogistics, type MethodLogistics } from './methodLogistics';
 export { getPersonaMethodHero, type PersonaMethodHero } from './personaMethodContent';
+export { translateRecipe, translateRecipes, hasTranslation } from './recipeTranslations';

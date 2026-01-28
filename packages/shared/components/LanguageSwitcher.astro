@@ -24,7 +24,20 @@ const switchUrl = localizedPath(otherLang, currentPath);
   class="lang-switch flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all hover:opacity-80 no-underline"
   style="border: 1px solid var(--border-subtle); color: var(--text-secondary);"
   title={`Switch to ${languages[otherLang]}`}
+  data-switch-lang={otherLang}
 >
   <span class="text-sm">{otherLang === 'es' ? '🇪🇸' : '🇺🇸'}</span>
   <span>{otherLang.toUpperCase()}</span>
 </a>
+
+<script is:inline>
+  // Save language preference when flag is clicked
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('[data-switch-lang]');
+    if (link) {
+      localStorage.setItem('preferredLang', link.getAttribute('data-switch-lang'));
+      // Clear redirect guard so the new preference takes effect on next navigation
+      sessionStorage.removeItem('langRedirected');
+    }
+  });
+</script>

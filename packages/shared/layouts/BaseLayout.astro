@@ -65,6 +65,14 @@ const isMealPrep = isMealPrepSite || (!isProteinSite && isMealPrepContent);
 const resolvedSiteName = siteName || (isMealPrep ? 'MealPrepIdeas.co' : 'ProteinMeals.co');
 const resolvedFavicon = faviconEmoji || (isMealPrep ? '🥦' : '🍗');
 const gaId = isMealPrep ? 'G-TQHW6LM9X1' : 'G-LWJ3R2F2BG';
+
+// Clerk auth keys per site
+const clerkPublishableKey = isMealPrep
+  ? 'pk_test_dXNlZnVsLWJsdWVnaWxsLTIuY2xlcmsuYWNjb3VudHMuZGV2JA'
+  : 'pk_test_ZGVhci1saW9uZmlzaC00OS5jbGVyay5hY2NvdW50cy5kZXYk';
+const clerkFrontendApi = isMealPrep
+  ? 'useful-bluegill-2.clerk.accounts.dev'
+  : 'dear-lionfish-49.clerk.accounts.dev';
 ---
 
 <!DOCTYPE html>
@@ -109,6 +117,51 @@ const gaId = isMealPrep ? 'G-TQHW6LM9X1' : 'G-LWJ3R2F2BG';
     })();
   </script>
 
+  <!-- Language auto-redirect: saved preference or browser detection -->
+  <script is:inline>
+    (function() {
+      // Skip if already redirecting or if explicitly navigating
+      if (sessionStorage.getItem('langRedirected')) return;
+
+      var path = window.location.pathname;
+      var isEs = path.startsWith('/es/') || path === '/es';
+      var currentLang = isEs ? 'es' : 'en';
+
+      // 1. Check saved preference (from flag click)
+      var saved = localStorage.getItem('preferredLang');
+
+      // 2. If no saved preference, detect browser language
+      if (!saved) {
+        var browserLangs = navigator.languages || [navigator.language || ''];
+        for (var i = 0; i < browserLangs.length; i++) {
+          if (browserLangs[i].toLowerCase().startsWith('es')) {
+            saved = 'es';
+            break;
+          }
+        }
+      }
+
+      // 3. Redirect if needed
+      if (saved && saved !== currentLang) {
+        var newPath;
+        if (saved === 'es' && !isEs) {
+          newPath = '/es' + path;
+        } else if (saved === 'en' && isEs) {
+          newPath = path.replace(/^\/es\//, '/').replace(/^\/es$/, '/');
+        }
+        if (newPath && newPath !== path) {
+          // Mark so we don't loop if the target 404s back
+          sessionStorage.setItem('langRedirected', '1');
+          window.location.replace(newPath);
+          return; // stop execution
+        }
+      }
+
+      // Clear redirect guard on successful load (no redirect needed)
+      sessionStorage.removeItem('langRedirected');
+    })();
+  </script>
+
   <!-- Google Analytics -->
   <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
   <script is:inline define:vars={{ gaId }}>
@@ -124,13 +177,13 @@ const gaId = isMealPrep ? 'G-TQHW6LM9X1' : 'G-LWJ3R2F2BG';
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
 
   <!-- Clerk Auth -->
-  <script is:inline>
+  <script is:inline define:vars={{ clerkPublishableKey }}>
     // Clerk auth state for Alpine.js integration
-    window.__clerkPublishableKey = 'pk_test_ZGVhci1saW9uZmlzaC00OS5jbGVyay5hY2NvdW50cy5kZXYk';
+    window.__clerkPublishableKey = clerkPublishableKey;
     window.__authReady = false;
     window.__authUser = null;
   </script>
-  <script async crossorigin="anonymous" data-clerk-publishable-key="pk_test_ZGVhci1saW9uZmlzaC00OS5jbGVyay5hY2NvdW50cy5kZXYk" src="https://dear-lionfish-49.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js" onload="
+  <script async crossorigin="anonymous" data-clerk-publishable-key={clerkPublishableKey} src={`https://${clerkFrontendApi}/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`} onload="
     window.Clerk.load().then(function() {
       window.__authReady = true;
       window.__authUser = window.Clerk.user;
