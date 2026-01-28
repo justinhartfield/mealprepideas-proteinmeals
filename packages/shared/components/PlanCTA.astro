@@ -5,6 +5,7 @@
  * Light variant with 2-column layout: text + stacked batch cards
  */
 import { plans } from '../data/content/plans';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Props {
   hub: string;
@@ -36,6 +37,10 @@ const batches = [
 
 const totalServings = numDays * 3;
 const groceryCost = plan.groceryBudget || `$${numDays * 10}`;
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <section class="py-24 px-6" style="background-color: var(--bg-secondary);">
@@ -43,7 +48,7 @@ const groceryCost = plan.groceryBudget || `$${numDays * 10}`;
 
     <!-- LEFT: Text Content -->
     <div>
-      <span class="text-[10px] font-black uppercase tracking-[0.5em] block mb-6" style="color: var(--text-tertiary);">Signature Protocol</span>
+      <span class="text-[10px] font-black uppercase tracking-[0.5em] block mb-6" style="color: var(--text-tertiary);">{t('planCta.signatureProtocol')}</span>
       <h2 class="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] mb-8" style="color: var(--text-primary);">
         {plan.title.toUpperCase()}
       </h2>
@@ -55,11 +60,11 @@ const groceryCost = plan.groceryBudget || `$${numDays * 10}`;
       <div class="flex gap-16 mb-10">
         <div>
           <span class="text-5xl font-black block" style="color: var(--text-primary);">{totalServings}</span>
-          <span class="text-[9px] font-black uppercase tracking-widest block mt-1" style="color: var(--text-tertiary);">Individual Servings</span>
+          <span class="text-[9px] font-black uppercase tracking-widest block mt-1" style="color: var(--text-tertiary);">{t('hub.individualServings')}</span>
         </div>
         <div>
           <span class="text-5xl font-black block" style="color: var(--text-primary);">{groceryCost}</span>
-          <span class="text-[9px] font-black uppercase tracking-widest block mt-1" style="color: var(--text-tertiary);">Total Grocery Cost</span>
+          <span class="text-[9px] font-black uppercase tracking-widest block mt-1" style="color: var(--text-tertiary);">{t('hub.totalGroceryCost')}</span>
         </div>
       </div>
 
@@ -70,7 +75,7 @@ const groceryCost = plan.groceryBudget || `$${numDays * 10}`;
           class="px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-widest cursor-pointer transition-all hover:scale-105 flex items-center gap-2 no-underline"
           style="background: var(--text-primary); color: var(--bg-primary);"
         >
-          View Full Plan
+          {t('hub.viewFullPlan')}
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
         </a>
         <a
@@ -78,7 +83,7 @@ const groceryCost = plan.groceryBudget || `$${numDays * 10}`;
           class="px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-widest cursor-pointer transition-all hover:scale-105 border-2 no-underline"
           style="border-color: var(--text-primary); color: var(--text-primary);"
         >
-          Browse All Plans
+          {t('hub.browseAllPlans')}
         </a>
       </div>
     </div>

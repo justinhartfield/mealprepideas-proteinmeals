@@ -5,6 +5,11 @@
  */
 import ThemeToggle from './ThemeToggle.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+// i18n — must be before nav arrays that use t()
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 interface Props {
   site?: 'mealprepideas' | 'proteinmeals';
@@ -17,24 +22,24 @@ interface Props {
 }
 
 const mealprepNav = [
-  { href: '/', label: 'Home' },
-  { href: '/meal-prep/', label: 'Meal Prep Hub' },
-  { href: '/meal-prep/method/', label: 'Methods' },
-  { href: '/meal-prep/persona/', label: 'Personas' },
-  { href: '/meal-prep/store/', label: 'Stores' },
-  { href: '/meal-prep/constraint/', label: 'Plans' },
-  { href: '/tools/', label: 'Tools' },
+  { href: '/', label: t('nav.home') },
+  { href: '/meal-prep/', label: t('nav.hub') },
+  { href: '/meal-prep/method/', label: t('nav.methods') },
+  { href: '/meal-prep/persona/', label: t('nav.personas') },
+  { href: '/meal-prep/store/', label: t('nav.stores') },
+  { href: '/meal-prep/constraint/', label: t('nav.plans') },
+  { href: '/tools/', label: t('nav.tools') },
 ];
 
 const proteinNav = [
-  { href: '/', label: 'Home' },
-  { href: '/high-protein/', label: 'High Protein Hub' },
-  { href: '/high-protein/method/', label: 'Methods' },
-  { href: '/high-protein/diet/', label: 'Diets' },
-  { href: '/high-protein/goal/', label: 'Goals' },
-  { href: '/high-protein/persona/', label: 'Personas' },
-  { href: '/stores/', label: 'Stores' },
-  { href: '/tools/', label: 'Tools' },
+  { href: '/', label: t('nav.home') },
+  { href: '/high-protein/', label: t('nav.hpHub') },
+  { href: '/high-protein/method/', label: t('nav.methods') },
+  { href: '/high-protein/diet/', label: t('nav.diets') },
+  { href: '/high-protein/goal/', label: t('nav.goals') },
+  { href: '/high-protein/persona/', label: t('nav.personas') },
+  { href: '/stores/', label: t('nav.stores') },
+  { href: '/tools/', label: t('nav.tools') },
 ];
 
 // Auto-detect site from the Astro site config URL
@@ -43,13 +48,14 @@ const autoSite = siteUrl.includes('proteinmeals') ? 'proteinmeals' : 'mealprepid
 
 const {
   site = autoSite,
-  brandLabel = site === 'proteinmeals' ? 'High Protein Authority' : 'Meal Prep Authority',
+  brandLabel = site === 'proteinmeals' ? t('nav.brandHP') : t('nav.brand'),
   brandName = site === 'proteinmeals' ? 'PROTEINMEALS.CO' : 'MEALPREPIDEAS.CO',
   activeLink,
   navLinks = site === 'proteinmeals' ? proteinNav : mealprepNav,
   statusText,
   statusBadge,
 } = Astro.props;
+
 ---
 
 <header class="glass-nav sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
@@ -102,7 +108,7 @@ const {
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
       </svg>
-      SIGN IN
+      {t('nav.signIn')}
     </button>
 
     <!-- Auth: Signed In - Avatar Dropdown -->
@@ -119,20 +125,20 @@ const {
         </div>
         <a href="/profile/" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold transition-colors" style="color: var(--text-secondary); text-decoration: none;">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-          Profile
+          {t('nav.profile')}
         </a>
         <a href="/profile/#saved" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold transition-colors" style="color: var(--text-secondary); text-decoration: none;">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
-          Saved Recipes
+          {t('nav.savedRecipes')}
         </a>
         <a href="/profile/#macros" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold transition-colors" style="color: var(--text-secondary); text-decoration: none;">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-          Macro Calculator
+          {t('nav.macroCalc')}
         </a>
         <div style="border-top: 1px solid var(--border-default); margin-top: 0.25rem; padding-top: 0.25rem;">
           <button onclick="window.authHelper && window.authHelper.signOut()" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold w-full text-left cursor-pointer" style="color: var(--accent-primary); background:none; border:none;">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            Sign Out
+            {t('nav.signOut')}
           </button>
         </div>
       </div>

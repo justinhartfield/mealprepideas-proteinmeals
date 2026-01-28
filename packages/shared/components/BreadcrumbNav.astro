@@ -1,4 +1,5 @@
 ---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 /**
  * BreadcrumbNav — Breadcrumb navigation with schema.org BreadcrumbList
  * Theme-aware: uses CSS custom properties
@@ -24,6 +25,10 @@ const structuredData = JSON.stringify({
     ...(item.href ? { item: item.href } : {}),
   })),
 });
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <nav class="px-6 py-6 max-w-7xl mx-auto flex items-center gap-2 text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">

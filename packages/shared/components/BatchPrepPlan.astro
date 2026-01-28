@@ -8,6 +8,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface MealInfo { name: string; protein: string; cals: string; image?: string; recipeSlug?: string; }
 
@@ -65,6 +66,10 @@ const structuredData = JSON.stringify({
     name: item.text,
   })),
 });
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl} structuredData={structuredData}>
@@ -101,10 +106,10 @@ const structuredData = JSON.stringify({
       <!-- Key Stats -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
         {[
-          { value: String(totalMeals), label: 'Total Meals' },
-          { value: prepTime, label: 'Prep Time' },
-          { value: weeklyBudget, label: 'Weekly Budget' },
-          { value: avgProtein, label: 'Avg Protein/Meal' },
+          { value: String(totalMeals), label: t('plan.totalMeals') },
+          { value: prepTime, label: t('plan.prepTime') },
+          { value: weeklyBudget, label: t('plan.weeklyBudget') },
+          { value: avgProtein, label: t('plan.avgProteinMeal') },
         ].map(stat => (
           <div class="border rounded-2xl p-6 text-center" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
             <span class="text-3xl font-black block" style="color: var(--accent-primary);">{stat.value}</span>
@@ -118,7 +123,7 @@ const structuredData = JSON.stringify({
     {days.length > 0 && (
       <section class="py-16 px-6 border-y" style="background-color: var(--bg-primary); border-color: var(--border-default);">
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-3xl font-black tracking-tighter mb-8">Daily Breakdown</h2>
+          <h2 class="text-3xl font-black tracking-tighter mb-8">{t('plan.dailyBreakdown')}</h2>
           <!-- Day Selector -->
           <div class="flex gap-2 mb-8">
             {days.map(d => (
@@ -180,10 +185,10 @@ const structuredData = JSON.stringify({
     <!-- SHOPPING LIST -->
     {shoppingList.length > 0 && (
       <section class="py-16 px-6 max-w-4xl mx-auto">
-        <h2 class="text-3xl font-black tracking-tighter mb-8">Shopping List</h2>
+        <h2 class="text-3xl font-black tracking-tighter mb-8">{t('plan.shoppingList')}</h2>
         <div class="border rounded-2xl p-8" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
           <div class="flex justify-between items-center mb-6 pb-4 border-b" style="border-color: var(--border-default);">
-            <span class="text-xs font-black tracking-widest uppercase">MASTER LIST</span>
+            <span class="text-xs font-black tracking-widest uppercase">{t('plan.masterList')}</span>
             <span class="text-xs font-bold" style="color: var(--text-secondary);">{planId}</span>
           </div>
           <div class="space-y-3">
@@ -201,7 +206,7 @@ const structuredData = JSON.stringify({
     <!-- PREP STEPS -->
     {prepSteps.length > 0 && (
       <section class="py-16 px-6 max-w-4xl mx-auto">
-        <h2 class="text-3xl font-black tracking-tighter mb-8">Sunday Prep Protocol</h2>
+        <h2 class="text-3xl font-black tracking-tighter mb-8">{t('plan.sundayPrepProtocol')}</h2>
         <div class="space-y-6">
           {prepSteps.map(s => (
             <div class="flex gap-6">

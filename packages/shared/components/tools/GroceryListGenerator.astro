@@ -5,6 +5,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import HeaderNav from '../HeaderNav.astro';
 import FooterNav from '../FooterNav.astro';
 import { recipes } from '../../data/content/recipes';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 interface Props { site?: 'mealprepideas' | 'proteinmeals'; }
 const { site = 'mealprepideas' } = Astro.props;
@@ -14,6 +15,10 @@ const recipeData = JSON.stringify(recipes.map(r => ({
   protein: r.protein, calories: r.calories,
   ingredients: r.ingredients,
 })));
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title="Smart Grocery List Generator | Build Your Shopping List" description="Generate a smart, categorized grocery list from recipes. Add multiple recipes, consolidate ingredients, and print your shopping list.">

@@ -7,6 +7,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface SKUItem {
   id: string; name: string; protein: string; cals: string; tag: string; price: string; score: string;
@@ -41,6 +42,10 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     acceptedAnswer: { '@type': 'Answer', text: faq.answer },
   })),
 }) : null;
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>

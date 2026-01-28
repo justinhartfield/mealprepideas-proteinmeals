@@ -4,11 +4,16 @@ import AuthGate from '../AuthGate.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HeaderNav from '../HeaderNav.astro';
 import FooterNav from '../FooterNav.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 interface Props {
   site?: 'mealprepideas' | 'proteinmeals';
 }
 const { site = 'mealprepideas' } = Astro.props;
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title="Nutrition Label Generator | Create FDA-Style Labels" description="Generate FDA-style nutrition facts labels instantly. Enter your recipe macros and get a printable nutrition label.">

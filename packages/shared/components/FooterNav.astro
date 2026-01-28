@@ -5,6 +5,7 @@
  * Uses CSS custom properties for light/dark adaptation
  */
 import { facets } from '../data/taxonomy';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 function slugToLabel(slug: string): string {
   return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -144,6 +145,10 @@ const footerColumns = isProtein ? [
     ],
   },
 ];
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <!-- EXPLORE ALL CATEGORIES — Full Taxonomy Navigation -->
@@ -151,8 +156,8 @@ const footerColumns = isProtein ? [
   <section style="background-color: var(--bg-secondary); border-top: 1px solid var(--border-default);" class="py-24">
     <div class="px-6 max-w-7xl mx-auto">
       <div class="mb-16">
-        <span class="text-[10px] font-black tracking-[0.5em] uppercase mb-4 block" style="color: var(--text-secondary);">Full Taxonomy Navigation</span>
-        <h2 class="text-5xl md:text-7xl font-black tracking-tighter leading-none">EXPLORE ALL CATEGORIES</h2>
+        <span class="text-[10px] font-black tracking-[0.5em] uppercase mb-4 block" style="color: var(--text-secondary);">{t('footer.fullTaxNav')}</span>
+        <h2 class="text-5xl md:text-7xl font-black tracking-tighter leading-none">{t('footer.exploreAllCats')}</h2>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
         {taxonomyColumns.map((col) => (
@@ -217,9 +222,9 @@ const footerColumns = isProtein ? [
     <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-tertiary);">© 2026 {copyrightSuffix}</span>
     <div class="flex gap-8">
       {[
-        { label: 'Privacy', href: '/privacy/' },
-        { label: 'Terms', href: '/terms/' },
-        { label: 'Sitemap', href: '/sitemap/' },
+        { label: t('footer.privacy'), href: '/privacy/' },
+        { label: t('footer.terms'), href: '/terms/' },
+        { label: t('footer.sitemap'), href: '/sitemap/' },
       ].map(item => (
         <a href={item.href} class="text-[10px] font-bold uppercase tracking-widest transition-colors hover-accent-text" style="color: var(--text-tertiary);">{item.label}</a>
       ))}

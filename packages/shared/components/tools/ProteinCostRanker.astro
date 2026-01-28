@@ -4,6 +4,7 @@ import AuthGate from '../AuthGate.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HeaderNav from '../HeaderNav.astro';
 import FooterNav from '../FooterNav.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 interface Props {
   site?: 'mealprepideas' | 'proteinmeals';
@@ -31,6 +32,10 @@ const proteinData = [
 ];
 
 const dataJson = JSON.stringify(proteinData);
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title="Protein Cost Efficiency Ranker | Compare Protein Sources" description="Compare protein sources by cost-per-gram. Find the most affordable high-protein foods for your budget and diet.">

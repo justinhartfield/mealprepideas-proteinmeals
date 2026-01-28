@@ -9,6 +9,7 @@ import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
 import ExploreByBlock from './ExploreByBlock.astro';
 import PlanCTA from './PlanCTA.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Recipe {
   id: number;
@@ -80,6 +81,10 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     acceptedAnswer: { '@type': 'Answer', text: faq.answer },
   })),
 }) : null;
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
@@ -96,7 +101,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
           <h1 class="text-7xl md:text-9xl font-black tracking-tighter leading-[0.85] mb-8">{headline}<br/>{headlineAccent || 'PROTEIN.'}</h1>
           {definition && (
             <div class="max-w-2xl border p-8 rounded-2xl" style="background-color: color-mix(in srgb, var(--bg-secondary) 50%, transparent); border-color: var(--border-default);">
-              <h2 class="text-xs font-black uppercase tracking-[0.3em] mb-4" style="color: var(--accent-primary);">Functional Definition</h2>
+              <h2 class="text-xs font-black uppercase tracking-[0.3em] mb-4" style="color: var(--accent-primary);">{t('category.functionalDef')}</h2>
               <p class="text-lg leading-relaxed font-medium mb-6" style="color: var(--text-secondary);" set:html={definition} />
               {definitionBullets.length > 0 && (
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -116,7 +121,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
         <div class="lg:col-span-4">
           <div class="hyper-border p-8 rounded-3xl" style="background-color: var(--bg-primary);">
             <div class="flex justify-between items-center mb-8">
-              <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-secondary);">P:E Efficiency Index</span>
+              <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-secondary);">{t('category.peEfficiency')}</span>
               <span class="font-black italic" style="color: var(--accent-primary);">{peLabel}</span>
             </div>
             <div class="space-y-6">
@@ -188,11 +193,11 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
             </div>
             <div class="p-4 grid grid-cols-2 gap-4 border-t" style="border-color: var(--border-default);">
               <div class="p-3 rounded-xl border" style="background-color: var(--bg-primary); border-color: var(--border-default);">
-                <span class="text-[9px] font-bold uppercase tracking-widest block mb-1" style="color: var(--text-secondary);">Protein</span>
+                <span class="text-[9px] font-bold uppercase tracking-widest block mb-1" style="color: var(--text-secondary);">{t('common.protein')}</span>
                 <span class="text-xl font-black tabular-nums" x-text="recipe.protein"></span>
               </div>
               <div class="p-3 rounded-xl border" style="background-color: var(--bg-primary); border-color: var(--border-default);">
-                <span class="text-[9px] font-bold uppercase tracking-widest block mb-1" style="color: var(--text-secondary);">Calories</span>
+                <span class="text-[9px] font-bold uppercase tracking-widest block mb-1" style="color: var(--text-secondary);">{t('common.calories')}</span>
                 <span class="text-xl font-black tabular-nums" x-text="recipe.cal"></span>
               </div>
             </div>
@@ -223,7 +228,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     <!-- FAQ -->
     {faqs.length > 0 && (
       <section class="py-24 px-6 max-w-4xl mx-auto">
-        <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">TECHNICAL FAQ</h4>
+        <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">{t('common.technicalFaq')}</h4>
         <div class="space-y-4">
           {faqs.map((faq, index) => (
             <div class="border rounded-2xl overflow-hidden" style="border-color: var(--border-default);">

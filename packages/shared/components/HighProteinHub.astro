@@ -18,6 +18,7 @@ import {
   getPlanCount,
   getFastFoodChains,
 } from '../utils/stats';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const allHPRecipes = recipes.filter(r => r.hub === 'high-protein');
 const allHPPlans = plans.filter(p => p.hub === 'high-protein');
@@ -206,6 +207,10 @@ const structuredData = JSON.stringify({
   description: 'Browse all high protein recipes, macro-optimized plans, and discover your perfect protein strategy with our interactive wizard.',
   url: 'https://proteinmeals.co/high-protein/',
 });
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl} structuredData={structuredData}>
@@ -268,7 +273,7 @@ const structuredData = JSON.stringify({
             <div class="flex items-center gap-3 mb-6">
               <span class="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded"
                     style="background-color: var(--accent-primary); color: var(--text-inverse);">Protein Hub</span>
-              <span class="text-[10px] font-black uppercase tracking-[0.4em]" style="color: var(--text-tertiary);">Interactive Wizard</span>
+              <span class="text-[10px] font-black uppercase tracking-[0.4em]" style="color: var(--text-tertiary);">{t('hub.interactiveWizard')}</span>
             </div>
             <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-[0.85] mb-4" style="color: var(--text-primary);">
               BUILD YOUR<br/>MACRO PROTOCOL
@@ -280,11 +285,11 @@ const structuredData = JSON.stringify({
           <div class="flex gap-6">
             <div class="text-center">
               <span class="text-[40px] font-black tabular-nums tracking-tighter block leading-none" style="color: var(--accent-primary);">{hpAvgProtein}g</span>
-              <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-secondary);">Avg Protein</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-secondary);">{t('hub.avgProtein')}</span>
             </div>
             <div class="text-center">
               <span class="text-[40px] font-black tabular-nums tracking-tighter block leading-none" style="color: var(--text-primary);">{hpRecipeCount}</span>
-              <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-secondary);">Recipes</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-secondary);">{t('hub.recipes')}</span>
             </div>
           </div>
         </div>
@@ -293,7 +298,7 @@ const structuredData = JSON.stringify({
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
           <!-- 01. Goal -->
           <div class="p-6 rounded-2xl transition-all" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
-            <label class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-tertiary);">01. Goal</label>
+            <label class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-tertiary);">{t('wizard.goal')}</label>
             <div class="space-y-2">
               <template x-for="g in [{v:'weight-loss',l:'Weight Loss'},{v:'muscle-gain',l:'Muscle Gain'},{v:'healthy',l:'Healthy'}]">
                 <button x-on:click="goal = goal === g.v ? '' : g.v"
@@ -306,7 +311,7 @@ const structuredData = JSON.stringify({
 
           <!-- 02. Method -->
           <div class="p-6 rounded-2xl transition-all" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
-            <label class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-tertiary);">02. Method</label>
+            <label class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-tertiary);">{t('wizard.method')}</label>
             <div class="space-y-2">
               <template x-for="m in [{v:'crockpot',l:'Crockpot'},{v:'air-fryer',l:'Air Fryer'},{v:'microwave',l:'Microwave'},{v:'no-cook',l:'No-Cook'},{v:'freezer',l:'Freezer'},{v:'instant-pot',l:'Instant Pot'}]">
                 <button x-on:click="method = method === m.v ? '' : m.v"
@@ -319,7 +324,7 @@ const structuredData = JSON.stringify({
 
           <!-- 03. Diet -->
           <div class="p-6 rounded-2xl transition-all" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
-            <label class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-tertiary);">03. Diet</label>
+            <label class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-tertiary);">{t('wizard.diet')}</label>
             <div class="space-y-2">
               <template x-for="d in [{v:'vegan',l:'Vegan'},{v:'keto',l:'Keto'},{v:'low-carb',l:'Low-Carb'},{v:'gluten-free',l:'Gluten-Free'},{v:'dairy-free',l:'Dairy-Free'},{v:'vegetarian',l:'Vegetarian'}]">
                 <button x-on:click="diet = diet === d.v ? '' : d.v"
@@ -332,7 +337,7 @@ const structuredData = JSON.stringify({
 
           <!-- 04. Meal -->
           <div class="p-6 rounded-2xl transition-all" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
-            <label class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-tertiary);">04. Meal</label>
+            <label class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-tertiary);">{t('wizard.meal')}</label>
             <div class="space-y-2">
               <template x-for="m in [{v:'breakfast',l:'Breakfast'},{v:'lunch',l:'Lunch'},{v:'dinner',l:'Dinner'},{v:'snacks',l:'Snacks'}]">
                 <button x-on:click="meal = meal === m.v ? '' : m.v"
@@ -345,7 +350,7 @@ const structuredData = JSON.stringify({
 
           <!-- 05. Constraint -->
           <div class="p-6 rounded-2xl transition-all" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
-            <label class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-tertiary);">05. Constraint</label>
+            <label class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-tertiary);">{t('wizard.constraint')}</label>
             <div class="space-y-2">
               <template x-for="c in [{v:'budget',l:'Budget'},{v:'quick',l:'Quick'},{v:'high-fiber',l:'High-Fiber'},{v:'no-microwave',l:'No-Microwave'},{v:'simple',l:'Simple'}]">
                 <button x-on:click="constraint = constraint === c.v ? '' : c.v"
@@ -362,12 +367,12 @@ const structuredData = JSON.stringify({
           <button x-on:click="generatePlan()"
                   class="theme-btn-cta px-10 py-5 rounded-xl font-black uppercase text-sm tracking-widest transition-transform hover:scale-[1.02] flex items-center justify-center gap-3 cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            Generate Protocol
+            {t('hub.generateProtocol')}
           </button>
           <button x-on:click="resetWizard()"
                   class="px-8 py-5 rounded-xl font-black uppercase text-xs tracking-widest transition-all cursor-pointer"
                   style="border: 1px solid var(--border-default); color: var(--text-secondary);">
-            Reset All
+            {t('hub.resetAll')}
           </button>
         </div>
       </div>
@@ -396,12 +401,12 @@ const structuredData = JSON.stringify({
           <div>
             <div class="flex items-center gap-4 mb-3">
               <div class="h-[2px] w-12" style="background-color: var(--accent-primary);"></div>
-              <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">Browse & Filter</span>
+              <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">{t('hub.browseFilter')}</span>
             </div>
-            <h2 class="text-4xl font-black tracking-tighter" style="color: var(--text-primary);">ALL HIGH PROTEIN RECIPES</h2>
+            <h2 class="text-4xl font-black tracking-tighter" style="color: var(--text-primary);">{t('hub.allHPRecipes')}</h2>
           </div>
           <div class="text-sm font-bold" style="color: var(--text-secondary);">
-            Showing <span class="font-black" style="color: var(--accent-primary);" x-text="filteredRecipes.length"></span> recipes
+            Showing <span class="font-black" style="color: var(--accent-primary);" x-text="filteredRecipes.length"></span> {t('hub.recipesLc')}
           </div>
         </div>
 
@@ -468,15 +473,15 @@ const structuredData = JSON.stringify({
 
         <!-- Empty State -->
         <div x-show="filteredRecipes.length === 0" class="text-center py-16 rounded-2xl" style="background: var(--bg-primary); border: 1px solid var(--border-default);">
-          <p class="text-lg font-bold mb-2" style="color: var(--text-secondary);">No recipes match this filter.</p>
-          <button x-on:click="filter = 'all'" class="text-xs font-black uppercase tracking-widest cursor-pointer" style="color: var(--accent-primary);">Show All Recipes</button>
+          <p class="text-lg font-bold mb-2" style="color: var(--text-secondary);">{t('hub.noRecipesMatch')}</p>
+          <button x-on:click="filter = 'all'" class="text-xs font-black uppercase tracking-widest cursor-pointer" style="color: var(--accent-primary);">{t('hub.showAllRecipes')}</button>
         </div>
 
         <!-- PLANS SECTION -->
         <div class="mt-20">
           <div class="flex items-center gap-4 mb-10">
             <div class="h-[2px] w-12" style="background-color: var(--accent-primary);"></div>
-            <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">Macro-Optimized Plans</span>
+            <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">{t('hub.macroOptPlans')}</span>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <template x-for="p in allPlans" x-bind:key="p.slug">
@@ -494,15 +499,15 @@ const structuredData = JSON.stringify({
                 <div class="grid grid-cols-3 gap-3">
                   <div class="text-center p-3 rounded-xl" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
                     <span class="block text-lg font-black tabular-nums" style="color: var(--text-primary);" x-text="p.totalMeals"></span>
-                    <span class="text-[8px] font-bold uppercase" style="color: var(--text-tertiary);">Meals</span>
+                    <span class="text-[8px] font-bold uppercase" style="color: var(--text-tertiary);">{t('hub.meals')}</span>
                   </div>
                   <div class="text-center p-3 rounded-xl" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
                     <span class="block text-lg font-black tabular-nums" style="color: var(--accent-primary);" x-text="p.dailyProtein + 'g'"></span>
-                    <span class="text-[8px] font-bold uppercase" style="color: var(--text-tertiary);">Protein/Day</span>
+                    <span class="text-[8px] font-bold uppercase" style="color: var(--text-tertiary);">{t('hub.proteinDay')}</span>
                   </div>
                   <div class="text-center p-3 rounded-xl" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
                     <span class="block text-lg font-black tabular-nums" style="color: var(--text-primary);" x-text="p.groceryBudget"></span>
-                    <span class="text-[8px] font-bold uppercase" style="color: var(--text-tertiary);">Budget</span>
+                    <span class="text-[8px] font-bold uppercase" style="color: var(--text-tertiary);">{t('hub.budget')}</span>
                   </div>
                 </div>
               </a>

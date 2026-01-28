@@ -10,6 +10,7 @@ import { recipes } from '../data/content/recipes';
 import { plans } from '../data/content/plans';
 import { stores } from '../data/content/stores';
 import { facets } from '../data/taxonomy';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 function slugToDisplay(slug: string): string {
   return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -36,6 +37,10 @@ const hubPlans = plans.filter(p => p.hub === (isProtein ? 'high-protein' : 'meal
 
 // Facet types
 const facetTypes = ['meal', 'method', 'diet', 'goal', 'constraint', 'ingredient', 'persona', 'store', 'chain'] as const;
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={`Sitemap | ${siteName}`} description={`Complete site directory for ${siteName}. Browse all recipes, methods, diets, goals, personas, stores, plans, and tools.`}>
@@ -43,8 +48,8 @@ const facetTypes = ['meal', 'method', 'diet', 'goal', 'constraint', 'ingredient'
 
   <main class="flex-grow py-16 px-6 max-w-7xl mx-auto">
     <div class="mb-12">
-      <span class="text-[10px] font-black uppercase tracking-widest block mb-4" style="color: var(--accent-primary);">Site Directory</span>
-      <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-4">Sitemap</h1>
+      <span class="text-[10px] font-black uppercase tracking-widest block mb-4" style="color: var(--accent-primary);">{t('sitemap.siteDirectory')}</span>
+      <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-4">{t('sitemap.sitemap')}</h1>
       <p class="text-lg" style="color: var(--text-secondary);">Everything on {siteName}, organized for humans.</p>
       <p class="text-sm mt-2" style="color: var(--text-tertiary);">Looking for the XML sitemap? <a href="/sitemap-index.xml" class="underline" style="color: var(--accent-primary);">sitemap-index.xml</a></p>
     </div>
@@ -53,7 +58,7 @@ const facetTypes = ['meal', 'method', 'diet', 'goal', 'constraint', 'ingredient'
 
       <!-- Main Pages -->
       <div>
-        <h2 class="text-xs font-black uppercase tracking-widest mb-4 pb-2 border-b" style="color: var(--accent-primary); border-color: var(--border-default);">Main Pages</h2>
+        <h2 class="text-xs font-black uppercase tracking-widest mb-4 pb-2 border-b" style="color: var(--accent-primary); border-color: var(--border-default);">{t('sitemap.mainPages')}</h2>
         <ul class="space-y-2 text-sm font-medium" style="color: var(--text-secondary);">
           <li><a href="/" class="hover:underline">Home</a></li>
           <li><a href={hubPath} class="hover:underline">{hubLabel} Hub</a></li>

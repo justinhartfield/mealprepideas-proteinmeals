@@ -1,4 +1,5 @@
 ---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 /**
  * FacetNav — Theme-aware chip-based facet navigation
  * Uses CSS custom properties for light/dark adaptation
@@ -24,6 +25,10 @@ const {
   badge,
   layout = 'chips',
 } = Astro.props;
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 {layout === 'chips' ? (

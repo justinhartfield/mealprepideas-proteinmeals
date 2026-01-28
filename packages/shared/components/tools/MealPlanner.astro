@@ -5,6 +5,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import HeaderNav from '../HeaderNav.astro';
 import FooterNav from '../FooterNav.astro';
 import { recipes } from '../../data/content/recipes';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 interface Props { site?: 'mealprepideas' | 'proteinmeals'; }
 const { site = 'mealprepideas' } = Astro.props;
@@ -15,6 +16,10 @@ const recipeData = JSON.stringify(recipes.map(r => ({
   calories: r.calories, protein: r.protein, carbs: r.carbs, fat: r.fat,
   servings: r.servings, ingredients: r.ingredients, prepTime: r.prepTime, cookTime: r.cookTime,
 })));
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title="Weekly Meal Plan Builder | Plan Your Week" description="Build your perfect weekly meal plan. Drag-and-drop recipes into a 7-day calendar, track macros, and generate a shopping list.">

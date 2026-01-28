@@ -8,6 +8,7 @@ import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
 import ExploreByBlock from './ExploreByBlock.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface NutrientRule { nutrient: string; recommendation: string; reason: string; severity?: 'critical' | 'important' | 'helpful'; }
 interface Recipe { id: number; title: string; protein: string; cal: string; tags: string[]; img?: string; slug?: string; }
@@ -48,6 +49,10 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     acceptedAnswer: { '@type': 'Answer', text: faq.answer },
   })),
 }) : null;
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
@@ -69,10 +74,10 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
           <div class="flex items-center gap-3 mb-6">
             <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase" style="background-color: var(--accent-primary); color: var(--text-inverse);">T8: {conditionType}</span>
           </div>
-          <h1 class="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-8">{conditionName}<br/><span style="color: var(--text-tertiary);">INDEX</span></h1>
+          <h1 class="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-8">{conditionName}<br/><span style="color: var(--text-tertiary);">{t('persona.index')}</span></h1>
           {definition && (
             <div class="border rounded-2xl p-8 mb-8" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
-              <h2 class="text-xs font-black uppercase tracking-[0.3em] mb-4" style="color: var(--accent-primary);">Clinical Definition</h2>
+              <h2 class="text-xs font-black uppercase tracking-[0.3em] mb-4" style="color: var(--accent-primary);">{t('persona.clinicalDef')}</h2>
               <p class="text-lg leading-relaxed" style="color: var(--text-secondary);" set:html={definition} />
             </div>
           )}
@@ -86,18 +91,18 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
         <div class="md:col-span-4">
           <div class="hyper-border rounded-3xl p-8">
             <div class="scanner-line"></div>
-            <h3 class="text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-secondary);">Condition Profile</h3>
+            <h3 class="text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-secondary);">{t('persona.conditionProfile')}</h3>
             <div class="space-y-4">
               <div class="flex justify-between items-center border-b pb-3" style="border-color: var(--border-default);">
-                <span class="text-xs font-bold" style="color: var(--text-secondary);">Type</span>
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">{t('persona.type')}</span>
                 <span class="text-sm font-black capitalize">{conditionType}</span>
               </div>
               <div class="flex justify-between items-center border-b pb-3" style="border-color: var(--border-default);">
-                <span class="text-xs font-bold" style="color: var(--text-secondary);">Protocols</span>
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">{t('persona.protocols')}</span>
                 <span class="text-sm font-black" style="color: var(--accent-primary);">{recipes.length}+</span>
               </div>
               <div class="flex justify-between items-center border-b pb-3" style="border-color: var(--border-default);">
-                <span class="text-xs font-bold" style="color: var(--text-secondary);">Rules</span>
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">{t('persona.rules')}</span>
                 <span class="text-sm font-black">{nutritionRules.length}</span>
               </div>
             </div>
@@ -110,7 +115,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     {nutritionRules.length > 0 && (
       <section class="py-16 px-6 border-y" style="background-color: var(--bg-primary); border-color: var(--border-default);">
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-3xl font-black tracking-tighter mb-8">Nutrition Rules</h2>
+          <h2 class="text-3xl font-black tracking-tighter mb-8">{t('persona.nutritionRules')}</h2>
           <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {nutritionRules.map(rule => (
               <div class:list={[
@@ -143,7 +148,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     <!-- RECIPE GRID -->
     {recipes.length > 0 && (
       <section class="py-16 px-6 max-w-7xl mx-auto">
-        <h2 class="text-3xl font-black tracking-tighter mb-8">Recommended Protocols</h2>
+        <h2 class="text-3xl font-black tracking-tighter mb-8">{t('persona.recommendedProtocols')}</h2>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <template x-for="recipe in recipes" x-bind:key="recipe.id">
             <a x-bind:href={`recipe.slug ? '${hubPath}recipes/' + recipe.slug + '/' : '${hubPath}'`} class="hyper-border rounded-2xl overflow-hidden group block">
@@ -161,11 +166,11 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                   <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
-                    <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Protein</span>
+                    <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">{t('common.protein')}</span>
                     <span class="font-black" style="color: var(--accent-primary);" x-text="recipe.protein"></span>
                   </div>
                   <div class="p-3 rounded-xl border text-center" style="background-color: var(--bg-primary); border-color: var(--border-default);">
-                    <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">Calories</span>
+                    <span class="text-[9px] font-bold uppercase block" style="color: var(--text-secondary);">{t('common.calories')}</span>
                     <span class="font-black" x-text="recipe.cal"></span>
                   </div>
                 </div>
@@ -187,7 +192,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     <!-- RELATED CONDITIONS -->
     {relatedConditions.length > 0 && (
       <section class="py-16 px-6 max-w-7xl mx-auto border-t" style="border-color: var(--border-default);">
-        <h3 class="text-2xl font-black tracking-tight mb-8">Related Conditions</h3>
+        <h3 class="text-2xl font-black tracking-tight mb-8">{t('persona.relatedConditions')}</h3>
         <div class="grid md:grid-cols-4 gap-4">
           {relatedConditions.map(c => (
             <a href={c.href} class="p-6 border rounded-2xl hover-accent-border transition-all group" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
@@ -201,7 +206,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     <!-- FAQ -->
     {faqs.length > 0 && (
       <section class="py-24 px-6 max-w-4xl mx-auto">
-        <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">FAQ</h4>
+        <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">{t('common.faq')}</h4>
         <div class="space-y-4">
           {faqs.map((faq, i) => (
             <div class="border rounded-2xl overflow-hidden" style="border-color: var(--border-default);">

@@ -12,6 +12,7 @@ import ExploreByBlock from './ExploreByBlock.astro';
 import { facets, FACET_ORDER, type FacetKey } from '../data/taxonomy';
 import { slugToDisplay } from '../utils/urls';
 import { getRecipesMatchingAnyFacet } from '../utils/content';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Props {
   title: string;
@@ -84,6 +85,10 @@ const exploreColumns = otherFacetTypes.slice(0, 4).map(ft => ({
 }));
 
 const resolvedSite = site || (hub === 'meal-prep' ? 'mealprepideas' : 'proteinmeals');
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl} structuredData={structuredData}>
@@ -102,7 +107,7 @@ const resolvedSite = site || (hub === 'meal-prep' ? 'mealprepideas' : 'proteinme
           <div class="flex items-center gap-3 mb-6">
             <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase"
                   style="background-color: var(--accent-primary); color: var(--text-inverse);">
-              Facet Index
+              {t('facetIndex.facetIndex')}
             </span>
             <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-tertiary);">
               {totalValues} Categories
@@ -126,15 +131,15 @@ const resolvedSite = site || (hub === 'meal-prep' ? 'mealprepideas' : 'proteinme
             </h3>
             <div class="space-y-6">
               <div class="flex justify-between items-end">
-                <span class="text-xs font-bold" style="color: var(--text-secondary);">Total Categories</span>
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">{t('facetIndex.totalCategories')}</span>
                 <span class="text-3xl font-black" style="color: var(--accent-primary);">{totalValues}</span>
               </div>
               <div class="flex justify-between items-end">
-                <span class="text-xs font-bold" style="color: var(--text-secondary);">Total Recipes</span>
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">{t('facetIndex.totalRecipes')}</span>
                 <span class="text-3xl font-black">{totalRecipes}</span>
               </div>
               <div class="flex justify-between items-end">
-                <span class="text-xs font-bold" style="color: var(--text-secondary);">Facet Type</span>
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">{t('facetIndex.facetType')}</span>
                 <span class="text-sm font-black uppercase tracking-widest" style="color: var(--accent-primary);">{facetLabel}</span>
               </div>
             </div>

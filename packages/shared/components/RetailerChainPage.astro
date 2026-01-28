@@ -8,6 +8,7 @@ import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
 import FacetNav from './FacetNav.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface SKU {
   id: string; name: string; category: string; protein: string; cals: string; price: string; peScore: string;
@@ -98,6 +99,10 @@ const faqSchema = generatedFaqs.length > 0 ? {
 
 const allSchemas = [breadcrumbSchema, itemListSchema, faqSchema].filter(Boolean);
 const combinedSchemaJson = JSON.stringify(allSchemas);
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
@@ -154,7 +159,7 @@ const combinedSchemaJson = JSON.stringify(allSchemas);
                 <span class="text-3xl font-black" style="color: var(--accent-primary);">{totalSKUs || skus.length}</span>
               </div>
               <div class="flex justify-between items-end">
-                <span class="text-xs font-bold" style="color: var(--text-secondary);">Avg P:E Score</span>
+                <span class="text-xs font-bold" style="color: var(--text-secondary);">{t('retail.avgPeScore')}</span>
                 <span class="text-3xl font-black">{avgPE}</span>
               </div>
               <button class="w-full py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all theme-btn-primary">
@@ -178,9 +183,9 @@ const combinedSchemaJson = JSON.stringify(allSchemas);
                 <button x-on:click="filter = cat" x-bind:class="filter === cat ? 'pill-active' : 'theme-pill-inactive'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all" x-text="cat"></button>
               </template>
               <span class="w-px h-6 mx-1" style="background: var(--border-default);"></span>
-              <button x-on:click="sortBy = sortBy === 'protein' ? 'default' : 'protein'" x-bind:class="sortBy === 'protein' ? 'pill-active' : 'theme-pill-inactive'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">↑ Protein</button>
-              <button x-on:click="sortBy = sortBy === 'calories' ? 'default' : 'calories'" x-bind:class="sortBy === 'calories' ? 'pill-active' : 'theme-pill-inactive'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">↓ Calories</button>
-              <button x-on:click="sortBy = sortBy === 'pe' ? 'default' : 'pe'" x-bind:class="sortBy === 'pe' ? 'pill-active' : 'theme-pill-inactive'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">↑ P:E</button>
+              <button x-on:click="sortBy = sortBy === 'protein' ? 'default' : 'protein'" x-bind:class="sortBy === 'protein' ? 'pill-active' : 'theme-pill-inactive'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">{t('retail.sortProtein')}</button>
+              <button x-on:click="sortBy = sortBy === 'calories' ? 'default' : 'calories'" x-bind:class="sortBy === 'calories' ? 'pill-active' : 'theme-pill-inactive'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">{t('retail.sortCalories')}</button>
+              <button x-on:click="sortBy = sortBy === 'pe' ? 'default' : 'pe'" x-bind:class="sortBy === 'pe' ? 'pill-active' : 'theme-pill-inactive'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">{t('retail.sortPE')}</button>
             </div>
           </div>
 
@@ -210,7 +215,7 @@ const combinedSchemaJson = JSON.stringify(allSchemas);
     <!-- TOP PICKS -->
     {topPicks.length > 0 && (
       <section class="py-16 px-6 max-w-7xl mx-auto">
-        <h2 class="text-3xl font-black tracking-tighter mb-8">Top Picks</h2>
+        <h2 class="text-3xl font-black tracking-tighter mb-8">{t('retail.topPicks')}</h2>
         <div class="grid md:grid-cols-3 gap-6">
           {topPicks.map((pick, i) => (
             <div class="hyper-border rounded-2xl p-6 group">
@@ -230,14 +235,14 @@ const combinedSchemaJson = JSON.stringify(allSchemas);
     {menuHacks.length > 0 && (
       <section class="py-16 px-6" style="background-color: var(--accent-primary); color: var(--text-inverse);">
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-4xl font-black tracking-tighter mb-8">Menu Modification Guide</h2>
+          <h2 class="text-4xl font-black tracking-tighter mb-8">{t('retail.menuModGuide')}</h2>
           <div class="grid md:grid-cols-2 gap-6">
             {menuHacks.map(hack => (
               <div class="rounded-2xl p-6 border-2" style="background-color: var(--bg-secondary); color: var(--text-primary); border-color: var(--text-inverse);">
                 <h4 class="text-xl font-black mb-3">{hack.order}</h4>
                 <p class="text-sm font-bold mb-4" style="color: var(--text-secondary);">{hack.modifications}</p>
                 <div class="grid grid-cols-3 gap-3">
-                  <div class="text-center"><span class="text-xs font-bold block" style="color: var(--text-secondary);">Protein</span><span class="font-black">{hack.protein}</span></div>
+                  <div class="text-center"><span class="text-xs font-bold block" style="color: var(--text-secondary);">{t('common.protein')}</span><span class="font-black">{hack.protein}</span></div>
                   <div class="text-center"><span class="text-xs font-bold block" style="color: var(--text-secondary);">Cals</span><span class="font-black">{hack.cals}</span></div>
                   <div class="text-center"><span class="text-xs font-bold block" style="color: var(--text-secondary);">Savings</span><span class="font-black">{hack.savings}</span></div>
                 </div>
@@ -251,7 +256,7 @@ const combinedSchemaJson = JSON.stringify(allSchemas);
     <!-- RELATED LINKS -->
     {relatedLinks.length > 0 && (
       <section class="py-16 px-6 max-w-7xl mx-auto">
-        <h3 class="text-2xl font-black tracking-tight mb-8">Related Indexes</h3>
+        <h3 class="text-2xl font-black tracking-tight mb-8">{t('retail.relatedIndexes')}</h3>
         <div class="grid md:grid-cols-4 gap-4">
           {relatedLinks.map(link => (
             <a href={link.href} class="p-6 border rounded-2xl hover-accent-border transition-all group" style="background-color: var(--bg-secondary); border-color: var(--border-default);">

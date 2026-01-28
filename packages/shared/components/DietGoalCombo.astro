@@ -8,6 +8,7 @@ import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
 import ExploreByBlock from './ExploreByBlock.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Recipe {
   id: number; title: string; slug?: string; protein: string; cal: string; method: string; tag: string; img?: string;
@@ -41,6 +42,10 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     acceptedAnswer: { '@type': 'Answer', text: faq.answer },
   })),
 }) : null;
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
@@ -64,9 +69,9 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
             <p class="text-xl leading-relaxed" style="color: var(--text-secondary);">{subheadline}</p>
           </div>
           <div class="border p-6 rounded-3xl w-full md:w-64" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
-            <div class="text-[10px] font-black uppercase tracking-widest mb-4" style="color: var(--text-secondary);">Macro Intent</div>
+            <div class="text-[10px] font-black uppercase tracking-widest mb-4" style="color: var(--text-secondary);">{t('combo.macroIntent')}</div>
             <div class="flex justify-between items-end mb-2">
-              <span class="text-sm font-bold">Protein Min.</span>
+              <span class="text-sm font-bold">{t('combo.proteinMin')}</span>
               <span class="text-2xl font-black" style="color: var(--accent-primary);">30g</span>
             </div>
             <div class="w-full h-1 rounded-full overflow-hidden" style="background-color: var(--bg-tertiary);">
@@ -89,7 +94,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
         </div>
       </div>
       <div class="border rounded-3xl p-8" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
-        <h4 class="text-xs font-black uppercase tracking-widest mb-6" style="color: var(--text-secondary);">Quick Filters</h4>
+        <h4 class="text-xs font-black uppercase tracking-widest mb-6" style="color: var(--text-secondary);">{t('combo.quickFilters')}</h4>
         <div class="flex flex-col gap-2">
           {['all', 'no-cook', 'one-pan', 'air-fryer', 'crockpot'].map(f => (
             <button
@@ -108,7 +113,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
       <div class="max-w-7xl mx-auto relative z-10">
         <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
           <div>
-            <span class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--accent-primary);">The Ranking Machine</span>
+            <span class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--accent-primary);">{t('combo.rankingMachine')}</span>
             <h2 class="text-4xl md:text-5xl font-black tracking-tight">Top {headline} <br/>{headlineAccent} Protocols</h2>
           </div>
         </div>
@@ -153,8 +158,8 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
       <section class="py-24 px-6 border-t" style="border-color: var(--border-default);">
         <div class="max-w-7xl mx-auto">
           <div class="mb-12">
-            <span class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-secondary);">Related Systems</span>
-            <h3 class="text-3xl font-black tracking-tight">Explore Sibling Nodes.</h3>
+            <span class="text-[10px] font-black uppercase tracking-widest mb-4 block" style="color: var(--text-secondary);">{t('combo.relatedSystems')}</span>
+            <h3 class="text-3xl font-black tracking-tight">{t('combo.exploreSiblings')}</h3>
           </div>
           <div class="grid md:grid-cols-4 gap-4">
             {siblings.map(sib => (
@@ -171,7 +176,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     <!-- FAQ -->
     {faqs.length > 0 && (
       <section class="py-24 px-6 max-w-4xl mx-auto">
-        <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">TECHNICAL FAQ</h4>
+        <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">{t('common.technicalFaq')}</h4>
         <div class="space-y-4">
           {faqs.map((faq, index) => (
             <div class="border rounded-2xl overflow-hidden" style="border-color: var(--border-default);">

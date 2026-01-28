@@ -13,6 +13,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Recipe {
   id: string;
@@ -76,6 +77,10 @@ const recipesJson = JSON.stringify(recipes);
 
 // Collect unique focus values for filter pills
 const focusValues = [...new Set(recipes.map(r => r.focus).filter(Boolean))];
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
@@ -106,9 +111,9 @@ const focusValues = [...new Set(recipes.map(r => r.focus).filter(Boolean))];
           <!-- Operational Capacity stat -->
           <div class="flex flex-col items-end gap-2">
             <div class="text-right">
-              <span class="text-[10px] font-black uppercase tracking-widest block" style="color: var(--text-tertiary);">Operational Capacity</span>
+              <span class="text-[10px] font-black uppercase tracking-widest block" style="color: var(--text-tertiary);">{t('pm.operationalCapacity')}</span>
               <span class="text-5xl font-black tabular-nums tracking-tighter">{avgPrepTime}</span>
-              <span class="text-[10px] font-bold block" style="color: var(--text-tertiary);">Avg. Prep Time (Mins)</span>
+              <span class="text-[10px] font-bold block" style="color: var(--text-tertiary);">{t('pm.avgPrepTime')}</span>
             </div>
           </div>
         </div>
@@ -131,8 +136,8 @@ const focusValues = [...new Set(recipes.map(r => r.focus).filter(Boolean))];
     <section class="py-16 px-6 max-w-7xl mx-auto">
       <div class="flex flex-wrap items-center justify-between gap-6 mb-12">
         <div>
-          <h2 class="text-3xl font-black tracking-tighter uppercase">The Essentials Matrix</h2>
-          <p class="text-xs font-bold tracking-widest uppercase" style="color: var(--text-tertiary);">Ranked by nutrient density &amp; reheat stability</p>
+          <h2 class="text-3xl font-black tracking-tighter uppercase">{t('pm.essentialsMatrix')}</h2>
+          <p class="text-xs font-bold tracking-widest uppercase" style="color: var(--text-tertiary);">{t('pm.rankedBy')}</p>
         </div>
 
         <!-- Filter pills -->
@@ -141,7 +146,7 @@ const focusValues = [...new Set(recipes.map(r => r.focus).filter(Boolean))];
             @click="filter = 'all'"
             :class="filter === 'all' ? 'pill-active' : 'theme-pill-inactive'"
             class="px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all"
-          >All SKUs</button>
+          >{t('pm.allSkus')}</button>
           {focusValues.map(f => (
             <button
               x-on:click={`filter = '${f}'`}
@@ -184,17 +189,17 @@ const focusValues = [...new Set(recipes.map(r => r.focus).filter(Boolean))];
               <div class="grid grid-cols-2 md:grid-cols-4 gap-8 flex-1">
                 <!-- Protein -->
                 <div>
-                  <span class="text-[8px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">Protein/Serve</span>
+                  <span class="text-[8px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">{t('pm.proteinServe')}</span>
                   <span class="text-sm font-bold tabular-nums" x-text="item.protein"></span>
                 </div>
                 <!-- Fiber -->
                 <div>
-                  <span class="text-[8px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">Fiber/Serve</span>
+                  <span class="text-[8px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">{t('pm.fiberServe')}</span>
                   <span class="text-sm font-bold tabular-nums" x-text="item.fiber || '—'"></span>
                 </div>
                 <!-- Stability bar -->
                 <div>
-                  <span class="text-[8px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">Stability</span>
+                  <span class="text-[8px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">{t('pm.stability')}</span>
                   <div class="flex items-center gap-2">
                     <div class="h-1 w-12 rounded-full overflow-hidden" style="background-color: var(--bg-tertiary);">
                       <div class="h-full" style="background-color: var(--accent-primary);" :style="`width: ${(parseInt(item.stability) || 7) * 10}%`"></div>
@@ -204,7 +209,7 @@ const focusValues = [...new Set(recipes.map(r => r.focus).filter(Boolean))];
                 </div>
                 <!-- Reheat -->
                 <div class="hidden md:block">
-                  <span class="text-[8px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">Optimal Reheat</span>
+                  <span class="text-[8px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">{t('pm.optimalReheat')}</span>
                   <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--accent-primary);" x-text="item.reheat || 'Microwave'"></span>
                 </div>
               </div>
@@ -261,8 +266,8 @@ const focusValues = [...new Set(recipes.map(r => r.focus).filter(Boolean))];
 
         <!-- Storage stability matrix -->
         <div class="lg:w-1/2">
-          <span class="text-[10px] font-black tracking-[0.4em] uppercase mb-4 block" style="color: var(--accent-primary);">Stability Matrix</span>
-          <h3 class="text-5xl font-black tracking-tighter leading-none mb-10 uppercase">Maximum Storage Life</h3>
+          <span class="text-[10px] font-black tracking-[0.4em] uppercase mb-4 block" style="color: var(--accent-primary);">{t('pm.stabilityMatrix')}</span>
+          <h3 class="text-5xl font-black tracking-tighter leading-none mb-10 uppercase">{t('pm.maxStorageLife')}</h3>
 
           <div class="grid grid-cols-2 gap-4">
             {storageCards.map(card => (

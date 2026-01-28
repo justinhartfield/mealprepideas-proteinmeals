@@ -12,6 +12,7 @@ import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import PlanCTA from './PlanCTA.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Recipe {
   id: number;
@@ -114,6 +115,10 @@ const recipesJson = JSON.stringify(recipes.map(r => ({
 
 // Split logistics title for line break rendering
 const logisticsTitleLines = logisticsTitle.split('\n');
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
@@ -175,7 +180,7 @@ const logisticsTitleLines = logisticsTitle.split('\n');
         <!-- Sidebar: Client-Side Filters -->
         <aside class="w-full lg:w-64 space-y-8 shrink-0">
           <div>
-            <h3 class="text-[10px] font-black uppercase tracking-widest mb-4" style="color: var(--text-tertiary);">Refine Search</h3>
+            <h3 class="text-[10px] font-black uppercase tracking-widest mb-4" style="color: var(--text-tertiary);">{t('combo.refineSearch')}</h3>
             <div class="flex flex-col gap-2">
               <button
                 @click="activeFilter = 'all'"
@@ -199,7 +204,7 @@ const logisticsTitleLines = logisticsTitle.split('\n');
           </div>
 
           <div class="p-6 border border-dashed rounded-2xl" style="background-color: var(--bg-tertiary); border-color: var(--border-default);">
-            <span class="text-[10px] font-black uppercase tracking-widest block mb-2" style="color: var(--accent-primary);">Smart Sourcing</span>
+            <span class="text-[10px] font-black uppercase tracking-widest block mb-2" style="color: var(--accent-primary);">{t('combo.smartSourcing')}</span>
             <p class="text-[11px] font-medium leading-relaxed" style="color: var(--text-tertiary);">
               Combinations here are engineered to satisfy both {displayA.toLowerCase()} and {displayB.toLowerCase()} constraints simultaneously for maximum protocol efficiency.
             </p>
@@ -210,7 +215,7 @@ const logisticsTitleLines = logisticsTitle.split('\n');
         <div class="flex-grow">
           <div class="flex items-center justify-between mb-8">
             <h2 class="text-xl font-black uppercase tracking-tight">The Top {recipes.length} Protocols</h2>
-            <div class="text-[10px] font-bold" style="color: var(--text-tertiary);">SORTED BY PROTEIN DENSITY</div>
+            <div class="text-[10px] font-bold" style="color: var(--text-tertiary);">{t('combo.sortedByDensity')}</div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -239,11 +244,11 @@ const logisticsTitleLines = logisticsTitle.split('\n');
                     </div>
                     <div class="flex gap-4 mt-2">
                       <div class="flex flex-col">
-                        <span class="text-[9px] font-bold uppercase" style="color: var(--text-tertiary);">Protein</span>
+                        <span class="text-[9px] font-bold uppercase" style="color: var(--text-tertiary);">{t('common.protein')}</span>
                         <span class="text-xs font-black" x-text="item.protein"></span>
                       </div>
                       <div class="flex flex-col">
-                        <span class="text-[9px] font-bold uppercase" style="color: var(--text-tertiary);">Calories</span>
+                        <span class="text-[9px] font-bold uppercase" style="color: var(--text-tertiary);">{t('common.calories')}</span>
                         <span class="text-xs font-black" style="color: var(--text-secondary);" x-text="item.cal"></span>
                       </div>
                     </div>
@@ -310,7 +315,7 @@ const logisticsTitleLines = logisticsTitle.split('\n');
     <!-- T3 MODULE: CROSS-REFERENCE BLOCK -->
     {siblingPages.length > 0 && (
       <section class="py-20 md:py-24 px-6 max-w-7xl mx-auto">
-        <h4 class="text-xs font-black tracking-[0.4em] uppercase mb-12 text-center" style="color: var(--text-tertiary);">Cross-Reference The Matrix</h4>
+        <h4 class="text-xs font-black tracking-[0.4em] uppercase mb-12 text-center" style="color: var(--text-tertiary);">{t('combo.crossRefMatrix')}</h4>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           {siblingPages.map(sib => (
             <a href={sib.href} class="hyper-border p-6 rounded-2xl flex flex-col items-center text-center group">

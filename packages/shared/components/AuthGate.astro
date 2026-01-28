@@ -1,4 +1,5 @@
 ---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 /**
  * AuthGate — Wraps content behind Clerk authentication
  * Shows a compelling sign-up prompt when not signed in.
@@ -15,6 +16,10 @@ const {
   toolDescription = 'Sign in to access this free tool.',
   toolIcon = '🔧',
 } = Astro.props;
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <div x-data="authGate()" x-init="init()">

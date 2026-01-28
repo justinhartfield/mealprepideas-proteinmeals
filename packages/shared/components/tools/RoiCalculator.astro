@@ -8,6 +8,7 @@ import AuthGate from '../AuthGate.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HeaderNav from '../HeaderNav.astro';
 import FooterNav from '../FooterNav.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 interface Props {
   site?: 'mealprepideas' | 'proteinmeals';
@@ -28,6 +29,10 @@ const structuredData = JSON.stringify({
   "operatingSystem": "All",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 });
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout

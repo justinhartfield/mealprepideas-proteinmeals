@@ -11,6 +11,7 @@ import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
 import type { Recipe } from '../data/content/recipes';
 import { plans } from '../data/content/plans';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Props {
   recipe: Recipe;
@@ -173,6 +174,10 @@ const structuredData = JSON.stringify({
     text: s.detail,
   })),
 });
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription} canonicalUrl={`/meal-prep/recipes/${recipe.slug}/`} structuredData={structuredData}>
@@ -228,19 +233,19 @@ const structuredData = JSON.stringify({
           <!-- Macro Stat Boxes -->
           <div class="rp-stats">
             <div class="rp-stat">
-              <span class="rp-stat__label">PROTEIN</span>
+              <span class="rp-stat__label">{t('recipe.protein')}</span>
               <span class="rp-stat__value" x-text="scaledProtein + 'g'">{recipe.protein}g</span>
             </div>
             <div class="rp-stat">
-              <span class="rp-stat__label">CALORIES</span>
+              <span class="rp-stat__label">{t('recipe.calories')}</span>
               <span class="rp-stat__value" x-text="scaledCalories">{recipe.calories}</span>
             </div>
             <div class="rp-stat">
-              <span class="rp-stat__label">P:E RATIO</span>
+              <span class="rp-stat__label">{t('recipe.peRatio')}</span>
               <span class="rp-stat__value rp-stat__value--accent">{peRatio}</span>
             </div>
             <div class="rp-stat">
-              <span class="rp-stat__label">TIME</span>
+              <span class="rp-stat__label">{t('recipe.time')}</span>
               <span class="rp-stat__value">{totalTimeMin}m</span>
             </div>
           </div>
@@ -248,21 +253,21 @@ const structuredData = JSON.stringify({
           <!-- Yield + Save -->
           <div class="rp-yield-row">
             <div class="rp-yield">
-              <span class="rp-yield__label">YIELD</span>
+              <span class="rp-yield__label">{t('recipe.yield')}</span>
               <button x-on:click="decrement()" class="rp-yield__btn" x-bind:disabled="servings <= 1" x-bind:style="servings <= 1 ? 'opacity:0.3;cursor:not-allowed' : ''">−</button>
               <span class="rp-yield__count" x-text="servings">{servings}</span>
               <button x-on:click="increment()" class="rp-yield__btn" x-bind:disabled="servings >= 12" x-bind:style="servings >= 12 ? 'opacity:0.3;cursor:not-allowed' : ''">+</button>
             </div>
             <button class="rp-save-btn" id="save-recipe-btn" data-slug={recipe.slug} data-title={recipeName} data-protein={recipe.protein} data-calories={recipe.calories} data-image={heroImage}>
-              <span id="save-btn-text">SAVE PROTOCOL</span>
+              <span id="save-btn-text">{t('recipe.save')}</span>
             </button>
             <button class="rp-grocery-btn" x-on:click="showGrocery = !showGrocery" title="View grocery list">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
-              <span>GROCERY LIST</span>
+              <span>{t('recipe.groceryList')}</span>
             </button>
             <button class="rp-print-btn" onclick="window.print()" title="Print prep sheet">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-              <span>PRINT PREP SHEET</span>
+              <span>{t('recipe.printPrep')}</span>
             </button>
           </div>
           <!-- Yield gate message -->
@@ -288,7 +293,7 @@ const structuredData = JSON.stringify({
               <span class="rp-pe-badge__label">P:E</span>
               <span class="rp-pe-badge__value">{peRatio}</span>
             </div>
-            <span class="rp-pe-badge__sublabel">ELITE DENSITY</span>
+            <span class="rp-pe-badge__sublabel">{t('recipe.eliteDensity')}</span>
           </div>
         </div>
       </div>
@@ -300,9 +305,9 @@ const structuredData = JSON.stringify({
         <!-- LEFT COLUMN: Inventory List -->
         <div class="rp-inventory">
           <div class="rp-inventory__header">
-            <h2 class="rp-section-title">INVENTORY LIST</h2>
+            <h2 class="rp-section-title">{t('recipe.inventoryList')}</h2>
             <div class="rp-toggle-pills">
-              <span class="rp-pill rp-pill--active" id="pill-original">ORIGINAL</span>
+              <span class="rp-pill rp-pill--active" id="pill-original">{t('recipe.original')}</span>
               <span class="rp-pill" id="pill-vegan" onclick="window.authHelper ? window.authHelper.requireAuth(function() { document.getElementById('pill-vegan').classList.add('rp-pill--active'); document.getElementById('pill-original').classList.remove('rp-pill--active'); }) : void(0)">
                 <svg class="inline w-3 h-3 mr-1 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24" data-auth-show="signed-out"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                 VEGAN SWAP
@@ -323,7 +328,7 @@ const structuredData = JSON.stringify({
           <!-- Meal Prep Logistics Box -->
           <div class="rp-logistics">
             <div class="rp-logistics__header">
-              <h3 class="rp-logistics__title">MEAL PREP LOGISTICS</h3>
+              <h3 class="rp-logistics__title">{t('recipe.mealPrepLogistics')}</h3>
               <div class="rp-logistics__icon">
                 <span></span><span></span><span></span>
               </div>
@@ -331,15 +336,15 @@ const structuredData = JSON.stringify({
             <ul class="rp-logistics__list">
               <li>
                 <span class="rp-logistics__dot"></span>
-                <span><strong>Storage:</strong> {storageText}</span>
+                <span><strong>{t('recipe.storageLbl')}</strong> {storageText}</span>
               </li>
               <li>
                 <span class="rp-logistics__dot"></span>
-                <span><strong>Batching:</strong> {batchingText}</span>
+                <span><strong>{t('recipe.batchingLbl')}</strong> {batchingText}</span>
               </li>
               <li>
                 <span class="rp-logistics__dot"></span>
-                <span><strong>Reheat:</strong> {reheatText}</span>
+                <span><strong>{t('recipe.reheatLbl')}</strong> {reheatText}</span>
               </li>
             </ul>
           </div>
@@ -347,7 +352,7 @@ const structuredData = JSON.stringify({
 
         <!-- RIGHT COLUMN: Execution Steps -->
         <div class="rp-steps">
-          <h2 class="rp-section-title">EXECUTION STEPS</h2>
+          <h2 class="rp-section-title">{t('recipe.executionSteps')}</h2>
 
           <div class="rp-steps__list">
             {steps.map(step => (
@@ -379,10 +384,10 @@ const structuredData = JSON.stringify({
       <div class="grid md:grid-cols-3 gap-8">
         <!-- Primary Category -->
         <div class="rp-bottom-col">
-          <h3 class="rp-bottom__label">PRIMARY CATEGORY</h3>
+          <h3 class="rp-bottom__label">{t('recipe.primaryCategory')}</h3>
           {primaryCategory && (
             <a href={`/meal-prep/${primaryCategory.type}/${primaryCategory.slug}/`} class="rp-category-card">
-              <span class="rp-category-card__eyebrow">EXPLORE MORE</span>
+              <span class="rp-category-card__eyebrow">{t('recipe.exploreMore')}</span>
               <span class="rp-category-card__title">{primaryCategory.label} Protein</span>
             </a>
           )}
@@ -390,7 +395,7 @@ const structuredData = JSON.stringify({
 
         <!-- Related Ingredients -->
         <div class="rp-bottom-col">
-          <h3 class="rp-bottom__label">RELATED INGREDIENTS</h3>
+          <h3 class="rp-bottom__label">{t('recipe.relatedIngredients')}</h3>
           <div class="rp-ingredient-pills">
             {relatedIngredients.map(ing => (
               <a href={`/meal-prep/ingredient/${ing.slug}/`} class="rp-ing-pill">{ing.label}</a>
@@ -400,7 +405,7 @@ const structuredData = JSON.stringify({
 
         <!-- Full Execution Plans -->
         <div class="rp-bottom-col">
-          <h3 class="rp-bottom__label">FULL EXECUTION PLANS</h3>
+          <h3 class="rp-bottom__label">{t('recipe.fullExecutionPlans')}</h3>
           {displayPlans.map(plan => (
             <a href={`/meal-prep/plans/${plan.slug}/`} class="rp-plan-link">
               <span class="rp-plan-link__title">{plan.title.toUpperCase()}</span>
@@ -424,7 +429,7 @@ const structuredData = JSON.stringify({
       <!-- Header -->
       <div class="flex items-center justify-between px-6 py-5 border-b" style="border-color: var(--border-subtle);">
         <div>
-          <h3 class="text-lg font-black uppercase tracking-wider" style="color: var(--text-primary);">Grocery List</h3>
+          <h3 class="text-lg font-black uppercase tracking-wider" style="color: var(--text-primary);">{t('recipe.groceryList')}</h3>
           <p class="text-xs mt-1" style="color: var(--text-tertiary);"><span x-text="servings"></span> servings</p>
         </div>
         <button x-on:click="showGrocery = false" class="p-2 rounded-lg hover:opacity-70" style="color: var(--text-secondary);">
@@ -468,7 +473,7 @@ const structuredData = JSON.stringify({
         " class="w-full py-3 rounded-full font-black text-xs uppercase tracking-widest cursor-pointer transition-all hover:opacity-90 flex items-center justify-center gap-2"
            style="background: var(--accent-primary); color: var(--text-inverse);">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-          <span id="save-grocery-text">SAVE TO PROFILE</span>
+          <span id="save-grocery-text">{t('recipe.saveToProfile')}</span>
         </button>
         <a href="/profile/#grocery" class="w-full py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest cursor-pointer transition-all hover:opacity-80 flex items-center justify-center gap-2 no-underline"
            style="border: 1px solid var(--border-subtle); color: var(--text-secondary);">

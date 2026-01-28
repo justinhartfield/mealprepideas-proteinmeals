@@ -7,6 +7,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface ShoppingItem { name: string; qty: string; price: string; protein?: string; aisle?: string; }
 interface DayPlan { day: string; meals: { meal: string; name: string; protein: string; cals: string }[]; }
@@ -28,6 +29,10 @@ const {
 } = Astro.props;
 
 const shoppingJson = JSON.stringify(shoppingItems);
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>

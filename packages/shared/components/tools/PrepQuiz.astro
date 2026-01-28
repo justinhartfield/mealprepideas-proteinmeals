@@ -4,6 +4,7 @@ import AuthGate from '../AuthGate.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HeaderNav from '../HeaderNav.astro';
 import FooterNav from '../FooterNav.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 interface Props {
   site?: 'mealprepideas' | 'proteinmeals';
@@ -11,6 +12,10 @@ interface Props {
 const { site = 'mealprepideas' } = Astro.props;
 const mpBase = site === 'mealprepideas' ? '' : 'https://mealprepideas.co';
 const hpBase = site === 'proteinmeals' ? '' : 'https://proteinmeals.co';
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title="Find Your Prep Style — Meal Prep Quiz" description="Answer 5 quick questions to discover your ideal meal prep style, cooking method, and get personalized recipe recommendations.">

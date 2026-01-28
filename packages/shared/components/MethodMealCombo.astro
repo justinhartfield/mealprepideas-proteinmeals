@@ -8,6 +8,7 @@ import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
 import ExploreByBlock from './ExploreByBlock.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Recipe {
   id: number; title: string; slug?: string; protein: string; cal: string; tags?: string[]; score?: number; img?: string;
@@ -41,6 +42,10 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     acceptedAnswer: { '@type': 'Answer', text: faq.answer },
   })),
 }) : null;
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
@@ -66,7 +71,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     <!-- DATA TABLE GRID -->
     <section class="py-16 px-6 max-w-7xl mx-auto">
       <div class="flex items-center justify-between mb-8">
-        <h2 class="text-2xl font-black tracking-tighter">Protocol Index</h2>
+        <h2 class="text-2xl font-black tracking-tighter">{t('combo.protocolIndex')}</h2>
         <div class="flex gap-2">
           {['all', 'vegan', 'low-carb'].map(f => (
             <button
@@ -84,7 +89,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
         <div class="col-span-5">Recipe Title</div>
         <div class="col-span-2">Protein</div>
         <div class="col-span-2">Calories</div>
-        <div class="col-span-2">Score</div>
+        <div class="col-span-2">{t('mm.score')}</div>
       </div>
 
       <!-- Rows -->
@@ -117,7 +122,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     {siblings.length > 0 && (
       <section class="py-20 px-6 border-t" style="border-color: var(--border-default);">
         <div class="max-w-7xl mx-auto">
-          <h3 class="text-3xl font-black tracking-tight mb-8">Explore Related</h3>
+          <h3 class="text-3xl font-black tracking-tight mb-8">{t('combo.exploreRelated')}</h3>
           <div class="grid md:grid-cols-4 gap-4">
             {siblings.map(sib => (
               <a href={sib.href} class="p-6 border rounded-2xl hover-accent-border transition-all group" style="background-color: var(--bg-secondary); border-color: var(--border-default);">
@@ -133,7 +138,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     <!-- FAQ -->
     {faqs.length > 0 && (
       <section class="py-24 px-6 max-w-4xl mx-auto">
-        <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">FAQ</h4>
+        <h4 class="text-4xl font-black tracking-tighter mb-12 text-center">{t('common.faq')}</h4>
         <div class="space-y-4">
           {faqs.map((faq, i) => (
             <div class="border rounded-2xl overflow-hidden" style="border-color: var(--border-default);">

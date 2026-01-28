@@ -9,6 +9,7 @@ import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
 import ExploreByBlock from './ExploreByBlock.astro';
 import PlanCTA from './PlanCTA.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Recipe {
   id: number;
@@ -77,6 +78,10 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     acceptedAnswer: { '@type': 'Answer', text: faq.answer },
   })),
 }) : null;
+
+// i18n
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl}>
@@ -95,7 +100,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
             <span class="text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest" style="background-color: var(--accent-primary); color: var(--text-inverse);">Facet ID: M-05</span>
             <div class="barcode-deco"></div>
           </div>
-          <h1 class="text-7xl md:text-9xl font-black tracking-tighter leading-[0.85] mb-8">{headline}<br/>STRATEGIES</h1>
+          <h1 class="text-7xl md:text-9xl font-black tracking-tighter leading-[0.85] mb-8">{headline}<br/>{t('category.strategies')}</h1>
           <div class="flex flex-col md:flex-row gap-8 items-start">
             {subheadline && (
               <div class="max-w-md">
@@ -104,7 +109,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
             )}
             {useCases.length > 0 && (
               <div class="border-l-2 p-6 space-y-4 flex-1 w-full md:w-auto" style="background-color: var(--bg-secondary); border-color: var(--accent-primary);">
-                <h3 class="text-[10px] font-black uppercase tracking-[0.3em]" style="color: var(--accent-primary);">Primary Utility</h3>
+                <h3 class="text-[10px] font-black uppercase tracking-[0.3em]" style="color: var(--accent-primary);">{t('category.primaryUtility')}</h3>
                 <ul class="space-y-2">
                   {useCases.map(uc => (
                     <li class="flex items-center gap-3 text-sm font-bold">
@@ -141,7 +146,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
           ))}
         </div>
         <div class="flex items-center gap-4 w-full md:w-auto">
-          <span class="text-[10px] font-black uppercase tracking-widest whitespace-nowrap" style="color: var(--text-tertiary);">Sort By: Protein Content</span>
+          <span class="text-[10px] font-black uppercase tracking-widest whitespace-nowrap" style="color: var(--text-tertiary);">{t('category.sortByProtein')}</span>
         </div>
       </div>
     </section>
@@ -173,11 +178,11 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
                 <h4 class="text-xl font-black tracking-tight mb-4 group-hover-accent-text transition-colors" x-text="recipe.title"></h4>
                 <div class="grid grid-cols-2 gap-px border rounded-lg overflow-hidden mb-6" style="background-color: var(--bg-tertiary); border-color: var(--border-default);">
                   <div class="p-3 text-center" style="background-color: var(--bg-primary);">
-                    <span class="block text-[8px] font-black uppercase tracking-widest mb-1" style="color: var(--text-secondary);">Protein</span>
+                    <span class="block text-[8px] font-black uppercase tracking-widest mb-1" style="color: var(--text-secondary);">{t('common.protein')}</span>
                     <span class="text-lg font-black tracking-tighter" style="color: var(--accent-primary);" x-text="recipe.protein"></span>
                   </div>
                   <div class="p-3 text-center" style="background-color: var(--bg-primary);">
-                    <span class="block text-[8px] font-black uppercase tracking-widest mb-1" style="color: var(--text-secondary);">Calories</span>
+                    <span class="block text-[8px] font-black uppercase tracking-widest mb-1" style="color: var(--text-secondary);">{t('common.calories')}</span>
                     <span class="text-lg font-black tracking-tighter" x-text="recipe.cals"></span>
                   </div>
                 </div>
@@ -208,13 +213,13 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
         <div class="sticky top-[90px] space-y-6">
           {executionNotes && (
             <div class="rounded-2xl p-6" style="background-color: var(--bg-secondary); border: 1px solid var(--border-default);">
-              <h3 class="text-[10px] font-black uppercase tracking-[0.3em] mb-6" style="color: var(--text-primary);">Execution Notes</h3>
+              <h3 class="text-[10px] font-black uppercase tracking-[0.3em] mb-6" style="color: var(--text-primary);">{t('category.executionNotes')}</h3>
               <div class="mb-6">
-                <span class="text-[10px] font-black uppercase tracking-widest block mb-2" style="color: var(--accent-primary);">Batching Rule</span>
+                <span class="text-[10px] font-black uppercase tracking-widest block mb-2" style="color: var(--accent-primary);">{t('category.batchingRule')}</span>
                 <p class="text-sm font-medium leading-relaxed" style="color: var(--text-secondary);">{executionNotes.batchingRule}</p>
               </div>
               <div class="mb-4">
-                <span class="text-[10px] font-black uppercase tracking-widest block mb-2" style="color: var(--accent-primary);">Storage Logic</span>
+                <span class="text-[10px] font-black uppercase tracking-widest block mb-2" style="color: var(--accent-primary);">{t('category.storageLogic')}</span>
                 <p class="text-sm font-medium leading-relaxed" style="color: var(--text-secondary);">{executionNotes.storageLogic}</p>
               </div>
               <div class="h-1 rounded-full overflow-hidden" style="background-color: var(--bg-tertiary);">
@@ -225,11 +230,11 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
 
           {relatedMethods.length > 0 && (
             <div>
-              <h3 class="text-[10px] font-black uppercase tracking-[0.3em] mb-4" style="color: var(--text-secondary);">Related Methods</h3>
+              <h3 class="text-[10px] font-black uppercase tracking-[0.3em] mb-4" style="color: var(--text-secondary);">{t('category.relatedMethods')}</h3>
               <div class="space-y-3">
                 {relatedMethods.map(rm => (
                   <a href={rm.href} class="block p-5 rounded-2xl transition-all group" style="background-color: var(--bg-secondary); border: 1px solid var(--border-default);">
-                    <span class="text-[9px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">Swap Method</span>
+                    <span class="text-[9px] font-black uppercase tracking-widest block mb-1" style="color: var(--text-tertiary);">{t('category.swapMethod')}</span>
                     <span class="text-base font-black group-hover:opacity-80 transition-opacity">{rm.label}</span>
                   </a>
                 ))}
@@ -239,7 +244,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
 
           {planCard && (
             <div class="rounded-2xl p-6" style="background-color: var(--bg-inverse, #fff); color: var(--text-inverse, #000);" x-data="{ generating: false }">
-              <span class="text-[10px] font-black uppercase tracking-widest block mb-3" style="color: var(--accent-primary);">System Update</span>
+              <span class="text-[10px] font-black uppercase tracking-widest block mb-3" style="color: var(--accent-primary);">{t('category.systemUpdate')}</span>
               <h4 class="text-xl font-black tracking-tight mb-2">{planCard.title}</h4>
               <p class="text-sm font-medium mb-5 opacity-70">{planCard.description}</p>
               <button
@@ -260,7 +265,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
               </button>
               <div x-show="generating" class="flex items-center justify-center py-3 gap-2">
                 <div class="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin" style="border-color: var(--text-primary, #000); border-top-color: transparent;"></div>
-                <span class="text-[10px] font-black uppercase tracking-widest">Generating...</span>
+                <span class="text-[10px] font-black uppercase tracking-widest">{t('category.generating')}</span>
               </div>
             </div>
           )}
@@ -280,7 +285,7 @@ const faqStructuredData = faqs.length > 0 ? JSON.stringify({
     <!-- FAQ -->
     {faqs.length > 0 && (
       <section class="py-24 px-6 max-w-3xl mx-auto">
-        <h2 class="text-4xl font-black tracking-tighter mb-12 text-center">TECHNICAL RECAP / FAQ</h2>
+        <h2 class="text-4xl font-black tracking-tighter mb-12 text-center">{t('common.technicalRecap')}</h2>
         <div class="space-y-4">
           {faqs.map((faq, index) => (
             <div class="border rounded-2xl overflow-hidden" style="border-color: var(--border-default);">

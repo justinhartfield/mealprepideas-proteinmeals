@@ -1,0 +1,75 @@
+---
+import BatchPrepPlan from '@mealprepideas/shared/components/BatchPrepPlan.astro';
+import { plans } from '@mealprepideas/shared/data/content/plans';
+
+export function getStaticPaths() {
+  return plans
+    .filter(p => p.hub === 'high-protein')
+    .map(plan => ({
+      params: { slug: plan.slug },
+      props: { plan },
+    }));
+}
+
+const { plan } = Astro.props;
+
+// Map a meal to include image + recipeSlug
+function mapMeal(meal: typeof plan.days[0]['meals'][0] | undefined) {
+  if (!meal) return { name: '—', protein: '—', cals: '—' };
+  return {
+    name: meal.title,
+    protein: `${meal.protein}g`,
+    cals: `${meal.calories}`,
+    image: meal.recipeSlug ? `/images/recipes/${meal.recipeSlug}.jpg` : undefined,
+    recipeSlug: meal.recipeSlug,
+  };
+}
+
+// Map days to the shape BatchPrepPlan expects
+function mapDays(planDays: typeof plan.days) {
+  return planDays.map((d, i) => ({
+    day: d.day,
+    dayNumber: i + 1,
+    breakfast: mapMeal(d.meals.find(m => m.type === 'breakfast')),
+    lunch: mapMeal(d.meals.find(m => m.type === 'lunch')),
+    dinner: mapMeal(d.meals.find(m => m.type === 'dinner')),
+  }));
+}
+
+// Pick a hero image from the first recipe that has one
+const firstRecipeSlug = plan.days.flatMap(d => d.meals).find(m => m.recipeSlug)?.recipeSlug;
+const heroImage = firstRecipeSlug ? `/images/recipes/${firstRecipeSlug}.jpg` : undefined;
+
+// Flatten shopping list categories into flat items
+function mapShoppingList(list: typeof plan.shoppingList) {
+  return list.flatMap(cat =>
+    cat.items.map(item => ({ text: `${item}`, checked: false }))
+  );
+}
+
+// Map prep schedule to prepSteps shape
+function mapPrepSteps(schedule: typeof plan.prepSchedule) {
+  return schedule.map(s => ({
+    step: String(s.step),
+    title: s.task.split('—')[0].split('(')[0].trim().slice(0, 60),
+    detail: s.task,
+    time: s.duration,
+  }));
+}
+
+const totalMeals = plan.days.reduce((sum, d) => sum + d.meals.filter(m => m.type !== 'snack').length, 0);
+---
+<BatchPrepPlan
+  title={`${plan.title} | ProteinMeals.co`}
+  description={plan.description}
+  planName={plan.title}
+  planId={plan.slug}
+  heroImage={heroImage}
+  totalMeals={totalMeals}
+  prepTime={`${plan.totalPrepTime} min`}
+  weeklyBudget={plan.groceryBudget}
+  avgProtein={`${plan.dailyProtein}g`}
+  days={mapDays(plan.days)}
+  shoppingList={mapShoppingList(plan.shoppingList)}
+  prepSteps={mapPrepSteps(plan.prepSchedule)}
+/>

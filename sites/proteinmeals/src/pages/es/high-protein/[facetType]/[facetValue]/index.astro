@@ -1,0 +1,248 @@
+---
+/**
+ * proteinmeals.co/high-protein/[facetType]/[facetValue]/ — Single Facet Category (T2)
+ * Renders PersonaConditionPage for persona, RetailerChainPage for store/chain,
+ * MethodCategory for method, DietCategory for everything else.
+ */
+import DietCategory from '@mealprepideas/shared/components/DietCategory.astro';
+import MethodCategory from '@mealprepideas/shared/components/MethodCategory.astro';
+import PersonaConditionPage from '@mealprepideas/shared/components/PersonaConditionPage.astro';
+import RetailerChainPage from '@mealprepideas/shared/components/RetailerChainPage.astro';
+import { generateSingleFacetPaths, slugToDisplay, comboUrl } from '@mealprepideas/shared/utils/urls';
+import { getRecipesMatchingAnyFacet, getFacetContent, buildFacetKey } from '@mealprepideas/shared/utils/content';
+import { stores } from '@mealprepideas/shared/data/content/stores';
+import { personaContent } from '@mealprepideas/shared/data/content/personas';
+import { getMethodLogistics } from '@mealprepideas/shared/data/content/methodLogistics';
+import { facets } from '@mealprepideas/shared/data/taxonomy';
+import type { FacetKey } from '@mealprepideas/shared/data/taxonomy';
+
+export function getStaticPaths() {
+  const paths = generateSingleFacetPaths('high-protein');
+  return paths.map(({ facetType, facetValue }) => ({
+    params: { facetType, facetValue },
+  }));
+}
+
+const { facetType, facetValue } = Astro.params;
+const displayValue = slugToDisplay(facetValue!);
+const displayType = slugToDisplay(facetType!);
+
+const isMethod = facetType === 'method';
+const isPersona = facetType === 'persona';
+const isStoreOrChain = facetType === 'store' || facetType === 'chain';
+
+// --- PERSONA RENDERING ---
+let personaRecipes: any[] = [];
+const persona = isPersona ? personaContent.find(p => p.slug === facetValue) : undefined;
+if (isPersona) {
+  const matchingRecipes = getRecipesMatchingAnyFacet('high-protein', 'persona', facetValue!);
+  personaRecipes = matchingRecipes.map((r, i) => ({
+    id: i + 1,
+    title: r.title,
+    slug: r.slug,
+    protein: `${r.protein}g`,
+    cal: `${r.calories}`,
+    tags: Object.values(r.facets).filter(Boolean) as string[],
+    img: '/images/recipes/' + r.slug + '.jpg',
+  }));
+}
+
+// --- STORE/CHAIN RENDERING ---
+let storeData: typeof stores[number] | undefined;
+if (isStoreOrChain) {
+  storeData = stores.find(s => s.slug === facetValue);
+}
+
+function calculateAvgPE(topPicks: typeof stores[number]['topPicks']): string {
+  const valid = topPicks.filter(p => p.protein && p.calories && p.calories > 0);
+  if (valid.length === 0) return '—';
+  const avg = valid.reduce((sum, p) => sum + (p.protein! / (p.calories! / 100)), 0) / valid.length;
+  return avg.toFixed(1);
+}
+
+// --- DEFAULT (Diet/Method) RENDERING ---
+// Look up real content data
+const seoContent = getFacetContent(buildFacetKey(facetType!, facetValue!), 'high-protein');
+const realRecipes = getRecipesMatchingAnyFacet('high-protein', facetType!, facetValue!);
+
+// Build recipe display objects from real data, with fallback placeholders
+const displayRecipes = realRecipes.length > 0
+  ? realRecipes.slice(0, 6).map((r, i) => isMethod
+      ? { id: i + 1, title: r.title, slug: r.slug, protein: `${r.protein}g`, cals: `${r.calories}`, time: `${r.prepTime + r.cookTime}m`, category: r.facets.meal || 'dinner', img: '/images/recipes/' + r.slug + '.jpg' }
+      : { id: i + 1, title: r.title, slug: r.slug, protein: `${r.protein}g`, cal: `${r.calories}`, pe: r.protein > 35 ? 'Elite' : r.protein > 25 ? 'High' : 'Mid', tags: [r.facets.meal || 'Dinner', r.facets.goal || r.facets.constraint || 'Protein'].map(t => slugToDisplay(t)), img: '/images/recipes/' + r.slug + '.jpg' }
+    )
+  : isMethod
+    ? Array.from({ length: 6 }, (_, i) => ({
+        id: i + 1,
+        title: `${displayValue} Recipe ${i + 1}`,
+        slug: '',
+        protein: `${28 + i * 4}g`,
+        cals: `${320 + i * 50}`,
+        time: `${10 + i * 3}m`,
+        category: ['lunch', 'dinner', 'snacks', 'dinner', 'lunch', 'dinner'][i],
+        img: '',
+      }))
+    : Array.from({ length: 6 }, (_, i) => ({
+        id: i + 1,
+        title: `${displayValue} Meal ${i + 1}`,
+        slug: '',
+        protein: `${24 + i * 3}g`,
+        cal: `${380 + i * 40}`,
+        pe: ['High', 'Elite', 'Mid', 'High', 'Elite', 'Mid'][i],
+        tags: [['Lunch', 'Muscle Gain'], ['Dinner', 'Weight Loss'], ['Dinner', 'Cheap'], ['Breakfast', 'Quick'], ['Lunch', 'No-Microwave'], ['Dinner', 'Crockpot']][i],
+      }));
+
+// Use SEO content FAQs if available, otherwise fallback
+const displayFaqs = seoContent?.faqItems ?? [
+  { question: `What defines ${displayValue} in our high-protein system?`, answer: `Our ${displayValue} protocols ensure a minimum of 30g protein per serving while optimizing for taste, cost, and prep efficiency.` },
+  { question: `Can I combine ${displayValue} with other constraints?`, answer: `Absolutely. Our faceted taxonomy allows you to intersect ${displayValue.toLowerCase()} with goals, methods, and store constraints.` },
+];
+
+// Build contextual explore columns
+const dv = displayValue;
+const fv = facetValue;
+const ft = facetType;
+const isDietOrGoal = ft === 'diet' || ft === 'goal' || ft === 'constraint';
+const hp = '/high-protein/';
+const cu = (tA: string, vA: string, tB: string, vB: string) => comboUrl(hp, tA, vA, tB, vB);
+const exploreColumns = isDietOrGoal ? [
+  { title: `${dv} by Meal`, titleHref: '/high-protein/meal/', number: '01', links: [
+    { label: `${dv} Breakfast`, href: cu('meal', 'breakfast', ft!, fv!) },
+    { label: `${dv} Lunch`, href: cu('meal', 'lunch', ft!, fv!) },
+    { label: `${dv} Dinner`, href: cu('meal', 'dinner', ft!, fv!) },
+  ]},
+  { title: `${dv} by Method`, titleHref: '/high-protein/method/', number: '02', links: [
+    { label: `${dv} Air Fryer`, href: cu('method', 'air-fryer', ft!, fv!) },
+    { label: `${dv} Crockpot`, href: cu('method', 'crockpot', ft!, fv!) },
+    { label: `${dv} No-Cook`, href: cu('method', 'no-cook', ft!, fv!) },
+  ]},
+  { title: `${dv} by Goal`, titleHref: '/high-protein/goal/', number: '03', links: ft === 'goal' ? [
+    { label: 'Weight Loss', href: '/high-protein/goal/weight-loss/' },
+    { label: 'Muscle Gain', href: '/high-protein/goal/muscle-gain/' },
+    { label: 'Budget', href: '/high-protein/constraint/budget/' },
+  ] : [
+    { label: `${dv} Weight Loss`, href: cu(ft!, fv!, 'goal', 'weight-loss') },
+    { label: `${dv} Muscle Gain`, href: cu(ft!, fv!, 'goal', 'muscle-gain') },
+    { label: `${dv} Healthy`, href: cu(ft!, fv!, 'goal', 'healthy') },
+  ]},
+] : [
+  { title: 'By Meal', titleHref: '/high-protein/meal/', number: '01', links: [
+    { label: 'Breakfast', href: '/high-protein/meal/breakfast/' }, { label: 'Lunch', href: '/high-protein/meal/lunch/' }, { label: 'Dinner', href: '/high-protein/meal/dinner/' },
+  ]},
+  { title: 'By Goal', titleHref: '/high-protein/goal/', number: '02', links: [
+    { label: 'Weight Loss', href: '/high-protein/goal/weight-loss/' }, { label: 'Muscle Gain', href: '/high-protein/goal/muscle-gain/' }, { label: 'Budget', href: '/high-protein/constraint/budget/' },
+  ]},
+  { title: 'Constraints', titleHref: '/high-protein/constraint/', number: '03', links: [
+    { label: 'High Fiber', href: '/high-protein/constraint/high-fiber/' }, { label: 'Low Calorie', href: '/high-protein/diet/low-calorie/' }, { label: 'Quick Prep', href: '/high-protein/constraint/quick/' },
+  ]},
+];
+
+// P:E widget data per facet type
+const peData: Record<string, { label: string; target: string; barWidth: string; score: string; scoreLabel: string }> = {
+  'diet': { label: 'DIET OPTIMIZED', target: '30-45%', barWidth: '80%', score: '0.8+', scoreLabel: 'Avg Protein Grams Per 10 Calories' },
+  'goal': { label: 'GOAL ALIGNED', target: '35-50%', barWidth: '90%', score: '1.0+', scoreLabel: 'Avg Protein Grams Per 10 Calories' },
+  'meal': { label: 'MEAL TYPE', target: '30-40g', barWidth: '75%', score: String(realRecipes.length), scoreLabel: 'Recipes In This Category' },
+  'constraint': { label: 'CONSTRAINT MET', target: '100%', barWidth: '90%', score: String(realRecipes.length), scoreLabel: 'Matching Protocols Available' },
+  'ingredient': { label: 'KEY INGREDIENT', target: '25-45g', barWidth: '85%', score: String(realRecipes.length), scoreLabel: 'Recipes Featuring This Ingredient' },
+};
+const pe = peData[facetType!] || peData['diet'];
+---
+
+{isPersona ? (
+  <PersonaConditionPage
+    title={`High Protein for ${displayValue} | ProteinMeals.co`}
+    description={`High protein meal guide for ${displayValue.toLowerCase()}. Recipes, macros, and nutrition tips tailored to your needs.`}
+    canonicalUrl={`https://proteinmeals.co/high-protein/persona/${facetValue}/`}
+    conditionName={displayValue}
+    conditionType={persona?.conditionType || 'persona'}
+    definition={persona?.definition || `High protein nutrition guide tailored for ${displayValue.toLowerCase()}. Browse curated recipes, macro breakdowns, and expert tips designed specifically for your goals.`}
+    disclaimer={persona?.disclaimer}
+    nutritionRules={persona?.nutritionRules || []}
+    recipes={personaRecipes}
+    faqs={persona?.faqs || []}
+    hub="high-protein"
+  />
+) : isStoreOrChain && storeData ? (
+  <RetailerChainPage
+    site="proteinmeals"
+    title={`${storeData.name} High Protein Guide | ProteinMeals.co`}
+    description={storeData.description}
+    canonicalUrl={`https://proteinmeals.co/high-protein/${facetType}/${facetValue}/`}
+    entityName={storeData.name}
+    entityType={storeData.type === 'grocery' ? 'store' : 'chain'}
+    tagline={storeData.tagline}
+    entityDescription={storeData.description}
+    totalSKUs={storeData.topPicks.length}
+    avgPE={calculateAvgPE(storeData.topPicks)}
+    skus={storeData.topPicks.map((pick, i) => ({
+      id: `SKU-${String(i + 1).padStart(3, '0')}`,
+      name: pick.name,
+      category: pick.category,
+      protein: pick.protein ? `${pick.protein}g` : '—',
+      cals: pick.calories ? `${pick.calories}` : '—',
+      price: pick.price || '—',
+      peScore: pick.protein && pick.calories ? (pick.protein / (pick.calories / 100)).toFixed(1) : '—',
+    }))}
+    topPicks={storeData.topPicks.slice(0, 3).map(p => ({
+      name: p.name,
+      protein: p.protein ? `${p.protein}g` : '—',
+      reason: p.tip,
+    }))}
+  />
+) : isMethod ? (
+  <MethodCategory
+    hub="high-protein"
+    facetType={facetType!}
+    facetValue={facetValue!}
+    title={seoContent?.metaTitle ?? `${displayValue} High Protein Recipes | ProteinMeals.co`}
+    description={seoContent?.metaDescription ?? `${displayValue} high-protein recipes optimized for macro density.`}
+    canonicalUrl={`https://proteinmeals.co/high-protein/${facetType}/${facetValue}/`}
+    headline={seoContent?.h1 ?? displayValue}
+    subheadline={seoContent?.heroText ?? `High-performance ${displayValue.toLowerCase()} cooking protocols optimized for maximum protein output.`}
+    useCases={[
+      { number: '01.', title: 'Recovery', description: 'Leucine-rich sources for muscle synthesis' },
+      { number: '02.', title: 'Density', description: 'Maximum protein per calorie and dollar' },
+      { number: '03.', title: 'Volume', description: 'High satiety, low calorie-density options' },
+    ]}
+    recipes={displayRecipes as any}
+    faqs={displayFaqs}
+    exploreColumns={exploreColumns}
+    executionNotes={(() => {
+      const ml = getMethodLogistics(facetValue!);
+      if (!ml || ml.steps.length < 2) return undefined;
+      return { batchingRule: ml.steps[0].description, storageLogic: ml.steps[1].description };
+    })()}
+    relatedMethods={(() => {
+      const methods = (facets.method?.values || []).filter(m => m !== facetValue).slice(0, 2);
+      return methods.map(m => ({ label: `${slugToDisplay(m)} ${displayValue}`, href: `/high-protein/method/${m}/` }));
+    })()}
+    planCard={{ title: `5-Day ${displayValue} Plan`, description: `Download the Sunday prep-sheet for this exact category.`, href: `/high-protein/plans/` }}
+  />
+) : (
+  <DietCategory
+    hub="high-protein"
+    facetType={facetType!}
+    facetValue={facetValue!}
+    title={seoContent?.metaTitle ?? `${displayValue} High Protein Protocol | ProteinMeals.co`}
+    description={seoContent?.metaDescription ?? `Explore ${displayValue} high-protein protocols.`}
+    canonicalUrl={`https://proteinmeals.co/high-protein/${facetType}/${facetValue}/`}
+    headline={seoContent?.h1 ?? displayValue}
+    headlineAccent="Protein."
+    definition={seoContent?.heroText ?? `The systematic approach to ${displayValue.toLowerCase()} nutrition. Optimized for high P:E ratios and macro density.`}
+    definitionBullets={seoContent ? [
+      seoContent.sectionIntros.recipes?.slice(0, 100) + '...' || `Best for ${displayValue.toLowerCase()} high-protein optimization.`,
+      seoContent.sectionIntros.guides?.slice(0, 100) + '...' || `Optimized for macro density and cost efficiency.`,
+    ] : [
+      `Best for ${displayValue.toLowerCase()} high-protein optimization.`,
+      `Optimized for macro density and cost efficiency.`,
+    ]}
+    recipes={displayRecipes as any}
+    faqs={displayFaqs}
+    exploreColumns={exploreColumns}
+    peLabel={pe.label}
+    peTarget={pe.target}
+    peBarWidth={pe.barWidth}
+    peScore={pe.score}
+    peScoreLabel={pe.scoreLabel}
+  />
+)}
