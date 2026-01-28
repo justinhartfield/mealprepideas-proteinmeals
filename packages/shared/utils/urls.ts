@@ -162,3 +162,20 @@ export function getSiteUrl(hubId: HubId): string {
     ? 'https://mealprepideas.co'
     : 'https://proteinmeals.co';
 }
+
+/**
+ * Build a canonical two-facet combo URL.
+ * Always orders facets by FACET_ORDER so links match generated paths.
+ */
+export function comboUrl(
+  hubPath: string,
+  typeA: string, valueA: string,
+  typeB: string, valueB: string,
+): string {
+  const aIndex = FACET_ORDER.indexOf(typeA as typeof FACET_ORDER[number]);
+  const bIndex = FACET_ORDER.indexOf(typeB as typeof FACET_ORDER[number]);
+  if (aIndex <= bIndex) {
+    return `${hubPath}${typeA}/${valueA}/${typeB}/${valueB}/`;
+  }
+  return `${hubPath}${typeB}/${valueB}/${typeA}/${valueA}/`;
+}

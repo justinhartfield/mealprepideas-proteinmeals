@@ -8,7 +8,7 @@ import DietCategory from '@mealprepideas/shared/components/DietCategory.astro';
 import MethodCategory from '@mealprepideas/shared/components/MethodCategory.astro';
 import PersonaConditionPage from '@mealprepideas/shared/components/PersonaConditionPage.astro';
 import RetailerChainPage from '@mealprepideas/shared/components/RetailerChainPage.astro';
-import { generateSingleFacetPaths, slugToDisplay } from '@mealprepideas/shared/utils/urls';
+import { generateSingleFacetPaths, slugToDisplay, comboUrl } from '@mealprepideas/shared/utils/urls';
 import { getRecipesMatchingAnyFacet, getFacetContent, buildFacetKey } from '@mealprepideas/shared/utils/content';
 import { stores } from '@mealprepideas/shared/data/content/stores';
 import { personaContent } from '@mealprepideas/shared/data/content/personas';
@@ -103,25 +103,27 @@ const dv = displayValue;
 const fv = facetValue;
 const ft = facetType;
 const isDietOrGoal = ft === 'diet' || ft === 'goal' || ft === 'constraint';
+const hp = '/high-protein/';
+const cu = (tA: string, vA: string, tB: string, vB: string) => comboUrl(hp, tA, vA, tB, vB);
 const exploreColumns = isDietOrGoal ? [
   { title: `${dv} by Meal`, titleHref: '/high-protein/meal/', number: '01', links: [
-    { label: `${dv} Breakfast`, href: `/high-protein/meal/breakfast/${ft}/${fv}/` },
-    { label: `${dv} Lunch`, href: `/high-protein/meal/lunch/${ft}/${fv}/` },
-    { label: `${dv} Dinner`, href: `/high-protein/meal/dinner/${ft}/${fv}/` },
+    { label: `${dv} Breakfast`, href: cu('meal', 'breakfast', ft!, fv!) },
+    { label: `${dv} Lunch`, href: cu('meal', 'lunch', ft!, fv!) },
+    { label: `${dv} Dinner`, href: cu('meal', 'dinner', ft!, fv!) },
   ]},
   { title: `${dv} by Method`, titleHref: '/high-protein/method/', number: '02', links: [
-    { label: `${dv} Air Fryer`, href: `/high-protein/method/air-fryer/${ft}/${fv}/` },
-    { label: `${dv} Crockpot`, href: `/high-protein/method/crockpot/${ft}/${fv}/` },
-    { label: `${dv} No-Cook`, href: `/high-protein/method/no-cook/${ft}/${fv}/` },
+    { label: `${dv} Air Fryer`, href: cu('method', 'air-fryer', ft!, fv!) },
+    { label: `${dv} Crockpot`, href: cu('method', 'crockpot', ft!, fv!) },
+    { label: `${dv} No-Cook`, href: cu('method', 'no-cook', ft!, fv!) },
   ]},
   { title: `${dv} by Goal`, titleHref: '/high-protein/goal/', number: '03', links: ft === 'goal' ? [
     { label: 'Weight Loss', href: '/high-protein/goal/weight-loss/' },
     { label: 'Muscle Gain', href: '/high-protein/goal/muscle-gain/' },
     { label: 'Budget', href: '/high-protein/constraint/budget/' },
   ] : [
-    { label: `${dv} Weight Loss`, href: `/high-protein/${ft}/${fv}/goal/weight-loss/` },
-    { label: `${dv} Muscle Gain`, href: `/high-protein/${ft}/${fv}/goal/muscle-gain/` },
-    { label: `${dv} Healthy`, href: `/high-protein/${ft}/${fv}/goal/healthy/` },
+    { label: `${dv} Weight Loss`, href: cu(ft!, fv!, 'goal', 'weight-loss') },
+    { label: `${dv} Muscle Gain`, href: cu(ft!, fv!, 'goal', 'muscle-gain') },
+    { label: `${dv} Healthy`, href: cu(ft!, fv!, 'goal', 'healthy') },
   ]},
 ] : [
   { title: 'By Meal', titleHref: '/high-protein/meal/', number: '01', links: [

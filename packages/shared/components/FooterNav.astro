@@ -1,20 +1,119 @@
 ---
 /**
- * FooterNav — Theme-aware System Directory Footer
+ * FooterNav — Global Footer with Full Taxonomy Navigation
+ * Combines "Explore All Categories" + site footer for better indexing
  * Uses CSS custom properties for light/dark adaptation
  */
+import { facets } from '../data/taxonomy';
+
+function slugToLabel(slug: string): string {
+  return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
 interface Props {
   site?: 'mealprepideas' | 'proteinmeals';
   brandName?: string;
   brandDescription?: string;
-  columns?: {
-    title: string;
-    links: { href: string; label: string; active?: boolean }[];
-  }[];
   copyrightSuffix?: string;
 }
 
-const mealprepColumns = [
+// Auto-detect site from the Astro site config URL
+const siteUrl = Astro.site?.href || Astro.site?.toString() || '';
+const autoSite = siteUrl.includes('proteinmeals') ? 'proteinmeals' : 'mealprepideas';
+
+const {
+  site = autoSite,
+  brandName = site === 'proteinmeals' ? 'PROTEINMEALS.CO' : 'MEALPREPIDEAS.CO',
+  brandDescription = site === 'proteinmeals'
+    ? 'Your authority guide to high-protein nutrition. Recipes, macros, store guides, and meal plans for muscle gain and weight management.'
+    : 'Your authority guide to meal prep. Batch cooking, storage logistics, 5-day plans, and store guides for efficient weekly nutrition.',
+  copyrightSuffix = site === 'proteinmeals' ? 'ProteinMeals.co' : 'MealPrepIdeas.co',
+} = Astro.props;
+
+const isProtein = site === 'proteinmeals';
+const hubPath = isProtein ? '/high-protein/' : '/meal-prep/';
+const hubLabel = isProtein ? 'High Protein' : 'Meal Prep';
+
+// Build taxonomy columns from facets data
+const mealValues = facets.meal?.values || [];
+const methodValues = facets.method?.values || [];
+const dietValues = facets.diet?.values || [];
+const goalValues = facets.goal?.values || [];
+const constraintValues = facets.constraint?.values || [];
+
+const taxonomyColumns = [
+  {
+    title: 'By Meal',
+    titleHref: `${hubPath}meal/`,
+    links: mealValues.map(v => ({
+      label: slugToLabel(v),
+      href: `${hubPath}meal/${v}/`,
+    })),
+  },
+  {
+    title: 'By Method',
+    titleHref: `${hubPath}method/`,
+    links: methodValues.map(v => ({
+      label: slugToLabel(v),
+      href: `${hubPath}method/${v}/`,
+    })),
+  },
+  {
+    title: 'By Diet',
+    titleHref: `${hubPath}diet/`,
+    links: dietValues.map(v => ({
+      label: slugToLabel(v),
+      href: `${hubPath}diet/${v}/`,
+    })),
+  },
+  {
+    title: 'By Goal & Constraint',
+    titleHref: `${hubPath}goal/`,
+    links: [
+      ...goalValues.map(v => ({
+        label: slugToLabel(v),
+        href: `${hubPath}goal/${v}/`,
+      })),
+      ...constraintValues.map(v => ({
+        label: slugToLabel(v),
+        href: `${hubPath}constraint/${v}/`,
+      })),
+    ],
+  },
+].filter(col => col.links.length > 0);
+
+// Footer link columns
+const footerColumns = isProtein ? [
+  {
+    title: 'High Protein',
+    links: [
+      { href: '/high-protein/', label: 'High Protein Hub' },
+      { href: '/high-protein/plans/high-protein-muscle-gain-5-day/', label: '5-Day Plans' },
+      { href: '/high-protein/recipes/steak-and-egg-protein-plate/', label: 'Recipes' },
+      { href: '/high-protein/goal/muscle-gain/', label: 'Muscle Gain' },
+    ],
+  },
+  {
+    title: 'Stores & Chains',
+    links: [
+      { href: '/stores/trader-joes/', label: "Trader Joe's" },
+      { href: '/stores/costco/', label: 'Costco' },
+      { href: '/stores/chick-fil-a/', label: 'Chick-fil-A' },
+      { href: '/stores/chipotle/', label: 'Chipotle' },
+      { href: '/stores/sweetgreen/', label: 'Sweetgreen' },
+    ],
+  },
+  {
+    title: 'Popular',
+    links: [
+      { href: '/high-protein/diet/keto/', label: 'Keto Protein' },
+      { href: '/high-protein/diet/vegan/', label: 'Vegan Protein' },
+      { href: '/high-protein/goal/weight-loss/', label: 'Weight Loss' },
+      { href: '/high-protein/for/bariatric/', label: 'Bariatric' },
+      { href: '/high-protein/for/postpartum/', label: 'Postpartum' },
+    ],
+  },
+] : [
   {
     title: 'Meal Prep',
     links: [
@@ -45,54 +144,42 @@ const mealprepColumns = [
     ],
   },
 ];
-
-const proteinColumns = [
-  {
-    title: 'High Protein',
-    links: [
-      { href: '/high-protein/', label: 'High Protein Hub' },
-      { href: '/high-protein/plans/high-protein-muscle-gain-5-day/', label: '5-Day Plans' },
-      { href: '/high-protein/recipes/steak-and-egg-protein-plate/', label: 'Recipes' },
-      { href: '/high-protein/goal/muscle-gain/', label: 'Muscle Gain' },
-    ],
-  },
-  {
-    title: 'Stores & Chains',
-    links: [
-      { href: '/stores/trader-joes/', label: "Trader Joe's" },
-      { href: '/stores/costco/', label: 'Costco' },
-      { href: '/stores/chick-fil-a/', label: 'Chick-fil-A' },
-      { href: '/stores/chipotle/', label: 'Chipotle' },
-      { href: '/stores/sweetgreen/', label: 'Sweetgreen' },
-    ],
-  },
-  {
-    title: 'Popular',
-    links: [
-      { href: '/high-protein/diet/keto/', label: 'Keto Protein' },
-      { href: '/high-protein/diet/vegan/', label: 'Vegan Protein' },
-      { href: '/high-protein/goal/weight-loss/', label: 'Weight Loss' },
-      { href: '/high-protein/for/bariatric/', label: 'Bariatric' },
-      { href: '/high-protein/for/postpartum/', label: 'Postpartum' },
-    ],
-  },
-];
-
-// Auto-detect site from the Astro site config URL
-const siteUrl = Astro.site?.href || Astro.site?.toString() || Astro.site?.hostname || '';
-const autoSite = siteUrl.includes('proteinmeals') ? 'proteinmeals' : 'mealprepideas';
-
-const {
-  site = autoSite,
-  brandName = site === 'proteinmeals' ? 'PROTEINMEALS.CO' : 'MEALPREPIDEAS.CO',
-  brandDescription = site === 'proteinmeals'
-    ? 'Your authority guide to high-protein nutrition. Recipes, macros, store guides, and meal plans for muscle gain and weight management.'
-    : 'Your authority guide to meal prep. Batch cooking, storage logistics, 5-day plans, and store guides for efficient weekly nutrition.',
-  columns = site === 'proteinmeals' ? proteinColumns : mealprepColumns,
-  copyrightSuffix = site === 'proteinmeals' ? 'ProteinMeals.co' : 'MealPrepIdeas.co',
-} = Astro.props;
 ---
 
+<!-- EXPLORE ALL CATEGORIES — Full Taxonomy Navigation -->
+{taxonomyColumns.length > 0 && (
+  <section style="background-color: var(--bg-secondary); border-top: 1px solid var(--border-default);" class="py-24">
+    <div class="px-6 max-w-7xl mx-auto">
+      <div class="mb-16">
+        <span class="text-[10px] font-black tracking-[0.5em] uppercase mb-4 block" style="color: var(--text-secondary);">Full Taxonomy Navigation</span>
+        <h2 class="text-5xl md:text-7xl font-black tracking-tighter leading-none">EXPLORE ALL CATEGORIES</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+        {taxonomyColumns.map((col) => (
+          <div class="space-y-6">
+            <a href={col.titleHref} class="text-xs font-black uppercase tracking-widest pb-2 flex justify-between group transition-colors" style="border-bottom: 2px solid var(--text-primary); color: var(--text-primary);">
+              <span class="group-hover-accent-text transition-colors">{col.title} →</span>
+            </a>
+            <ul class="space-y-4">
+              {col.links.map((link) => (
+                <li>
+                  <a href={link.href} class="text-xl font-black tracking-tight flex items-center justify-between group" style="color: var(--text-primary);">
+                    <span class="group-hover-accent-text transition-colors">{link.label}</span>
+                    <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<!-- SITE FOOTER -->
 <footer class="py-20 px-6" style="background-color: var(--bg-primary); border-top: 1px solid var(--border-default);">
   <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-12">
     <div class="col-span-2">
@@ -111,17 +198,13 @@ const {
       </div>
     </div>
 
-    {columns.map((col) => (
+    {footerColumns.map((col) => (
       <div>
         <h6 class="text-[10px] font-black uppercase tracking-widest mb-6" style="color: var(--text-tertiary);">{col.title}</h6>
         <ul class="space-y-4 text-xs font-bold" style="color: var(--text-secondary);">
           {col.links.map((link) => (
             <li>
-              <a href={link.href}
-                 class="transition-colors"
-                 style={link.active ? `color: var(--accent-primary);` : ''}>
-                {link.label}
-              </a>
+              <a href={link.href} class="transition-colors hover-accent-text">{link.label}</a>
             </li>
           ))}
         </ul>
@@ -136,9 +219,9 @@ const {
       {[
         { label: 'Privacy', href: '/privacy/' },
         { label: 'Terms', href: '/terms/' },
-        { label: 'Sitemap', href: '/sitemap-index.xml' },
+        { label: 'Sitemap', href: '/sitemap/' },
       ].map(item => (
-        <a href={item.href} class="text-[10px] font-bold uppercase tracking-widest transition-colors" style="color: var(--text-tertiary);">{item.label}</a>
+        <a href={item.href} class="text-[10px] font-bold uppercase tracking-widest transition-colors hover-accent-text" style="color: var(--text-tertiary);">{item.label}</a>
       ))}
     </div>
   </div>
