@@ -30,9 +30,11 @@ const {
 
 // Infer site from URL or fallback
 const currentUrl = canonicalUrl || Astro.url?.href || '';
-const isMealPrep = currentUrl.includes('mealprepideas') || Astro.url?.pathname?.startsWith('/meal-prep');
+const siteHref = Astro.site?.href || Astro.site?.toString() || '';
+const isMealPrep = siteHref.includes('mealprepideas') || currentUrl.includes('mealprepideas') || Astro.url?.pathname?.startsWith('/meal-prep');
 const resolvedSiteName = siteName || (isMealPrep ? 'MealPrepIdeas.co' : 'ProteinMeals.co');
 const resolvedFavicon = faviconEmoji || (isMealPrep ? '🥦' : '🍗');
+const gaId = isMealPrep ? 'G-TQHW6LM9X1' : 'G-LWJ3R2F2BG';
 ---
 
 <!DOCTYPE html>
@@ -68,6 +70,15 @@ const resolvedFavicon = faviconEmoji || (isMealPrep ? '🥦' : '🍗');
       const theme = saved || 'light';
       document.documentElement.setAttribute('data-theme', theme);
     })();
+  </script>
+
+  <!-- Google Analytics -->
+  <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+  <script is:inline define:vars={{ gaId }}>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', gaId);
   </script>
 
   <!-- Fonts (preconnect + font-display swap) -->

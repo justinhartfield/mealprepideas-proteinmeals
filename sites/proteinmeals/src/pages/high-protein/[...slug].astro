@@ -153,6 +153,7 @@ const displayRecipes = matchingRecipes.length > 0
       method: r.facets.method || (facetA.type === 'method' ? facetA.value : facetB.type === 'method' ? facetB.value : 'batch-cook'),
       tag: r.facets.constraint || r.facets.goal || r.facets.diet || 'Protein',
       score: 9.8 - i * 0.3,
+      img: '/images/recipes/' + r.slug + '.jpg',
     }))
   : Array.from({ length: 6 }, (_, i) => ({
       id: i + 1,
@@ -163,6 +164,7 @@ const displayRecipes = matchingRecipes.length > 0
       method: facetA.type === 'method' ? facetA.value : facetB.type === 'method' ? facetB.value : 'batch-cook',
       tag: ['High Fiber', 'Budget', 'Quick', 'Freezer-Friendly', 'Comfort', 'Classic'][i],
       score: 9.8 - i * 0.3,
+      img: '',
     }));
 
 const placeholderFaqs = [

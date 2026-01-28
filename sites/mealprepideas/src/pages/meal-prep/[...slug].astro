@@ -160,7 +160,7 @@ const displayRecipes = matchingRecipes.length > 0
         r.facets.method,
         r.facets.diet,
       ].filter((t): t is string => !!t),
-      img: `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400`,
+      img: '/images/recipes/' + r.slug + '.jpg',
     }))
   : Array.from({ length: 10 }, (_, i) => ({
       id: i + 1,
@@ -168,7 +168,7 @@ const displayRecipes = matchingRecipes.length > 0
       protein: `${42 - i * 2}g`,
       cal: `${480 + i * 20}`,
       tags: [tagOptions[i % tagOptions.length], tagOptions[(i + 3) % tagOptions.length]],
-      img: `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400`,
+      img: '',
     }));
 
 // Generate dynamic content for TwoFacetCombo

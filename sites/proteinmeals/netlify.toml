@@ -5,3 +5,8 @@
 [build.environment]
   NODE_VERSION = "20"
   NPM_FLAGS = "--prefix=/dev/null"
+
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap-index.xml"
+  status = 301

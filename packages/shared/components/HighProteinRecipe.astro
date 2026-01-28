@@ -181,11 +181,8 @@ const structuredData = JSON.stringify({
 
 <BaseLayout title={pageTitle} description={pageDescription} canonicalUrl={`/high-protein/recipes/${recipe.slug}/`} structuredData={structuredData}>
   <HeaderNav
+    site="proteinmeals"
     statusText={`Recipe: ${recipeId}`}
-    navLinks={[
-      { href: `${mpBase}/meal-prep/`, label: 'Meal Prep' },
-      { href: `${hpBase}/high-protein/`, label: 'High Protein' },
-    ]}
   />
 
   <main class="recipe-page flex-grow" x-data={`{
