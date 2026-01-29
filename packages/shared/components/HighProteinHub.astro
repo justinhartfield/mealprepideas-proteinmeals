@@ -332,7 +332,37 @@ const nextUrl = currentPage < totalPages ? `/high-protein/page/${currentPage + 1
          SECTION B: PAGINATED RECIPE GRID (Static SSG)
          ════════════════════════════════════════════════════════════════ -->
     <section id="recipe-browser" class="py-20 px-6"
-             style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-default);">
+             style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-default);"
+             x-data={`{
+               searchQuery: '',
+               sortBy: 'default',
+               allRecipes: ${JSON.stringify(paginatedRecipes.map(r => ({
+                 slug: r.slug,
+                 title: r.title,
+                 imageAlt: r.imageAlt || r.title,
+                 protein: r.protein,
+                 calories: r.calories,
+                 prepTime: r.prepTime,
+                 cookTime: r.cookTime,
+                 servings: r.servings,
+                 facets: r.facets
+               })))},
+               get filteredRecipes() {
+                 let results = this.allRecipes;
+                 if (this.searchQuery.trim()) {
+                   const q = this.searchQuery.toLowerCase();
+                   results = results.filter(r => 
+                     r.title.toLowerCase().includes(q) ||
+                     Object.values(r.facets || {}).some(v => v && v.toLowerCase().includes(q))
+                   );
+                 }
+                 if (this.sortBy === 'protein-high') results = [...results].sort((a,b) => b.protein - a.protein);
+                 else if (this.sortBy === 'protein-low') results = [...results].sort((a,b) => a.protein - b.protein);
+                 else if (this.sortBy === 'calories-low') results = [...results].sort((a,b) => a.calories - b.calories);
+                 else if (this.sortBy === 'time-quick') results = [...results].sort((a,b) => (a.prepTime + a.cookTime) - (b.prepTime + b.cookTime));
+                 return results;
+               }
+             }`}>
       <div class="max-w-7xl mx-auto">
         <!-- Section Header -->
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10">
@@ -348,8 +378,40 @@ const nextUrl = currentPage < totalPages ? `/high-protein/page/${currentPage + 1
             </h2>
           </div>
           <div class="text-sm font-bold" style="color: var(--text-secondary);">
-            Showing <span class="font-black" style="color: var(--accent-primary);">{startIndex + 1}–{Math.min(endIndex, totalRecipes)}</span> of {totalRecipes} recipes
+            Showing <span class="font-black" style="color: var(--accent-primary);" x-text="filteredRecipes.length"></span> of {totalRecipes} recipes
           </div>
+        </div>
+
+        <!-- Search & Sort Bar -->
+        <div class="flex flex-col md:flex-row gap-4 mb-8">
+          <!-- Search Input -->
+          <div class="relative flex-1">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style="color: var(--text-tertiary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input type="text" 
+                   x-model="searchQuery"
+                   placeholder="Search recipes by name, ingredient, diet..."
+                   class="w-full pl-12 pr-4 py-4 rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-2"
+                   style="background: var(--bg-primary); border: 1px solid var(--border-default); color: var(--text-primary); --tw-ring-color: var(--accent-primary);" />
+            <button x-show="searchQuery" x-on:click="searchQuery = ''" 
+                    class="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:opacity-70"
+                    style="color: var(--text-tertiary);">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          <!-- Sort Dropdown -->
+          <select x-model="sortBy"
+                  class="px-4 py-4 rounded-xl text-sm font-bold cursor-pointer transition-all focus:outline-none focus:ring-2"
+                  style="background: var(--bg-primary); border: 1px solid var(--border-default); color: var(--text-primary); --tw-ring-color: var(--accent-primary);">
+            <option value="default">Sort: Default</option>
+            <option value="protein-high">Protein: High to Low</option>
+            <option value="protein-low">Protein: Low to High</option>
+            <option value="calories-low">Calories: Low to High</option>
+            <option value="time-quick">Time: Quickest First</option>
+          </select>
         </div>
 
         <!-- Quick Filter Pills (Link to facet pages) -->
@@ -365,42 +427,46 @@ const nextUrl = currentPage < totalPages ? `/high-protein/page/${currentPage + 1
         </div>
         )}
 
-        <!-- Recipe Grid (Server-rendered, paginated) -->
+        <!-- Recipe Grid (Client-side filtered via Alpine) -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          {paginatedRecipes.map((r) => (
-            <a href={`/high-protein/recipes/${r.slug}/`}
+          <template x-for="r in filteredRecipes" :key="r.slug">
+            <a x-bind:href="`/high-protein/recipes/${r.slug}/`"
                class="group rounded-2xl overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1"
                style="border: 1px solid var(--border-default); background: var(--bg-primary);">
               <div class="aspect-video overflow-hidden relative">
-                <img src={`/images/recipes/${r.slug}.jpg`}
+                <img x-bind:src="`/images/recipes/${r.slug}.jpg`"
                      onerror="this.src='/images/placeholder.svg'"
-                     alt={r.imageAlt || r.title}
+                     x-bind:alt="r.imageAlt || r.title"
                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                      width="400" height="225" loading="lazy" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 <div class="absolute bottom-3 left-3 flex gap-2">
                   <span class="px-2 py-1 rounded text-[9px] font-black uppercase"
-                        style="background-color: var(--accent-primary); color: var(--text-inverse);">
-                    {r.protein}g protein
-                  </span>
+                        style="background-color: var(--accent-primary); color: var(--text-inverse);"
+                        x-text="r.protein + 'g protein'"></span>
                   <span class="px-2 py-1 rounded text-[9px] font-black uppercase"
-                        style="background: rgba(0,0,0,0.6); color: white;">
-                    {r.calories} cal
-                  </span>
+                        style="background: rgba(0,0,0,0.6); color: white;"
+                        x-text="r.calories + ' cal'"></span>
                 </div>
               </div>
               <div class="p-4">
-                <h3 class="font-black text-sm mb-2 leading-tight group-hover:opacity-80 transition-opacity" style="color: var(--text-primary);">
-                  {r.title}
-                </h3>
+                <h3 class="font-black text-sm mb-2 leading-tight group-hover:opacity-80 transition-opacity" style="color: var(--text-primary);"
+                    x-text="r.title"></h3>
                 <div class="flex gap-3 text-[10px] font-bold" style="color: var(--text-tertiary);">
-                  <span>{r.prepTime + r.cookTime}m total</span>
+                  <span x-text="(r.prepTime + r.cookTime) + 'm total'"></span>
                   <span>·</span>
-                  <span>{r.servings} servings</span>
+                  <span x-text="r.servings + ' servings'"></span>
                 </div>
               </div>
             </a>
-          ))}
+          </template>
+        </div>
+
+        <!-- No Results Message -->
+        <div x-show="filteredRecipes.length === 0" x-cloak class="text-center py-16">
+          <div class="text-6xl mb-4">🔍</div>
+          <h3 class="text-xl font-black mb-2" style="color: var(--text-primary);">No recipes found</h3>
+          <p class="text-sm" style="color: var(--text-secondary);">Try a different search term or <button x-on:click="searchQuery = ''" class="underline cursor-pointer" style="color: var(--accent-primary);">clear your search</button></p>
         </div>
 
         <!-- Pagination -->
