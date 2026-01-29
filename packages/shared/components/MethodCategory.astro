@@ -7,7 +7,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
-import ExploreByBlock from './ExploreByBlock.astro';
 import PlanCTA from './PlanCTA.astro';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
@@ -276,11 +275,6 @@ const t = useTranslations(lang);
 
     <!-- PLAN CTA -->
     <PlanCTA hub={hub} />
-
-    <!-- INTERNAL LINKS -->
-    {exploreColumns.length > 0 && (
-      <ExploreByBlock headline={`OPTIMIZE YOUR ${headline.toUpperCase()} STACK`} columns={exploreColumns} />
-    )}
 
     <!-- FAQ -->
     {faqs.length > 0 && (

@@ -66,8 +66,9 @@ const seoContent = getFacetContent(buildFacetKey(facetType!, facetValue!), 'high
 const realRecipes = getRecipesMatchingAnyFacet('high-protein', facetType!, facetValue!);
 
 // Build recipe display objects from real data, with fallback placeholders
+// Pass ALL recipes - the component handles pagination via Alpine.js (showCount: 6, +6 on click)
 const displayRecipes = realRecipes.length > 0
-  ? realRecipes.slice(0, 6).map((r, i) => isMethod
+  ? realRecipes.map((r, i) => isMethod
       ? { id: i + 1, title: r.title, slug: r.slug, protein: `${r.protein}g`, cals: `${r.calories}`, time: `${r.prepTime + r.cookTime}m`, category: r.facets.meal || 'dinner', img: '/images/recipes/' + r.slug + '.jpg' }
       : { id: i + 1, title: r.title, slug: r.slug, protein: `${r.protein}g`, cal: `${r.calories}`, pe: r.protein > 35 ? 'Elite' : r.protein > 25 ? 'High' : 'Mid', tags: [r.facets.meal || 'Dinner', r.facets.goal || r.facets.constraint || 'Protein'].map(t => slugToDisplay(t)), img: '/images/recipes/' + r.slug + '.jpg' }
     )

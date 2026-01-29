@@ -8,7 +8,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import FacetNav from './FacetNav.astro';
-import ExploreByBlock from './ExploreByBlock.astro';
 import { recipes } from '../data/content/recipes';
 import { plans } from '../data/content/plans';
 import {
@@ -540,8 +539,6 @@ const t = useTranslations(lang);
          SECTION C: TAXONOMY NAVIGATION (preserved from Phase 8)
          ════════════════════════════════════════════════════════════════ -->
     <FacetNav layout="columns" sectionTitle="Universal Taxonomy" badge="54 Active Dimensions" groups={facetGroups} />
-
-    <ExploreByBlock headline="EXPLORE ALL CATEGORIES" subtitle="Full Taxonomy Navigation" columns={exploreColumns} variant="light" />
 
     <!-- DATA STREAM -->
     <section class="py-12 relative" style="background: var(--bg-tertiary); border-bottom: 1px solid var(--border-default);">

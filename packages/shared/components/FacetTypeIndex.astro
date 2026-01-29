@@ -8,7 +8,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
-import ExploreByBlock from './ExploreByBlock.astro';
 import { facets, FACET_ORDER, type FacetKey } from '../data/taxonomy';
 import { slugToDisplay } from '../utils/urls';
 import { getRecipesMatchingAnyFacet } from '../utils/content';
@@ -203,14 +202,6 @@ const t = useTranslations(lang);
         </div>
       </div>
     </section>
-
-    <!-- EXPLORE OTHER FACET TYPES -->
-    <ExploreByBlock
-      headline={`EXPLORE OTHER CATEGORIES`}
-      subtitle="Cross-Reference Navigation"
-      columns={exploreColumns}
-      variant="light"
-    />
 
   </main>
 

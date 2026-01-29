@@ -7,7 +7,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import BreadcrumbNav from './BreadcrumbNav.astro';
-import ExploreByBlock from './ExploreByBlock.astro';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface NutrientRule { nutrient: string; recommendation: string; reason: string; severity?: 'critical' | 'important' | 'helpful'; }
@@ -182,11 +181,6 @@ const t = useTranslations(lang);
           </template>
         </div>
       </section>
-    )}
-
-    <!-- EXPLORE LINKS -->
-    {exploreColumns.length > 0 && (
-      <ExploreByBlock headline={`EXPLORE ${conditionName.toUpperCase()} FURTHER`} columns={exploreColumns} variant="dark" />
     )}
 
     <!-- RELATED CONDITIONS -->

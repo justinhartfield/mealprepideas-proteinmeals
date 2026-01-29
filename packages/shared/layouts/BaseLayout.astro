@@ -66,6 +66,31 @@ const resolvedSiteName = siteName || (isMealPrep ? 'MealPrepIdeas.co' : 'Protein
 const resolvedFavicon = faviconEmoji || (isMealPrep ? '🥦' : '🍗');
 const gaId = isMealPrep ? 'G-TQHW6LM9X1' : 'G-LWJ3R2F2BG';
 
+// ─── Duplicate Content Prevention ───────────────────────────────────
+// Each site owns one hub. Cross-hub pages get canonical to the owning site + noindex.
+// mealprepideas.co owns /meal-prep/* → proteinmeals.co defers those
+// proteinmeals.co owns /high-protein/* → mealprepideas.co defers those
+const pathname = Astro.url.pathname;
+const isOnMealPrepHub = pathname.startsWith('/meal-prep') || pathname.startsWith('/es/meal-prep');
+const isOnHighProteinHub = pathname.startsWith('/high-protein') || pathname.startsWith('/es/high-protein');
+
+// Is this page on the "wrong" site (cross-hub)?
+const isCrossHub = (isMealPrep && isOnHighProteinHub) || (!isMealPrep && isOnMealPrepHub);
+
+// Build the canonical URL pointing to the owning site
+const ownerDomain = isOnMealPrepHub ? 'https://mealprepideas.co' : 'https://proteinmeals.co';
+const crossHubCanonical = isCrossHub ? `${ownerDomain}${pathname}` : '';
+
+// For shared pages (tools, stores, profile, etc.) — mealprepideas.co is canonical owner
+const isHubPage = isOnMealPrepHub || isOnHighProteinHub;
+const isHomePage = pathname === '/' || pathname === '/es/' || pathname === '/es';
+const isSharedPage = !isHubPage && !isHomePage;
+const sharedPageCanonical = (isSharedPage && !isMealPrep) ? `https://mealprepideas.co${pathname}` : '';
+
+// Final canonical: explicit prop > cross-hub > shared-page > self
+const resolvedCanonical = canonicalUrl || crossHubCanonical || sharedPageCanonical || '';
+const shouldNoindex = isCrossHub || (isSharedPage && !isMealPrep);
+
 // Clerk auth keys per site
 const clerkPublishableKey = isMealPrep
   ? 'pk_test_dXNlZnVsLWJsdWVnaWxsLTIuY2xlcmsuYWNjb3VudHMuZGV2JA'
