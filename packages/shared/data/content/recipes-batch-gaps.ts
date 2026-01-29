@@ -16,7 +16,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'High-Protein Quinoa Chicken Power Bowl',
     description: 'Grilled chicken breast over fluffy quinoa with roasted chickpeas, cucumber, and a tahini drizzle. 48g protein per bowl — a complete amino acid powerhouse.',
     hub: 'high-protein',
-    facets: { meal: 'lunch', ingredient: 'quinoa', goal: 'muscle-gain' },
+    facets: { meal: 'lunch', ingredient: 'quinoa', goal: 'muscle-gain', diet: 'gluten-free', method: 'grill' },
     prepTime: 10, cookTime: 25, servings: 4,
     calories: 520, protein: 48, carbs: 42, fat: 18, fiber: 8,
     ingredients: [
@@ -56,7 +56,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Turkey & Quinoa Stuffed Peppers (40g Protein)',
     description: 'Bell peppers stuffed with lean ground turkey, quinoa, black beans, and melted cheese. Each pepper packs 40g protein with a satisfying Tex-Mex kick.',
     hub: 'high-protein',
-    facets: { meal: 'dinner', ingredient: 'quinoa', method: 'oven', goal: 'muscle-gain' },
+    facets: { meal: 'dinner', ingredient: 'quinoa', method: 'oven', goal: 'muscle-gain', diet: 'gluten-free' },
     prepTime: 15, cookTime: 30, servings: 4,
     calories: 480, protein: 40, carbs: 38, fat: 16, fiber: 9,
     ingredients: [
@@ -95,7 +95,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Quinoa Salmon Protein Bowl',
     description: 'Seared salmon fillet over quinoa with avocado, edamame, and a soy-ginger glaze. 44g protein with heart-healthy omega-3s in every bite.',
     hub: 'high-protein',
-    facets: { meal: 'dinner', ingredient: 'quinoa', goal: 'healthy' },
+    facets: { meal: 'dinner', ingredient: 'quinoa', goal: 'healthy', method: 'one-pan' },
     prepTime: 10, cookTime: 20, servings: 4,
     calories: 540, protein: 44, carbs: 38, fat: 24, fiber: 7,
     ingredients: [
@@ -134,7 +134,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Quinoa Egg Breakfast Bowl (35g Protein)',
     description: 'Savory quinoa breakfast bowl with fried eggs, turkey bacon, sautéed spinach, and a sprinkle of feta. A high-protein morning that keeps you full until lunch.',
     hub: 'high-protein',
-    facets: { meal: 'breakfast', ingredient: 'quinoa', constraint: 'quick' },
+    facets: { meal: 'breakfast', ingredient: 'quinoa', constraint: 'quick', diet: 'gluten-free', goal: 'healthy', method: 'one-pan' },
     prepTime: 5, cookTime: 10, servings: 2,
     calories: 420, protein: 35, carbs: 32, fat: 18, fiber: 5,
     ingredients: [
@@ -170,7 +170,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Quinoa Black Bean Protein Burger',
     description: 'Hearty plant-forward burgers made with quinoa, black beans, and oats. 28g protein per patty — grillable, freezable, and surprisingly meaty.',
     hub: 'high-protein',
-    facets: { meal: 'dinner', ingredient: 'quinoa', diet: 'vegetarian' },
+    facets: { meal: 'dinner', ingredient: 'quinoa', diet: 'vegetarian', goal: 'healthy', method: 'one-pan', constraint: 'for-the-week' },
     prepTime: 15, cookTime: 12, servings: 6,
     calories: 380, protein: 28, carbs: 40, fat: 12, fiber: 10,
     ingredients: [
@@ -209,7 +209,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Quinoa Shrimp Stir-Fry Bowl',
     description: 'Garlic butter shrimp tossed with quinoa and crisp vegetables in a savory soy-lime sauce. 42g protein, low-carb-friendly, and ready in 20 minutes.',
     hub: 'high-protein',
-    facets: { meal: 'dinner', ingredient: 'quinoa', method: 'one-pan', constraint: 'quick' },
+    facets: { meal: 'dinner', ingredient: 'quinoa', method: 'one-pan', constraint: 'quick', goal: 'muscle-gain' },
     prepTime: 10, cookTime: 10, servings: 4,
     calories: 460, protein: 42, carbs: 36, fat: 16, fiber: 5,
     ingredients: [
@@ -252,7 +252,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Sweet Potato Chicken Protein Bowl',
     description: 'Roasted sweet potato cubes with seasoned chicken breast, black beans, and avocado crema. 46g protein with slow-digesting carbs for sustained energy.',
     hub: 'high-protein',
-    facets: { meal: 'lunch', ingredient: 'sweet-potato', goal: 'muscle-gain' },
+    facets: { meal: 'lunch', ingredient: 'sweet-potato', goal: 'muscle-gain', diet: 'gluten-free', method: 'sheet-pan' },
     prepTime: 10, cookTime: 25, servings: 4,
     calories: 510, protein: 46, carbs: 44, fat: 16, fiber: 9,
     ingredients: [
@@ -292,7 +292,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Ground Turkey Sweet Potato Skillet',
     description: 'One-pan ground turkey and sweet potato hash with peppers and eggs. 42g protein, naturally gluten-free, and on the table in 25 minutes.',
     hub: 'high-protein',
-    facets: { meal: 'dinner', ingredient: 'sweet-potato', method: 'one-pan', diet: 'gluten-free' },
+    facets: { meal: 'dinner', ingredient: 'sweet-potato', method: 'one-pan', diet: 'gluten-free', goal: 'muscle-gain' },
     prepTime: 10, cookTime: 15, servings: 4,
     calories: 470, protein: 42, carbs: 36, fat: 18, fiber: 6,
     ingredients: [
@@ -333,7 +333,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Loaded Sweet Potato with Cottage Cheese',
     description: 'Baked sweet potato split open and loaded with cottage cheese, chicken, pecans, and a honey drizzle. 38g protein in a single satisfying potato.',
     hub: 'high-protein',
-    facets: { meal: 'lunch', ingredient: 'sweet-potato', constraint: 'simple' },
+    facets: { meal: 'lunch', ingredient: 'sweet-potato', constraint: 'simple', diet: 'gluten-free', goal: 'healthy', method: 'oven' },
     prepTime: 5, cookTime: 45, servings: 4,
     calories: 440, protein: 38, carbs: 42, fat: 14, fiber: 7,
     ingredients: [
@@ -368,7 +368,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Sweet Potato Protein Pancakes',
     description: 'Fluffy pancakes made with mashed sweet potato and protein powder. 32g protein per stack with natural sweetness — no syrup needed.',
     hub: 'high-protein',
-    facets: { meal: 'breakfast', ingredient: 'sweet-potato', goal: 'muscle-gain' },
+    facets: { meal: 'breakfast', ingredient: 'sweet-potato', goal: 'muscle-gain', diet: 'vegetarian' },
     prepTime: 10, cookTime: 10, servings: 3,
     calories: 380, protein: 32, carbs: 44, fat: 10, fiber: 5,
     ingredients: [
@@ -406,7 +406,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Sheet Pan Steak & Sweet Potato',
     description: 'Sliced flank steak with roasted sweet potato wedges and broccolini on one pan. 50g protein per serving — a steakhouse meal made simple.',
     hub: 'high-protein',
-    facets: { meal: 'dinner', ingredient: 'sweet-potato', method: 'sheet-pan' },
+    facets: { meal: 'dinner', ingredient: 'sweet-potato', method: 'sheet-pan', diet: 'vegetarian', goal: 'muscle-gain' },
     prepTime: 10, cookTime: 20, servings: 4,
     calories: 520, protein: 50, carbs: 36, fat: 20, fiber: 6,
     ingredients: [
@@ -444,7 +444,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Sweet Potato & Sausage Egg Muffins',
     description: 'Portable egg muffins with diced sweet potato, chicken sausage, and cheddar. 20g protein per muffin — grab 2 for a 40g protein breakfast.',
     hub: 'high-protein',
-    facets: { meal: 'breakfast', ingredient: 'sweet-potato', method: 'oven', constraint: 'quick' },
+    facets: { meal: 'breakfast', ingredient: 'sweet-potato', method: 'oven', constraint: 'quick', diet: 'low-carb', goal: 'healthy' },
     prepTime: 10, cookTime: 20, servings: 12,
     calories: 145, protein: 20, carbs: 8, fat: 5, fiber: 1,
     ingredients: [
@@ -487,7 +487,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Low-Sodium Herb Chicken & Rice Bowls',
     description: 'Herb-roasted chicken thighs with lemon rice and steamed vegetables. Full flavor from herbs and citrus — zero added salt needed. Under 400mg sodium per serving.',
     hub: 'meal-prep',
-    facets: { meal: 'dinner', constraint: 'low-sodium', ingredient: 'chicken', method: 'oven' },
+    facets: { meal: 'dinner', constraint: 'low-sodium', ingredient: 'chicken', method: 'oven', diet: 'gluten-free', goal: 'healthy' },
     prepTime: 10, cookTime: 25, servings: 5,
     calories: 440, protein: 38, carbs: 40, fat: 14, fiber: 4,
     ingredients: [
@@ -526,7 +526,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Low-Sodium Turkey Veggie Meatballs',
     description: 'Tender turkey meatballs loaded with hidden vegetables and Italian herbs. Only 180mg sodium per serving — perfect for heart-healthy meal prep.',
     hub: 'meal-prep',
-    facets: { meal: 'dinner', constraint: 'low-sodium', ingredient: 'ground-turkey' },
+    facets: { meal: 'dinner', constraint: 'low-sodium', ingredient: 'ground-turkey', goal: 'weight-loss', method: 'sheet-pan' },
     prepTime: 15, cookTime: 20, servings: 5,
     calories: 380, protein: 34, carbs: 30, fat: 14, fiber: 4,
     ingredients: [
@@ -566,7 +566,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Low-Sodium Lemon Dill Salmon',
     description: 'Baked salmon with a bright lemon-dill crust, roasted asparagus, and brown rice. Heart-healthy omega-3s with only 220mg sodium per serving.',
     hub: 'meal-prep',
-    facets: { meal: 'dinner', constraint: 'low-sodium', ingredient: 'salmon', method: 'oven' },
+    facets: { meal: 'dinner', constraint: 'low-sodium', ingredient: 'salmon', method: 'oven', diet: 'gluten-free', goal: 'healthy' },
     prepTime: 10, cookTime: 18, servings: 4,
     calories: 460, protein: 38, carbs: 34, fat: 20, fiber: 5,
     ingredients: [
@@ -602,7 +602,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Low-Sodium Black Bean & Sweet Potato Bowls',
     description: 'Roasted sweet potato with no-salt-added black beans, corn, and a cumin-lime dressing. A plant-forward bowl with only 150mg sodium per serving.',
     hub: 'meal-prep',
-    facets: { meal: 'lunch', constraint: 'low-sodium', diet: 'vegan' },
+    facets: { meal: 'lunch', constraint: 'low-sodium', diet: 'vegan', ingredient: 'beans', goal: 'healthy', method: 'sheet-pan' },
     prepTime: 10, cookTime: 25, servings: 5,
     calories: 390, protein: 14, carbs: 62, fat: 10, fiber: 14,
     ingredients: [
@@ -640,7 +640,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Low-Sodium Overnight Oats with Banana',
     description: 'Creamy overnight oats sweetened naturally with banana and cinnamon. Just 5mg sodium per serving — the easiest heart-healthy breakfast prep.',
     hub: 'meal-prep',
-    facets: { meal: 'breakfast', constraint: 'low-sodium', method: 'no-cook' },
+    facets: { meal: 'breakfast', constraint: 'low-sodium', method: 'no-cook', diet: 'vegetarian', goal: 'healthy' },
     prepTime: 10, cookTime: 0, servings: 5,
     calories: 310, protein: 12, carbs: 54, fat: 8, fiber: 6,
     ingredients: [
@@ -675,7 +675,7 @@ export const recipesBatchGaps: Recipe[] = [
     title: 'Low-Sodium Chicken Vegetable Soup',
     description: 'Comforting chicken soup made with no-salt-added broth, loaded with vegetables and herbs. Classic flavor at only 190mg sodium per bowl.',
     hub: 'meal-prep',
-    facets: { meal: 'lunch', constraint: 'low-sodium', ingredient: 'chicken' },
+    facets: { meal: 'lunch', constraint: 'low-sodium', ingredient: 'chicken', diet: 'low-carb', goal: 'healthy', method: 'stovetop' },
     prepTime: 15, cookTime: 30, servings: 6,
     calories: 280, protein: 28, carbs: 24, fat: 8, fiber: 4,
     ingredients: [
