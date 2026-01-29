@@ -1,13 +1,14 @@
 ---
 /**
- * HighProteinHub — High Protein Hub Page (Wizard + Filterable Browser)
+ * HighProteinHub — High Protein Hub Page (Wizard + Paginated Recipe Grid)
  * This is the /high-protein/ hub — distinct from the homepage.
- * Features: Wizard tool, filterable recipe/plan grid, taxonomy navigation
+ * Features: Wizard tool, paginated recipe grid, taxonomy navigation
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeaderNav from './HeaderNav.astro';
 import FooterNav from './FooterNav.astro';
 import FacetNav from './FacetNav.astro';
+import Pagination from './Pagination.astro';
 import { recipes } from '../data/content/recipes';
 import { plans } from '../data/content/plans';
 import {
@@ -19,59 +20,32 @@ import {
 } from '../utils/stats';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
+interface Props {
+  title: string;
+  description?: string;
+  canonicalUrl?: string;
+  currentPage?: number;
+  perPage?: number;
+}
+
+const { title, description, canonicalUrl, currentPage = 1, perPage = 25 } = Astro.props;
+
 const allHPRecipes = recipes.filter(r => r.hub === 'high-protein');
 const allHPPlans = plans.filter(p => p.hub === 'high-protein');
 const fallbackImage = '/images/placeholder.svg';
+
+// Pagination calculations
+const totalRecipes = allHPRecipes.length;
+const totalPages = Math.ceil(totalRecipes / perPage);
+const startIndex = (currentPage - 1) * perPage;
+const endIndex = startIndex + perPage;
+const paginatedRecipes = allHPRecipes.slice(startIndex, endIndex);
 
 // Dynamic stats
 const hpRecipeCount = getHighProteinRecipeCount();
 const hpAvgProtein = getHighProteinAverageProtein();
 const hpAvgCals = getHighProteinAverageCalories();
 const planCount = getPlanCount();
-
-// Serialize data for Alpine.js
-const alpineRecipeData = JSON.stringify(
-  allHPRecipes.map(r => ({
-    slug: r.slug,
-    title: r.title,
-    protein: r.protein,
-    calories: r.calories,
-    imageAlt: r.imageAlt || r.title,
-    prepTime: r.prepTime + r.cookTime,
-    servings: r.servings,
-    meal: r.facets.meal || '',
-    method: r.facets.method || '',
-    diet: r.facets.diet || '',
-    goal: r.facets.goal || '',
-    constraint: r.facets.constraint || '',
-  }))
-);
-
-const alpinePlanData = JSON.stringify(
-  allHPPlans.map(p => ({
-    slug: p.slug,
-    title: p.title,
-    description: p.description,
-    dailyProtein: p.dailyProtein,
-    dailyCalories: p.dailyCalories,
-    groceryBudget: p.groceryBudget,
-    totalMeals: p.days.reduce((sum, d) => sum + d.meals.length, 0),
-  }))
-);
-
-// Extract unique filter values
-const uniqueMeals = [...new Set(allHPRecipes.map(r => r.facets.meal).filter(Boolean))];
-const uniqueMethods = [...new Set(allHPRecipes.map(r => r.facets.method).filter(Boolean))];
-const uniqueDiets = [...new Set(allHPRecipes.map(r => r.facets.diet).filter(Boolean))];
-const uniqueGoals = [...new Set(allHPRecipes.map(r => r.facets.goal).filter(Boolean))];
-
-interface Props {
-  title: string;
-  description?: string;
-  canonicalUrl?: string;
-}
-
-const { title, description, canonicalUrl } = Astro.props;
 
 // Facet groups for taxonomy nav
 const facetGroups = [
@@ -151,52 +125,20 @@ const facetGroups = [
   ] },
 ];
 
-const exploreColumns = [
-  {
-    title: 'By Meal',
-    titleHref: '/high-protein/meal/',
-    links: [
-      { label: 'Breakfast Protein', href: '/high-protein/meal/breakfast/' },
-      { label: 'Lunch Protein', href: '/high-protein/meal/lunch/' },
-      { label: 'Dinner Protein', href: '/high-protein/meal/dinner/' },
-      { label: 'Protein Snacks', href: '/high-protein/meal/snacks/' },
-    ],
-  },
-  {
-    title: 'By Goal',
-    titleHref: '/high-protein/goal/',
-    links: [
-      { label: 'Weight Loss Protein', href: '/high-protein/goal/weight-loss/' },
-      { label: 'Muscle Gain Protein', href: '/high-protein/goal/muscle-gain/' },
-      { label: 'Healthy Protein', href: '/high-protein/goal/healthy/' },
-    ],
-  },
-  {
-    title: 'By Diet',
-    titleHref: '/high-protein/diet/',
-    links: [
-      { label: 'Vegan Protein', href: '/high-protein/diet/vegan/' },
-      { label: 'Keto Protein', href: '/high-protein/diet/keto/' },
-      { label: 'Low Carb Protein', href: '/high-protein/diet/low-carb/' },
-      { label: 'Low Calorie', href: '/high-protein/diet/low-calorie/' },
-      { label: 'Gluten Free', href: '/high-protein/diet/gluten-free/' },
-      { label: 'Dairy Free', href: '/high-protein/diet/dairy-free/' },
-      { label: 'Vegetarian', href: '/high-protein/diet/vegetarian/' },
-    ],
-  },
-  {
-    title: 'By Constraint',
-    titleHref: '/high-protein/constraint/',
-    links: [
-      { label: 'Budget Protein', href: '/high-protein/constraint/budget/' },
-      { label: 'Quick Protein', href: '/high-protein/constraint/quick/' },
-      { label: 'High Fiber', href: '/high-protein/constraint/high-fiber/' },
-      { label: 'Low Sodium', href: '/high-protein/constraint/low-sodium/' },
-      { label: 'Simple Protein', href: '/high-protein/constraint/simple/' },
-      { label: 'For The Week', href: '/high-protein/constraint/for-the-week/' },
-      { label: 'No Microwave', href: '/high-protein/constraint/no-microwave/' },
-    ],
-  },
+// Quick filter links (replaces client-side Alpine filters)
+const quickFilters = [
+  { label: 'Breakfast', href: '/high-protein/meal/breakfast/' },
+  { label: 'Lunch', href: '/high-protein/meal/lunch/' },
+  { label: 'Dinner', href: '/high-protein/meal/dinner/' },
+  { label: 'Snacks', href: '/high-protein/meal/snacks/' },
+  { label: 'Keto', href: '/high-protein/diet/keto/' },
+  { label: 'Vegan', href: '/high-protein/diet/vegan/' },
+  { label: 'Low Carb', href: '/high-protein/diet/low-carb/' },
+  { label: 'Weight Loss', href: '/high-protein/goal/weight-loss/' },
+  { label: 'Muscle Gain', href: '/high-protein/goal/muscle-gain/' },
+  { label: 'Air Fryer', href: '/high-protein/method/air-fryer/' },
+  { label: 'No-Cook', href: '/high-protein/method/no-cook/' },
+  { label: 'Quick', href: '/high-protein/constraint/quick/' },
 ];
 
 const structuredData = JSON.stringify({
@@ -210,9 +152,18 @@ const structuredData = JSON.stringify({
 // i18n
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+// SEO: Prev/Next link tags
+const prevUrl = currentPage > 1 ? (currentPage === 2 ? '/high-protein/' : `/high-protein/page/${currentPage - 1}/`) : null;
+const nextUrl = currentPage < totalPages ? `/high-protein/page/${currentPage + 1}/` : null;
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl} structuredData={structuredData}>
+  <Fragment slot="head">
+    {prevUrl && <link rel="prev" href={prevUrl} />}
+    {nextUrl && <link rel="next" href={nextUrl} />}
+  </Fragment>
+
   <HeaderNav
     site="proteinmeals"
     activeLink="/high-protein/"
@@ -222,8 +173,9 @@ const t = useTranslations(lang);
 
   <main class="flex-grow">
     <!-- ════════════════════════════════════════════════════════════════
-         SECTION A: WIZARD TOOL — "BUILD YOUR MACRO PROTOCOL"
+         SECTION A: WIZARD TOOL — "BUILD YOUR MACRO PROTOCOL" (Page 1 only)
          ════════════════════════════════════════════════════════════════ -->
+    {currentPage === 1 && (
     <section class="relative py-20 px-6 overflow-hidden" style="background: var(--bg-primary); border-bottom: 1px solid var(--border-default);"
              x-data="{
                goal: '',
@@ -232,12 +184,10 @@ const t = useTranslations(lang);
                meal: '',
                constraint: '',
                generatePlan() {
-                 // Two-facet combos that exist for high-protein: method+goal, diet+constraint, store+constraint, chain+goal
                  if (!this.goal && !this.method && !this.diet && !this.meal && !this.constraint) {
                    document.getElementById('recipe-browser')?.scrollIntoView({ behavior: 'smooth' });
                    return;
                  }
-                 // Try two-facet combos first (matching indexed combos)
                  if (this.method && this.goal) {
                    window.location.href = '/high-protein/method/' + this.method + '/goal/' + this.goal + '/';
                    return;
@@ -246,7 +196,6 @@ const t = useTranslations(lang);
                    window.location.href = '/high-protein/diet/' + this.diet + '/constraint/' + this.constraint + '/';
                    return;
                  }
-                 // Fallback: canonical order single-facet
                  if (this.meal) { window.location.href = '/high-protein/meal/' + this.meal + '/'; return; }
                  if (this.method) { window.location.href = '/high-protein/method/' + this.method + '/'; return; }
                  if (this.diet) { window.location.href = '/high-protein/diet/' + this.diet + '/'; return; }
@@ -376,115 +325,99 @@ const t = useTranslations(lang);
         </div>
       </div>
     </section>
+    )}
 
 
     <!-- ════════════════════════════════════════════════════════════════
-         SECTION B: FILTERABLE RECIPE & PLAN BROWSER
+         SECTION B: PAGINATED RECIPE GRID (Static SSG)
          ════════════════════════════════════════════════════════════════ -->
     <section id="recipe-browser" class="py-20 px-6"
-             style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-default);"
-             x-data={`{
-               filter: 'all',
-               allRecipes: ${alpineRecipeData},
-               allPlans: ${alpinePlanData},
-               get filteredRecipes() {
-                 if (this.filter === 'all') return this.allRecipes;
-                 return this.allRecipes.filter(r => {
-                   return r.meal === this.filter || r.method === this.filter || r.diet === this.filter || r.goal === this.filter;
-                 });
-               }
-             }`}>
+             style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-default);">
       <div class="max-w-7xl mx-auto">
         <!-- Section Header -->
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10">
           <div>
             <div class="flex items-center gap-4 mb-3">
               <div class="h-[2px] w-12" style="background-color: var(--accent-primary);"></div>
-              <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">{t('hub.browseFilter')}</span>
+              <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">
+                {currentPage === 1 ? t('hub.browseFilter') : `PAGE ${currentPage}`}
+              </span>
             </div>
-            <h2 class="text-4xl font-black tracking-tighter" style="color: var(--text-primary);">{t('hub.allHPRecipes')}</h2>
+            <h2 class="text-4xl font-black tracking-tighter" style="color: var(--text-primary);">
+              {currentPage === 1 ? t('hub.allHPRecipes') : 'High Protein Recipes'}
+            </h2>
           </div>
           <div class="text-sm font-bold" style="color: var(--text-secondary);">
-            Showing <span class="font-black" style="color: var(--accent-primary);" x-text="filteredRecipes.length"></span> {t('hub.recipesLc')}
+            Showing <span class="font-black" style="color: var(--accent-primary);">{startIndex + 1}–{Math.min(endIndex, totalRecipes)}</span> of {totalRecipes} recipes
           </div>
         </div>
 
-        <!-- Filter Pills -->
+        <!-- Quick Filter Pills (Link to facet pages) -->
+        {currentPage === 1 && (
         <div class="flex flex-wrap gap-2 mb-10">
-          <button x-on:click="filter = 'all'"
-                  x-bind:style="filter === 'all' ? 'background: var(--accent-primary); color: var(--text-inverse); border-color: var(--accent-primary);' : 'color: var(--text-secondary); border-color: var(--border-default);'"
-                  class="px-4 py-2 border rounded-full text-[11px] font-bold uppercase transition-all cursor-pointer">All</button>
-          {uniqueMeals.map(m => (
-            <button x-on:click={`filter = filter === '${m}' ? 'all' : '${m}'`}
-                    x-bind:style={`filter === '${m}' ? 'background: var(--accent-primary); color: var(--text-inverse); border-color: var(--accent-primary);' : 'color: var(--text-secondary); border-color: var(--border-default);'`}
-                    class="px-4 py-2 border rounded-full text-[11px] font-bold uppercase transition-all cursor-pointer">{m}</button>
-          ))}
-          {uniqueMethods.map(m => (
-            <button x-on:click={`filter = filter === '${m}' ? 'all' : '${m}'`}
-                    x-bind:style={`filter === '${m}' ? 'background: var(--accent-primary); color: var(--text-inverse); border-color: var(--accent-primary);' : 'color: var(--text-secondary); border-color: var(--border-default);'`}
-                    class="px-4 py-2 border rounded-full text-[11px] font-bold uppercase transition-all cursor-pointer">{m.replace(/-/g, ' ')}</button>
-          ))}
-          {uniqueDiets.map(d => (
-            <button x-on:click={`filter = filter === '${d}' ? 'all' : '${d}'`}
-                    x-bind:style={`filter === '${d}' ? 'background: var(--accent-primary); color: var(--text-inverse); border-color: var(--accent-primary);' : 'color: var(--text-secondary); border-color: var(--border-default);'`}
-                    class="px-4 py-2 border rounded-full text-[11px] font-bold uppercase transition-all cursor-pointer">{d.replace(/-/g, ' ')}</button>
-          ))}
-          {uniqueGoals.map(g => (
-            <button x-on:click={`filter = filter === '${g}' ? 'all' : '${g}'`}
-                    x-bind:style={`filter === '${g}' ? 'background: var(--accent-primary); color: var(--text-inverse); border-color: var(--accent-primary);' : 'color: var(--text-secondary); border-color: var(--border-default);'`}
-                    class="px-4 py-2 border rounded-full text-[11px] font-bold uppercase transition-all cursor-pointer">{g.replace(/-/g, ' ')}</button>
+          {quickFilters.map(f => (
+            <a href={f.href}
+               class="px-4 py-2 border rounded-full text-[11px] font-bold uppercase transition-all hover:opacity-80"
+               style="color: var(--text-secondary); border-color: var(--border-default);">
+              {f.label}
+            </a>
           ))}
         </div>
+        )}
 
-        <!-- Recipe Grid -->
+        <!-- Recipe Grid (Server-rendered, paginated) -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <template x-for="r in filteredRecipes" x-bind:key="r.slug">
-            <a x-bind:href="'/high-protein/recipes/' + r.slug + '/'"
+          {paginatedRecipes.map((r) => (
+            <a href={`/high-protein/recipes/${r.slug}/`}
                class="group rounded-2xl overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1"
                style="border: 1px solid var(--border-default); background: var(--bg-primary);">
               <div class="aspect-video overflow-hidden relative">
-                <img x-bind:src="'/images/recipes/' + r.slug + '.jpg'"
-                     x-on:error="$el.src='/images/placeholder.svg'"
-                     x-bind:alt="r.imageAlt"
+                <img src={`/images/recipes/${r.slug}.jpg`}
+                     onerror="this.src='/images/placeholder.svg'"
+                     alt={r.imageAlt || r.title}
                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                      width="400" height="225" loading="lazy" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 <div class="absolute bottom-3 left-3 flex gap-2">
                   <span class="px-2 py-1 rounded text-[9px] font-black uppercase"
-                        style="background-color: var(--accent-primary); color: var(--text-inverse);"
-                        x-text="r.protein + 'g protein'"></span>
+                        style="background-color: var(--accent-primary); color: var(--text-inverse);">
+                    {r.protein}g protein
+                  </span>
                   <span class="px-2 py-1 rounded text-[9px] font-black uppercase"
-                        style="background: rgba(0,0,0,0.6); color: white;"
-                        x-text="r.calories + ' cal'"></span>
+                        style="background: rgba(0,0,0,0.6); color: white;">
+                    {r.calories} cal
+                  </span>
                 </div>
               </div>
               <div class="p-4">
-                <h3 class="font-black text-sm mb-2 leading-tight group-hover:opacity-80 transition-opacity" style="color: var(--text-primary);" x-text="r.title"></h3>
+                <h3 class="font-black text-sm mb-2 leading-tight group-hover:opacity-80 transition-opacity" style="color: var(--text-primary);">
+                  {r.title}
+                </h3>
                 <div class="flex gap-3 text-[10px] font-bold" style="color: var(--text-tertiary);">
-                  <span x-text="r.prepTime + 'm total'"></span>
+                  <span>{r.prepTime + r.cookTime}m total</span>
                   <span>·</span>
-                  <span x-text="r.servings + ' servings'"></span>
+                  <span>{r.servings} servings</span>
                 </div>
               </div>
             </a>
-          </template>
+          ))}
         </div>
 
-        <!-- Empty State -->
-        <div x-show="filteredRecipes.length === 0" class="text-center py-16 rounded-2xl" style="background: var(--bg-primary); border: 1px solid var(--border-default);">
-          <p class="text-lg font-bold mb-2" style="color: var(--text-secondary);">{t('hub.noRecipesMatch')}</p>
-          <button x-on:click="filter = 'all'" class="text-xs font-black uppercase tracking-widest cursor-pointer" style="color: var(--accent-primary);">{t('hub.showAllRecipes')}</button>
-        </div>
+        <!-- Pagination -->
+        {totalPages > 1 && (
+          <Pagination currentPage={currentPage} totalPages={totalPages} baseUrl="/high-protein/" />
+        )}
 
-        <!-- PLANS SECTION -->
+        <!-- PLANS SECTION (only on page 1) -->
+        {currentPage === 1 && allHPPlans.length > 0 && (
         <div class="mt-20">
           <div class="flex items-center gap-4 mb-10">
             <div class="h-[2px] w-12" style="background-color: var(--accent-primary);"></div>
             <span class="text-[10px] font-black tracking-[0.5em] uppercase" style="color: var(--accent-primary);">{t('hub.macroOptPlans')}</span>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <template x-for="p in allPlans" x-bind:key="p.slug">
-              <a x-bind:href="'/high-protein/plans/' + p.slug + '/'"
+            {allHPPlans.map((p) => (
+              <a href={`/high-protein/plans/${p.slug}/`}
                  class="group rounded-2xl p-8 transition-all hover:shadow-lg hover:-translate-y-1 flex flex-col justify-between"
                  style="border: 1px solid var(--border-default); background: var(--bg-primary);">
                 <div>
@@ -492,35 +425,44 @@ const t = useTranslations(lang);
                     <span class="px-2 py-1 rounded text-[9px] font-black uppercase"
                           style="background: var(--accent-glow); color: var(--accent-primary); border: 1px solid var(--accent-primary);">5-Day Plan</span>
                   </div>
-                  <h3 class="font-black text-xl tracking-tight mb-3 leading-tight group-hover:opacity-80 transition-opacity" style="color: var(--text-primary);" x-text="p.title"></h3>
-                  <p class="text-sm font-medium mb-6 line-clamp-2" style="color: var(--text-secondary);" x-text="p.description"></p>
+                  <h3 class="font-black text-xl tracking-tight mb-3 leading-tight group-hover:opacity-80 transition-opacity" style="color: var(--text-primary);">
+                    {p.title}
+                  </h3>
+                  <p class="text-sm font-medium mb-6 line-clamp-2" style="color: var(--text-secondary);">
+                    {p.description}
+                  </p>
                 </div>
                 <div class="grid grid-cols-3 gap-3">
                   <div class="text-center p-3 rounded-xl" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
-                    <span class="block text-lg font-black tabular-nums" style="color: var(--text-primary);" x-text="p.totalMeals"></span>
+                    <span class="block text-lg font-black tabular-nums" style="color: var(--text-primary);">
+                      {p.days.reduce((sum, d) => sum + d.meals.length, 0)}
+                    </span>
                     <span class="text-[8px] font-bold uppercase" style="color: var(--text-tertiary);">{t('hub.meals')}</span>
                   </div>
                   <div class="text-center p-3 rounded-xl" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
-                    <span class="block text-lg font-black tabular-nums" style="color: var(--accent-primary);" x-text="p.dailyProtein + 'g'"></span>
+                    <span class="block text-lg font-black tabular-nums" style="color: var(--accent-primary);">{p.dailyProtein}g</span>
                     <span class="text-[8px] font-bold uppercase" style="color: var(--text-tertiary);">{t('hub.proteinDay')}</span>
                   </div>
                   <div class="text-center p-3 rounded-xl" style="background: var(--bg-secondary); border: 1px solid var(--border-default);">
-                    <span class="block text-lg font-black tabular-nums" style="color: var(--text-primary);" x-text="p.groceryBudget"></span>
+                    <span class="block text-lg font-black tabular-nums" style="color: var(--text-primary);">{p.groceryBudget}</span>
                     <span class="text-[8px] font-bold uppercase" style="color: var(--text-tertiary);">{t('hub.budget')}</span>
                   </div>
                 </div>
               </a>
-            </template>
+            ))}
           </div>
         </div>
+        )}
       </div>
     </section>
 
 
     <!-- ════════════════════════════════════════════════════════════════
-         SECTION C: TAXONOMY NAVIGATION (preserved from Phase 8)
+         SECTION C: TAXONOMY NAVIGATION (only on page 1)
          ════════════════════════════════════════════════════════════════ -->
-    <FacetNav layout="columns" sectionTitle="Global Taxonomy Explorer" groups={facetGroups} />
+    {currentPage === 1 && (
+      <FacetNav layout="columns" sectionTitle="Global Taxonomy Explorer" groups={facetGroups} />
+    )}
 
     <!-- DATA STREAM -->
     <section class="py-12 relative" style="background: var(--bg-tertiary); border-bottom: 1px solid var(--border-default);">

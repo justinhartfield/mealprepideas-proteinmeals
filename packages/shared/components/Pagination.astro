@@ -1,0 +1,111 @@
+---
+/**
+ * SEO-friendly Pagination Component
+ * Renders prev/next links with proper rel attributes
+ */
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  baseUrl: string; // e.g., '/meal-prep/'
+}
+
+const { currentPage, totalPages, baseUrl } = Astro.props;
+
+// Generate page URLs
+const getPageUrl = (page: number) => {
+  if (page === 1) return baseUrl;
+  return `${baseUrl}page/${page}/`;
+};
+
+const prevPage = currentPage > 1 ? currentPage - 1 : null;
+const nextPage = currentPage < totalPages ? currentPage + 1 : null;
+
+// Generate visible page numbers (show 5 around current)
+const getVisiblePages = () => {
+  const pages: (number | 'ellipsis')[] = [];
+  const showAround = 2;
+  
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+  
+  pages.push(1);
+  
+  if (currentPage > showAround + 2) {
+    pages.push('ellipsis');
+  }
+  
+  for (let i = Math.max(2, currentPage - showAround); i <= Math.min(totalPages - 1, currentPage + showAround); i++) {
+    if (!pages.includes(i)) pages.push(i);
+  }
+  
+  if (currentPage < totalPages - showAround - 1) {
+    pages.push('ellipsis');
+  }
+  
+  if (!pages.includes(totalPages)) pages.push(totalPages);
+  
+  return pages;
+};
+
+const visiblePages = getVisiblePages();
+---
+
+<nav class="flex items-center justify-center gap-2 py-8" aria-label="Pagination">
+  {/* Previous */}
+  {prevPage ? (
+    <a href={getPageUrl(prevPage)} 
+       rel="prev"
+       class="px-4 py-2 rounded-lg font-bold text-sm transition-all hover:opacity-80"
+       style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-secondary);">
+      ← Prev
+    </a>
+  ) : (
+    <span class="px-4 py-2 rounded-lg font-bold text-sm opacity-40"
+          style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-tertiary);">
+      ← Prev
+    </span>
+  )}
+
+  {/* Page Numbers */}
+  <div class="flex items-center gap-1">
+    {visiblePages.map((page) => 
+      page === 'ellipsis' ? (
+        <span class="px-3 py-2 text-sm" style="color: var(--text-tertiary);">…</span>
+      ) : page === currentPage ? (
+        <span class="px-4 py-2 rounded-lg font-black text-sm"
+              style="background: var(--accent-primary); color: var(--text-inverse);"
+              aria-current="page">
+          {page}
+        </span>
+      ) : (
+        <a href={getPageUrl(page)}
+           class="px-4 py-2 rounded-lg font-bold text-sm transition-all hover:opacity-80"
+           style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-secondary);">
+          {page}
+        </a>
+      )
+    )}
+  </div>
+
+  {/* Next */}
+  {nextPage ? (
+    <a href={getPageUrl(nextPage)}
+       rel="next"
+       class="px-4 py-2 rounded-lg font-bold text-sm transition-all hover:opacity-80"
+       style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-secondary);">
+      Next →
+    </a>
+  ) : (
+    <span class="px-4 py-2 rounded-lg font-bold text-sm opacity-40"
+          style="background: var(--bg-secondary); border: 1px solid var(--border-default); color: var(--text-tertiary);">
+      Next →
+    </span>
+  )}
+</nav>
+
+{/* SEO: Add link tags to head via slot or directly */}
+<Fragment slot="head">
+  {prevPage && <link rel="prev" href={getPageUrl(prevPage)} />}
+  {nextPage && <link rel="next" href={getPageUrl(nextPage)} />}
+</Fragment>

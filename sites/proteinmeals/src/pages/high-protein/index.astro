@@ -1,7 +1,7 @@
 ---
 /**
- * proteinmeals.co/high-protein/ — Hub Landing
- * Uses HighProteinHub component
+ * proteinmeals.co/high-protein/ — Hub Landing (Page 1)
+ * Uses HighProteinHub component with pagination
  */
 import HighProteinHub from '@mealprepideas/shared/components/HighProteinHub.astro';
 ---
@@ -10,4 +10,6 @@ import HighProteinHub from '@mealprepideas/shared/components/HighProteinHub.astr
   title="High Protein Hub | ProteinMeals.co - The Macro Authority"
   description="The definitive index for macro-intent. Nutrient density across retail, fast food, and batch-cooking protocols."
   canonicalUrl="https://proteinmeals.co/high-protein/"
+  currentPage={1}
+  perPage={25}
 />

@@ -1,0 +1,29 @@
+---
+/**
+ * mealprepideas.co/meal-prep/page/[page]/ — Paginated Hub
+ */
+import MealPrepHub from '@mealprepideas/shared/components/MealPrepHub.astro';
+import { recipes } from '@mealprepideas/shared/data/content/recipes';
+
+export function getStaticPaths() {
+  const allMPRecipes = recipes.filter(r => r.hub === 'meal-prep');
+  const perPage = 25;
+  const totalPages = Math.ceil(allMPRecipes.length / perPage);
+  
+  // Generate pages 2 through totalPages (page 1 is /meal-prep/)
+  return Array.from({ length: totalPages - 1 }, (_, i) => ({
+    params: { page: String(i + 2) },
+  }));
+}
+
+const { page } = Astro.params;
+const currentPage = parseInt(page!, 10);
+---
+
+<MealPrepHub
+  title={`Meal Prep Recipes — Page ${currentPage} | mealprepideas.co`}
+  description={`Browse meal prep recipes, page ${currentPage}. High-protein, batch-cooking friendly recipes for your weekly prep.`}
+  canonicalUrl={`https://mealprepideas.co/meal-prep/page/${currentPage}/`}
+  currentPage={currentPage}
+  perPage={25}
+/>

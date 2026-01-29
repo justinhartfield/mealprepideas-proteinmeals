@@ -1,0 +1,29 @@
+---
+/**
+ * proteinmeals.co/high-protein/page/[page]/ — Paginated Hub
+ */
+import HighProteinHub from '@mealprepideas/shared/components/HighProteinHub.astro';
+import { recipes } from '@mealprepideas/shared/data/content/recipes';
+
+export function getStaticPaths() {
+  const allHPRecipes = recipes.filter(r => r.hub === 'high-protein');
+  const perPage = 25;
+  const totalPages = Math.ceil(allHPRecipes.length / perPage);
+  
+  // Generate pages 2 through totalPages (page 1 is /high-protein/)
+  return Array.from({ length: totalPages - 1 }, (_, i) => ({
+    params: { page: String(i + 2) },
+  }));
+}
+
+const { page } = Astro.params;
+const currentPage = parseInt(page!, 10);
+---
+
+<HighProteinHub
+  title={`High Protein Recipes — Page ${currentPage} | ProteinMeals.co`}
+  description={`Browse high protein recipes, page ${currentPage}. Macro-optimized meals for muscle gain and weight loss.`}
+  canonicalUrl={`https://proteinmeals.co/high-protein/page/${currentPage}/`}
+  currentPage={currentPage}
+  perPage={25}
+/>
