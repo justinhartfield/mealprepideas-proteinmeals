@@ -108,6 +108,11 @@ const clerkFrontendApi = isMealPrep
   {description && <meta name="twitter:description" content={description} />}
   <meta name="twitter:image" content={ogImage} />
 
+  <!-- Performance: Preconnect to external domains -->
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+  <link rel="preconnect" href="https://clerk.accounts.dev" crossorigin />
+
   <!-- FOUC Prevention: Apply saved theme before paint -->
   <script is:inline>
     (function() {
@@ -196,6 +201,37 @@ const clerkFrontendApi = isMealPrep
 
   <!-- Structured Data -->
   {structuredData && <script type="application/ld+json" set:html={structuredData} />}
+
+  <!-- Organization Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    'name': resolvedSiteName.replace('.co', ''),
+    'url': isMealPrep ? 'https://mealprepideas.co' : 'https://proteinmeals.co',
+    'logo': isMealPrep ? 'https://mealprepideas.co/images/logo.png' : 'https://proteinmeals.co/images/logo.png',
+    'description': isMealPrep 
+      ? 'Your complete guide to meal prep recipes, weekly plans, and batch cooking strategies.'
+      : 'High-protein recipes optimized for muscle gain, weight loss, and macro tracking.',
+    'sameAs': []
+  })} />
+
+  <!-- WebSite Schema with SearchAction -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    'name': resolvedSiteName,
+    'url': isMealPrep ? 'https://mealprepideas.co' : 'https://proteinmeals.co',
+    'potentialAction': {
+      '@type': 'SearchAction',
+      'target': {
+        '@type': 'EntryPoint',
+        'urlTemplate': isMealPrep 
+          ? 'https://mealprepideas.co/meal-prep/?q={search_term_string}'
+          : 'https://proteinmeals.co/high-protein/?q={search_term_string}'
+      },
+      'query-input': 'required name=search_term_string'
+    }
+  })} />
 
   <!-- Theme Variables -->
   <style is:global>
